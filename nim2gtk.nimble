@@ -5,7 +5,7 @@ author        = "Mac Taylor"
 description   = "GTK bindings for Nim 2.0"
 license       = "MIT"
 skipDirs      = @["examples", "tests"]
-installDirs   = @["gtk2nim"]
+installDirs   = @["nim2gtk"]
 
 # Dependencies
 
