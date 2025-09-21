@@ -41,23 +41,9 @@ proc prep =
   cd(td)
   cd(wd)
 
-  try:
-    exec("wget https://raw.githubusercontent.com/StefanSalewski/oldgtk3/master/oldgtk3/gobject.nim -O gobject.nim")
-    exec("wget https://raw.githubusercontent.com/StefanSalewski/oldgtk3/master/oldgtk3/glib.nim -O glib.nim")
-    exec("wget https://raw.githubusercontent.com/StefanSalewski/oldgtk3/master/oldgtk3/gir.nim -O gir.nim")
-  except:
-    try:
-      exec("nimgrab https://raw.githubusercontent.com/StefanSalewski/oldgtk3/master/oldgtk3/gobject.nim gobject.nim")
-      exec("nimgrab https://raw.githubusercontent.com/StefanSalewski/oldgtk3/master/oldgtk3/glib.nim glib.nim")
-      exec("nimgrab https://raw.githubusercontent.com/StefanSalewski/oldgtk3/master/oldgtk3/gir.nim gir.nim")
-    except:
-      echo "For bootstrapping of gintro package we need the low level files gobject.nim, glib.nim and gir.nim."
-      echo "We take these from package oldgtk3. As most gintro users will not need the whole oldgtk3 package"
-      echo "we tried to only download these 3 single files using wget or nimgrab. But that failed."
-      echo "Ensure that wget or nimgrab are available. wget should be available for Unix like systems."
-      echo "Nimgrab should be available in Nim/tools directory. You may compile it with 'nim c -d:ssl nimgrab.nim'"
-      echo "and put it into your search path"
-      echo "For the unlikely case that you have already full oldgtk3 package installed, we will just try to continue..."
+  cpFile(this / "oldgtk3" / "gobject.nim", "gobject.nim")
+  cpFile(this / "oldgtk3" / "glib.nim", "glib.nim")
+  cpFile(this / "oldgtk3" / "gir.nim", "gir.nim")
 
   exec("nim c gen.nim")
   mkDir("nim_gi")
