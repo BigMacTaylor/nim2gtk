@@ -8,7 +8,7 @@ skipDirs      = @["examples", "tests"]
 
 # Dependencies
 
-requires "nim >= 1.0.0"
+requires "nim >= 2.2.4"
 
 when defined(nimdistros):
   import distros
