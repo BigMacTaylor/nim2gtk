@@ -1,5 +1,5 @@
 #
-import gintro/[gtk4, gobject, gio, glib]
+import nim2gtk/[gtk4, gobject, gio, glib]
 
 # This is a way to replace ugly casts with safer conversion procs,
 # see https://github.com/StefanSalewski/gintro/issues/215#issuecomment-1408891125

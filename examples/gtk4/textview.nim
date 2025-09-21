@@ -1,7 +1,7 @@
 # nim c textview.nim
 # ./textview textview.nim
 # minimal GtkApplication example
-import gintro/[gtk4, gobject, glib, gio] # , gtksource] # gtksource is not yet available for GTK4
+import nim2gtk/[gtk4, gobject, glib, gio] # , gtksource] # gtksource is not yet available for GTK4
 
 from OS import paramCount, paramStr
 

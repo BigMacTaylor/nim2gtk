@@ -2,7 +2,7 @@
 # this is still based on the original testheaderbar.c, which was recently replaced by testheaderbar2.c
 # and testheaderbar.c is not a very good Nim GTK4 example unfortunately -- too comlicated and strange code.
 # nim c headerbar.nim
-import gintro/[gtk4, glib, gobject]
+import nim2gtk/[gtk4, glib, gobject]
 
 const
   Css = """

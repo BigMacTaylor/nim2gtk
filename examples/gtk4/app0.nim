@@ -1,10 +1,10 @@
 # app0.nim -- minimal application style example
 # nim c app0.nim
-import gintro/[gtk4, gobject, gio]
+import nim2gtk/[gtk4, gobject, gio]
 
 proc appActivate(app: Application) =
   let window = newApplicationWindow(app)
-  window.title = "GTK4 & Nim"
+  window.title = "GTK4 APP"
   window.defaultSize = (200, 200)
   show(window)
 
