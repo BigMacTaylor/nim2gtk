@@ -1119,7 +1119,7 @@ type
     rotation = 8
     slider = 9
 
-  AxisFlags* {.size: sizeof(cint).} = set[AxisFlag]
+  AxisFlags* = set[AxisFlag]
 
 proc gdk_device_get_axes(self: ptr Device00): AxisFlags {.
     importc, libprag.}
@@ -1226,7 +1226,7 @@ type
     modifierReserved_29 = 29
     release = 30
 
-  ModifierType* {.size: sizeof(cint).} = set[ModifierFlag]
+  ModifierType* = set[ModifierFlag]
 
 const ModifierMask* = {ModifierFlag.shift .. ModifierFlag.button5, ModifierFlag.super .. ModifierFlag.meta}
 
@@ -2935,7 +2935,7 @@ type
     noredir = 7
     typeHint = 8
 
-  WindowAttributesType* {.size: sizeof(cint).} = set[WindowAttributesTypeFlag]
+  WindowAttributesType* = set[WindowAttributesTypeFlag]
 
 proc gdk_window_new(parent: ptr Window00; attributes: ptr WindowAttr00; attributesMask: WindowAttributesType): ptr Window00 {.
     importc, libprag.}
@@ -3714,7 +3714,7 @@ type
     resumeEvents = 5
     afterPaint = 6
 
-  FrameClockPhase* {.size: sizeof(cint).} = set[FrameClockPhaseFlag]
+  FrameClockPhase* = set[FrameClockPhaseFlag]
 
 const
   FrameClockPhaseNone* = FrameClockPhase({})
@@ -3746,7 +3746,7 @@ type
     leftTiled = 15
     leftResizable = 16
 
-  WindowState* {.size: sizeof(cint).} = set[WindowStateFlag]
+  WindowState* = set[WindowStateFlag]
 
 proc gdk_window_get_state(self: ptr Window00): WindowState {.
     importc, libprag.}
@@ -4196,7 +4196,7 @@ type
     minimize = 5
     maximize = 6
 
-  WMDecoration* {.size: sizeof(cint).} = set[WMDecorationFlag]
+  WMDecoration* = set[WMDecorationFlag]
 
 proc gdk_window_get_decorations(self: ptr Window00; decorations: var WMDecoration): gboolean {.
     importc, libprag.}
@@ -4841,7 +4841,7 @@ type
     maximize = 4
     close = 5
 
-  WMFunction* {.size: sizeof(cint).} = set[WMFunctionFlag]
+  WMFunction* = set[WMFunctionFlag]
 
 proc gdk_window_set_functions(self: ptr Window00; functions: WMFunction) {.
     importc, libprag.}
@@ -4891,7 +4891,7 @@ type
     userPos = 7
     userSize = 8
 
-  WindowHints* {.size: sizeof(cint).} = set[WindowHintsFlag]
+  WindowHints* = set[WindowHintsFlag]
 
 proc gdk_window_constrain_size(geometry: Geometry; flags: WindowHints; width: int32;
     height: int32; newWidth: var int32; newHeight: var int32) {.
@@ -4943,7 +4943,7 @@ type
     touchpadGesture = 24
     tabletPad = 25
 
-  EventMask* {.size: sizeof(cint).} = set[EventFlag]
+  EventMask* = set[EventFlag]
 
 const AllEventsMask* = {EventFlag.exposure .. EventFlag.smoothScroll}
 
@@ -6038,7 +6038,7 @@ type
     private = 4
     ask = 5
 
-  DragAction* {.size: sizeof(cint).} = set[DragFlag]
+  DragAction* = set[DragFlag]
 
 type
   DragCancelReason* {.size: sizeof(cint), pure.} = enum

@@ -1870,7 +1870,7 @@ type
     cubic = 1
     conic = 2
 
-  PathForeachFlags* {.size: sizeof(cint).} = set[PathForeachFlag]
+  PathForeachFlags* = set[PathForeachFlag]
 
 const
   PathForeachFlagsOnlyLines* = PathForeachFlags({})

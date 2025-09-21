@@ -2194,7 +2194,7 @@ type
     scalable = 1
     threadsafe = 2
 
-  PixbufFormatFlags* {.size: sizeof(cint).} = set[PixbufFormatFlag]
+  PixbufFormatFlags* = set[PixbufFormatFlag]
 
 type
   PixbufLoader* = ref object of gobject.Object

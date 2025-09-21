@@ -1007,7 +1007,7 @@ type
     unpositionedIn = 2
     unpositionedOut = 3
 
-  AudioChannelMixerFlags* {.size: sizeof(cint).} = set[AudioChannelMixerFlag]
+  AudioChannelMixerFlags* = set[AudioChannelMixerFlag]
 
 const
   AudioChannelMixerFlagsNone* = AudioChannelMixerFlags({})
@@ -1236,7 +1236,7 @@ type
     inWritable = 0
     variableRate = 1
 
-  AudioConverterFlags* {.size: sizeof(cint).} = set[AudioConverterFlag]
+  AudioConverterFlags* = set[AudioConverterFlag]
 
 const
   AudioConverterFlagsNone* = AudioConverterFlags({})
@@ -1965,7 +1965,7 @@ type
   AudioFlag* {.size: sizeof(cint), pure.} = enum
     unpositioned = 0
 
-  AudioFlags* {.size: sizeof(cint).} = set[AudioFlag]
+  AudioFlags* = set[AudioFlag]
 
 const
   AudioFlagsNone* = AudioFlags({})
@@ -1979,13 +1979,13 @@ type
     complex = 4
     unpack = 5
 
-  AudioFormatFlags* {.size: sizeof(cint).} = set[AudioFormatFlag]
+  AudioFormatFlags* = set[AudioFormatFlag]
 
 type
   AudioPackFlag* {.size: sizeof(cint), pure.} = enum
     truncateRange = 0
 
-  AudioPackFlags* {.size: sizeof(cint).} = set[AudioPackFlag]
+  AudioPackFlags* = set[AudioPackFlag]
 
 const
   AudioPackFlagsNone* = AudioPackFlags({})
@@ -2088,7 +2088,7 @@ type
   AudioQuantizeFlag* {.size: sizeof(cint), pure.} = enum
     nonInterleaved = 0
 
-  AudioQuantizeFlags* {.size: sizeof(cint).} = set[AudioQuantizeFlag]
+  AudioQuantizeFlags* = set[AudioQuantizeFlag]
 
 const
   AudioQuantizeFlagsNone* = AudioQuantizeFlags({})
@@ -2189,7 +2189,7 @@ type
     nonInterleavedOut = 1
     variableRate = 2
 
-  AudioResamplerFlags* {.size: sizeof(cint).} = set[AudioResamplerFlag]
+  AudioResamplerFlags* = set[AudioResamplerFlag]
 
 const
   AudioResamplerFlagsNone* = AudioResamplerFlags({})

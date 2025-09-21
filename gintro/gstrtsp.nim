@@ -959,7 +959,7 @@ type
     get = 11
     post = 12
 
-  RTSPMethod* {.size: sizeof(cint).} = set[RTSPMethodFlag]
+  RTSPMethod* = set[RTSPMethodFlag]
 
 const
   RTSPMethodInvalid* = RTSPMethod({})
@@ -1410,7 +1410,7 @@ type
     http = 4
     tls = 5
 
-  RTSPLowerTrans* {.size: sizeof(cint).} = set[RTSPLowerTransFlag]
+  RTSPLowerTrans* = set[RTSPLowerTransFlag]
 
 const
   RTSPLowerTransUnknown* = RTSPLowerTrans({})
@@ -1437,7 +1437,7 @@ type
     avpf = 2
     savpf = 3
 
-  RTSPProfile* {.size: sizeof(cint).} = set[RTSPProfileFlag]
+  RTSPProfile* = set[RTSPProfileFlag]
 
 const
   RTSPProfileUnknown* = RTSPProfile({})

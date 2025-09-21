@@ -269,7 +269,7 @@ type
     focusVisible = 13
     focusWithin = 14
 
-  StateFlags* {.size: sizeof(cint).} = set[StateFlag]
+  StateFlags* = set[StateFlag]
 
 const
   StateFlagsNormal* = StateFlags({})
@@ -6234,7 +6234,7 @@ type
     suspend = 2
     idle = 3
 
-  ApplicationInhibitFlags* {.size: sizeof(cint).} = set[ApplicationInhibitFlag]
+  ApplicationInhibitFlags* = set[ApplicationInhibitFlag]
 
 proc gtk_application_inhibit(self: ptr Application00; window: ptr Window00;
     flags: ApplicationInhibitFlags; reason: cstring): uint32 {.
@@ -10465,7 +10465,7 @@ type
     itersPersist = 0
     listOnly = 1
 
-  TreeModelFlags* {.size: sizeof(cint).} = set[TreeModelFlag]
+  TreeModelFlags* = set[TreeModelFlag]
 
 proc gtk_tree_model_get_flags(self: ptr TreeModel00): TreeModelFlags {.
     importc, libprag.}
@@ -28390,7 +28390,7 @@ type
   PopoverMenuFlag* {.size: sizeof(cint), pure.} = enum
     nested = 0
 
-  PopoverMenuFlags* {.size: sizeof(cint).} = set[PopoverMenuFlag]
+  PopoverMenuFlags* = set[PopoverMenuFlag]
 
 const
   PopoverMenuFlagsSliding* = PopoverMenuFlags({})
@@ -30148,7 +30148,7 @@ type
     expandable = 5
     expanded = 6
 
-  CellRendererState* {.size: sizeof(cint).} = set[CellRendererStateFlag]
+  CellRendererState* = set[CellRendererStateFlag]
 
 proc gtk_cell_renderer_activate(self: ptr CellRenderer00; event: ptr gdk4.Event00;
     widget: ptr Widget00; path: cstring; backgroundArea: gdk4.Rectangle; cellArea: gdk4.Rectangle;
@@ -31533,7 +31533,7 @@ type
     focus = 0
     select = 1
 
-  ListScrollFlags* {.size: sizeof(cint).} = set[ListScrollFlag]
+  ListScrollFlags* = set[ListScrollFlag]
 
 const
   ListScrollFlagsNone* = ListScrollFlags({})
@@ -32200,7 +32200,7 @@ type
     numberUp = 8
     numberUpLayout = 9
 
-  PrintCapabilities* {.size: sizeof(cint).} = set[PrintCapabilitiesFlag]
+  PrintCapabilities* = set[PrintCapabilitiesFlag]
 
 proc gtk_print_unix_dialog_get_manual_capabilities(self: ptr PrintUnixDialog00): PrintCapabilities {.
     importc, libprag.}
@@ -35224,7 +35224,7 @@ type
     destroyWithParent = 1
     useHeaderBar = 2
 
-  DialogFlags* {.size: sizeof(cint).} = set[DialogFlag]
+  DialogFlags* = set[DialogFlag]
 
 proc gtk_app_chooser_dialog_new(parent: ptr Window00; flags: DialogFlags;
     file: ptr gio.GFile00): ptr AppChooserDialog00 {.
@@ -36249,7 +36249,7 @@ type
     noEmoji = 10
     private = 11
 
-  InputHints* {.size: sizeof(cint).} = set[InputHintsFlag]
+  InputHints* = set[InputHintsFlag]
 
 const
   InputHintsNone* = InputHints({})
@@ -36552,7 +36552,7 @@ type
     textOnly = 1
     caseInsensitive = 2
 
-  TextSearchFlags* {.size: sizeof(cint).} = set[TextSearchFlag]
+  TextSearchFlags* = set[TextSearchFlag]
 
 proc gtk_text_iter_backward_search(self: TextIter; str: cstring; flags: TextSearchFlags;
     matchStart: var TextIter; matchEnd: var TextIter; limit: TextIter): gboolean {.
@@ -39939,7 +39939,7 @@ type
     showStyle = 1
     showChange = 2
 
-  StyleContextPrintFlags* {.size: sizeof(cint).} = set[StyleContextPrintFlag]
+  StyleContextPrintFlags* = set[StyleContextPrintFlag]
 
 const
   StyleContextPrintFlagsNone* = StyleContextPrintFlags({})
@@ -40352,7 +40352,7 @@ type
     insensitive = 0
     nonTargetable = 1
 
-  PickFlags* {.size: sizeof(cint).} = set[PickFlag]
+  PickFlags* = set[PickFlag]
 
 const
   PickFlagsDefault* = PickFlags({})
@@ -48034,7 +48034,7 @@ type
     iconfallback = 18
     invertTextDir = 19
 
-  DebugFlags* {.size: sizeof(cint).} = set[DebugFlag]
+  DebugFlags* = set[DebugFlag]
 
 type
   DialogError* {.size: sizeof(cint), pure.} = enum
@@ -52202,7 +52202,7 @@ type
     variations = 2
     features = 3
 
-  FontChooserLevel* {.size: sizeof(cint).} = set[FontChooserLevelFlag]
+  FontChooserLevel* = set[FontChooserLevelFlag]
 
 const
   FontChooserLevelFamily* = FontChooserLevel({})
@@ -53471,7 +53471,7 @@ type
     forceSymbolic = 1
     preload = 2
 
-  IconLookupFlags* {.size: sizeof(cint).} = set[IconLookupFlag]
+  IconLookupFlags* = set[IconLookupFlag]
 
 type
   IconPaintable* = ref object of gobject.Object

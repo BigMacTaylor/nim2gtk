@@ -792,7 +792,7 @@ type
     drop = 3
     queue = 4
 
-  BaseParseFrameFlags* {.size: sizeof(cint).} = set[BaseParseFrameFlag]
+  BaseParseFrameFlags* = set[BaseParseFrameFlag]
 
 const
   BaseParseFrameFlagsNone* = BaseParseFrameFlags({})
@@ -1369,7 +1369,7 @@ type
     started = 15
     last = 20
 
-  BaseSrcFlags* {.size: sizeof(cint).} = set[BaseSrcFlag]
+  BaseSrcFlags* = set[BaseSrcFlag]
 
 type
   BaseTransform* = ref object of gst.Element
@@ -2884,7 +2884,7 @@ type
     waiting = 3
     locked = 4
 
-  CollectPadsStateFlags* {.size: sizeof(cint).} = set[CollectPadsStateFlag]
+  CollectPadsStateFlags* = set[CollectPadsStateFlag]
 
 type
   DataQueue* = ref object of gobject.Object

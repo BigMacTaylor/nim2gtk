@@ -561,7 +561,7 @@ type
     notMappable = 8
     last = 20
 
-  MemoryFlags* {.size: sizeof(cint).} = set[MemoryFlag]
+  MemoryFlags* = set[MemoryFlag]
 
 proc gst_memory_new_wrapped(flags: MemoryFlags; data: ptr uint8; maxsize: uint64;
     offset: uint64; size: uint64; userData: pointer; notify: DestroyNotify): ptr Memory00 {.
@@ -602,7 +602,7 @@ type
     write = 1
     flagLast = 16
 
-  MapFlags* {.size: sizeof(cint).} = set[MapFlag]
+  MapFlags* = set[MapFlag]
 
 type
   MapInfo* {.pure, byRef.} = object
@@ -643,7 +643,7 @@ type
     noCopy = 5
     last = 20
 
-  AllocatorFlags* {.size: sizeof(cint).} = set[AllocatorFlag]
+  AllocatorFlags* = set[AllocatorFlag]
 
 type
   AtomicQueue00* {.pure.} = object
@@ -1672,7 +1672,7 @@ type
     sticky = 3
     stickyMulti = 4
 
-  EventTypeFlags* {.size: sizeof(cint).} = set[EventTypeFlag]
+  EventTypeFlags* = set[EventTypeFlag]
 
 proc getFlags*(`type`: EventType): EventTypeFlags {.
     importc: "gst_event_type_get_flags", libprag.}
@@ -1757,7 +1757,7 @@ type
     select = 1
     unselect = 2
 
-  StreamFlags* {.size: sizeof(cint).} = set[StreamFlag]
+  StreamFlags* = set[StreamFlag]
 
 const
   StreamFlagsNone* = StreamFlags({})
@@ -1789,7 +1789,7 @@ type
     container = 3
     text = 4
 
-  StreamType* {.size: sizeof(cint).} = set[StreamTypeFlag]
+  StreamType* = set[StreamTypeFlag]
 
 proc gst_stream_type_get_name(stype: StreamType): cstring {.
     importc, libprag.}
@@ -3229,7 +3229,7 @@ type
     backwardCompat = 0
     strict = 1
 
-  SerializeFlags* {.size: sizeof(cint).} = set[SerializeFlag]
+  SerializeFlags* = set[SerializeFlag]
 
 const
   SerializeFlagsNone* = SerializeFlags({})
@@ -4003,7 +4003,7 @@ type
     merge = 4
     deep = 5
 
-  BufferCopyFlags* {.size: sizeof(cint).} = set[BufferCopyFlag]
+  BufferCopyFlags* = set[BufferCopyFlag]
 
 const
   BufferCopyFlagsNone* = BufferCopyFlags({})
@@ -4224,7 +4224,7 @@ type
     nonDroppable = 16
     last = 20
 
-  BufferFlags* {.size: sizeof(cint).} = set[BufferFlag]
+  BufferFlags* = set[BufferFlag]
 
 proc gst_buffer_get_flags(self: ptr Buffer00): BufferFlags {.
     importc, libprag.}
@@ -4730,7 +4730,7 @@ type
     fileNameIsPrefix = 3
     pathsAreRelativeToExe = 4
 
-  PluginDependencyFlags* {.size: sizeof(cint).} = set[PluginDependencyFlag]
+  PluginDependencyFlags* = set[PluginDependencyFlag]
 
 const
   PluginDependencyFlagsNone* = PluginDependencyFlags({})
@@ -5193,7 +5193,7 @@ type
     secondary = 7
     primary = 8
 
-  Rank* {.size: sizeof(cint).} = set[RankFlag]
+  Rank* = set[RankFlag]
 
 const
   RankNone* = Rank({})
@@ -6120,7 +6120,7 @@ type
     haveContext = 30
     extended = 31
 
-  MessageType* {.size: sizeof(cint).} = set[MessageFlag]
+  MessageType* = set[MessageFlag]
 
 proc gst_message_type_get_name(`type`: MessageType): cstring {.
     importc, libprag.}
@@ -6938,7 +6938,7 @@ type
     downstream = 1
     serialized = 2
 
-  QueryTypeFlags* {.size: sizeof(cint).} = set[QueryTypeFlag]
+  QueryTypeFlags* = set[QueryTypeFlag]
 
 proc getFlags*(`type`: QueryType): QueryTypeFlags {.
     importc: "gst_query_type_get_flags", libprag.}
@@ -7288,7 +7288,7 @@ type
     sequential = 1
     bandwidthLimited = 2
 
-  SchedulingFlags* {.size: sizeof(cint).} = set[SchedulingFlag]
+  SchedulingFlags* = set[SchedulingFlag]
 
 proc gst_query_has_scheduling_mode_with_flags(self: ptr Query00; mode: PadMode;
     flags: SchedulingFlags): gboolean {.
@@ -8979,7 +8979,7 @@ type
     trickmodeNoAudio = 8
     trickmodeForwardPredicted = 9
 
-  SegmentFlags* {.size: sizeof(cint).} = set[SegmentFlag]
+  SegmentFlags* = set[SegmentFlag]
 
 const
   SegmentTrickmode* = SegmentFlag.skip
@@ -10635,7 +10635,7 @@ type
     indexable = 9
     last = 14
 
-  ElementFlags* {.size: sizeof(cint).} = set[ElementFlag]
+  ElementFlags* = set[ElementFlag]
 
 proc gst_bin_get_suppressed_flags(self: ptr Bin00): ElementFlags {.
     importc, libprag.}
@@ -10662,7 +10662,7 @@ type
     streamsAware = 15
     last = 19
 
-  BinFlags* {.size: sizeof(cint).} = set[BinFlag]
+  BinFlags* = set[BinFlag]
 
 type
   Bitmask* = ref object of RootRef
@@ -10700,7 +10700,7 @@ type
     discont = 2
     last = 16
 
-  BufferPoolAcquireFlags* {.size: sizeof(cint).} = set[BufferPoolAcquireFlag]
+  BufferPoolAcquireFlags* = set[BufferPoolAcquireFlag]
 
 const
   BufferPoolAcquireFlagsNone* = BufferPoolAcquireFlags({})
@@ -10712,7 +10712,7 @@ type
     flushing = 4
     flagLast = 5
 
-  BusFlags* {.size: sizeof(cint).} = set[BusFlag]
+  BusFlags* = set[BusFlag]
 
 const CAN_INLINE* = 1'i32
 
@@ -11120,7 +11120,7 @@ type
     needsStartupSync = 10
     last = 12
 
-  ClockFlags* {.size: sizeof(cint).} = set[ClockFlag]
+  ClockFlags* = set[ClockFlag]
 
 type
   ClockType* {.size: sizeof(cint), pure.} = enum
@@ -12692,7 +12692,7 @@ type
     exclusive = 2
     last = 8
 
-  LockFlags* {.size: sizeof(cint).} = set[LockFlag]
+  LockFlags* = set[LockFlag]
 
 type
   LogFunction* = proc (category: ptr DebugCategory00; level: DebugLevel; file: cstring; function: cstring;
@@ -12741,7 +12741,7 @@ type
     locked = 2
     last = 16
 
-  MetaFlags* {.size: sizeof(cint).} = set[MetaFlag]
+  MetaFlags* = set[MetaFlag]
 
 const
   MetaFlagsNone* = MetaFlags({})
@@ -12773,7 +12773,7 @@ type
     mayBeLeaked = 2
     last = 4
 
-  MiniObjectFlags* {.size: sizeof(cint).} = set[MiniObjectFlag]
+  MiniObjectFlags* = set[MiniObjectFlag]
 type
 
   MiniObjectFreeFunction* = proc (obj: ptr MiniObject00) {.cdecl.}
@@ -15107,7 +15107,7 @@ type
     constructed = 1
     last = 4
 
-  ObjectFlags* {.size: sizeof(cint).} = set[ObjectFlag]
+  ObjectFlags* = set[ObjectFlag]
 
 const PARAM_CONDITIONALLY_AVAILABLE* = 16384'i32
 
@@ -15211,7 +15211,7 @@ type
     acceptTemplate = 16
     last = 20
 
-  PadFlags* {.size: sizeof(cint).} = set[PadFlag]
+  PadFlags* = set[PadFlag]
 
 type
   PadForwardFunction* = proc (pad: ptr Pad00; userData: pointer): gboolean {.cdecl.}
@@ -15544,7 +15544,7 @@ type
     noSingleElementBins = 1
     placeInBin = 2
 
-  ParseFlags* {.size: sizeof(cint).} = set[ParseFlag]
+  ParseFlags* = set[ParseFlag]
 
 const
   ParseFlagsNone* = ParseFlags({})
@@ -15556,7 +15556,7 @@ type
     fixedClock = 19
     last = 23
 
-  PipelineFlags* {.size: sizeof(cint).} = set[PipelineFlag]
+  PipelineFlags* = set[PipelineFlag]
 
 type
   PluginAPIFlags* {.size: sizeof(cint), pure.} = enum
@@ -15586,7 +15586,7 @@ type
     cached = 4
     blacklisted = 5
 
-  PluginFlags* {.size: sizeof(cint).} = set[PluginFlag]
+  PluginFlags* = set[PluginFlag]
 
 type
   PluginInitFullFunc* = proc (plugin: ptr Plugin00; userData: pointer): gboolean {.cdecl.}
@@ -16447,7 +16447,7 @@ type
   StackTraceFlag* {.size: sizeof(cint), pure.} = enum
     full = 0
 
-  StackTraceFlags* {.size: sizeof(cint).} = set[StackTraceFlag]
+  StackTraceFlags* = set[StackTraceFlag]
 
 const
   StackTraceFlagsNone* = StackTraceFlags({})
@@ -17163,7 +17163,7 @@ type
     optional = 0
     aggregated = 1
 
-  TracerValueFlags* {.size: sizeof(cint).} = set[TracerValueFlag]
+  TracerValueFlags* = set[TracerValueFlag]
 
 const
   TracerValueFlagsNone* = TracerValueFlags({})

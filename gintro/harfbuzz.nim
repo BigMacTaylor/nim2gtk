@@ -487,7 +487,7 @@ type
     glyphFlagsMismatch = 6
     positionMismatch = 7
 
-  bufferDiffFlagsT* {.size: sizeof(cint).} = set[bufferDiffFlagsTFlag]
+  bufferDiffFlagsT* = set[bufferDiffFlagsTFlag]
 
 const
   bufferDiffFlagsTEqual* = bufferDiffFlagsT({})

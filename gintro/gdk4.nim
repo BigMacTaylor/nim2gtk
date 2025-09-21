@@ -846,7 +846,7 @@ type
     rotation = 10
     slider = 11
 
-  AxisFlags* {.size: sizeof(cint).} = set[AxisFlag]
+  AxisFlags* = set[AxisFlag]
 
 proc gdk_device_tool_get_axes(self: ptr DeviceTool00): AxisFlags {.
     importc, libprag.}
@@ -4082,7 +4082,7 @@ type
     resumeEvents = 5
     afterPaint = 6
 
-  FrameClockPhase* {.size: sizeof(cint).} = set[FrameClockPhaseFlag]
+  FrameClockPhase* = set[FrameClockPhaseFlag]
 
 const
   FrameClockPhaseNone* = FrameClockPhase({})
@@ -4433,7 +4433,7 @@ type
     hyper = 27
     meta = 28
 
-  ModifierType* {.size: sizeof(cint).} = set[ModifierFlag]
+  ModifierType* = set[ModifierFlag]
 
 const ModifierMask* = {ModifierFlag.shift .. ModifierFlag.button5, ModifierFlag.super .. ModifierFlag.meta}
 
@@ -5533,7 +5533,7 @@ type
     link = 2
     ask = 3
 
-  DragAction* {.size: sizeof(cint).} = set[DragFlag]
+  DragAction* = set[DragFlag]
 
 proc gdk_drag_action_is_unique(action: DragAction): gboolean {.
     importc, libprag.}
@@ -11734,7 +11734,7 @@ type
     size = 0
     contents = 1
 
-  PaintableFlags* {.size: sizeof(cint).} = set[PaintableFlag]
+  PaintableFlags* = set[PaintableFlag]
 
 proc gdk_paintable_get_flags(self: ptr Paintable00): PaintableFlags {.
     importc, libprag.}
@@ -12556,7 +12556,7 @@ type
     leftResizable = 15
     suspended = 16
 
-  ToplevelState* {.size: sizeof(cint).} = set[ToplevelStateFlag]
+  ToplevelState* = set[ToplevelStateFlag]
 
 proc gdk_toplevel_get_state(self: ptr Toplevel00): ToplevelState {.
     importc, libprag.}

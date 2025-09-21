@@ -1632,7 +1632,7 @@ type
     doNotUseAuthCache = 4
     collectMetrics = 5
 
-  MessageFlags* {.size: sizeof(cint).} = set[MessageFlag]
+  MessageFlags* = set[MessageFlag]
 
 proc soup_message_add_flags(self: ptr Message00; flags: MessageFlags) {.
     importc, libprag.}
@@ -2622,7 +2622,7 @@ type
     invalidates = 2
     validates = 3
 
-  Cacheability* {.size: sizeof(cint).} = set[CacheabilityFlag]
+  Cacheability* = set[CacheabilityFlag]
 
 type
   ContentDecoder* = ref object of gobject.Object
@@ -4271,7 +4271,7 @@ type
     ipv4Only = 1
     ipv6Only = 2
 
-  ServerListenOptions* {.size: sizeof(cint).} = set[ServerListenOptionsFlag]
+  ServerListenOptions* = set[ServerListenOptionsFlag]
 
 proc soup_server_listen(self: ptr Server00; address: ptr gio.SocketAddress00;
     options: ServerListenOptions; error: ptr ptr glib.Error = nil): gboolean {.

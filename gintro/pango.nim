@@ -948,7 +948,7 @@ type
     gravity = 6
     variations = 7
 
-  FontMask* {.size: sizeof(cint).} = set[FontMaskFlag]
+  FontMask* = set[FontMaskFlag]
 
 proc pango_font_description_get_set_fields(self: ptr FontDescription00): FontMask {.
     importc, libprag.}
@@ -3781,7 +3781,7 @@ type
   LayoutDeserializeFlag* {.size: sizeof(cint), pure.} = enum
     context = 0
 
-  LayoutDeserializeFlags* {.size: sizeof(cint).} = set[LayoutDeserializeFlag]
+  LayoutDeserializeFlags* = set[LayoutDeserializeFlag]
 
 const
   LayoutDeserializeFlagsDefault* = LayoutDeserializeFlags({})
@@ -4490,7 +4490,7 @@ type
     context = 0
     output = 1
 
-  LayoutSerializeFlags* {.size: sizeof(cint).} = set[LayoutSerializeFlag]
+  LayoutSerializeFlags* = set[LayoutSerializeFlag]
 
 const
   LayoutSerializeFlagsDefault* = LayoutSerializeFlags({})
@@ -4817,7 +4817,7 @@ type
   ShapeFlag* {.size: sizeof(cint), pure.} = enum
     roundPositions = 0
 
-  ShapeFlags* {.size: sizeof(cint).} = set[ShapeFlag]
+  ShapeFlags* = set[ShapeFlag]
 
 const
   ShapeFlagsNone* = ShapeFlags({})
@@ -4829,7 +4829,7 @@ type
     lineBreaks = 1
     ignorables = 2
 
-  ShowFlags* {.size: sizeof(cint).} = set[ShowFlag]
+  ShowFlags* = set[ShowFlag]
 
 const
   ShowFlagsNone* = ShowFlags({})

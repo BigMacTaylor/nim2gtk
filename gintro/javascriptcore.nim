@@ -2013,7 +2013,7 @@ type
     enumerable = 1
     writable = 2
 
-  ValuePropertyFlags* {.size: sizeof(cint).} = set[ValuePropertyFlag]
+  ValuePropertyFlags* = set[ValuePropertyFlag]
 
 proc jsc_value_object_define_property_accessor(self: ptr Value00; propertyName: cstring;
     flags: ValuePropertyFlags; propertyType: GType; getter: Callback; setter: Callback;

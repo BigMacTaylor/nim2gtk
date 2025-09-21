@@ -1019,7 +1019,7 @@ type
     reverseOrder = 1
     removeDuplicates = 2
 
-  SortFlags* {.size: sizeof(cint).} = set[SortFlag]
+  SortFlags* = set[SortFlag]
 
 const
   SortFlagsNone* = SortFlags({})
@@ -1809,7 +1809,7 @@ type
     prelit = 1
     selected = 2
 
-  GutterRendererState* {.size: sizeof(cint).} = set[GutterRendererStateFlag]
+  GutterRendererState* = set[GutterRendererStateFlag]
 
 const
   GutterRendererStateNormal* = GutterRendererState({})
@@ -4216,7 +4216,7 @@ type
     ignoreModificationTime = 1
     createBackup = 2
 
-  FileSaverFlags* {.size: sizeof(cint).} = set[FileSaverFlag]
+  FileSaverFlags* = set[FileSaverFlag]
 
 const
   FileSaverFlagsNone* = FileSaverFlags({})

@@ -157,7 +157,7 @@ type
     creativeCommonsLicense = 24
     freeSoftwareFoundationLicense = 25
 
-  TagLicenseFlags* {.size: sizeof(cint).} = set[TagLicenseFlag]
+  TagLicenseFlags* = set[TagLicenseFlag]
 
 type
   TagMux* = ref object of gst.Element

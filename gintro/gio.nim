@@ -1783,7 +1783,7 @@ type
     closeStream2 = 1
     waitForBoth = 2
 
-  IOStreamSpliceFlags* {.size: sizeof(cint).} = set[IOStreamSpliceFlag]
+  IOStreamSpliceFlags* = set[IOStreamSpliceFlag]
 
 const
   IOStreamSpliceFlagsNone* = IOStreamSpliceFlags({})
@@ -1795,7 +1795,7 @@ type
     apparentSize = 2
     noXdev = 3
 
-  FileMeasureFlags* {.size: sizeof(cint).} = set[FileMeasureFlag]
+  FileMeasureFlags* = set[FileMeasureFlag]
 
 const
   FileMeasureFlagsNone* = FileMeasureFlags({})
@@ -1808,7 +1808,7 @@ type
     watchHardLinks = 2
     watchMoves = 3
 
-  FileMonitorFlags* {.size: sizeof(cint).} = set[FileMonitorFlag]
+  FileMonitorFlags* = set[FileMonitorFlag]
 
 const
   FileMonitorFlagsNone* = FileMonitorFlags({})
@@ -1827,7 +1827,7 @@ type
     anonymousSupported = 4
     tcrypt = 5
 
-  AskPasswordFlags* {.size: sizeof(cint).} = set[AskPasswordFlag]
+  AskPasswordFlags* = set[AskPasswordFlag]
 
 type
   MountOperationResult* {.size: sizeof(cint), pure.} = enum
@@ -2132,7 +2132,7 @@ type
     targetDefaultPerms = 5
     targetDefaultModifiedTime = 6
 
-  FileCopyFlags* {.size: sizeof(cint).} = set[FileCopyFlag]
+  FileCopyFlags* = set[FileCopyFlag]
 
 const
   FileCopyFlagsNone* = FileCopyFlags({})
@@ -2143,7 +2143,7 @@ type
     private = 0
     replaceDestination = 1
 
-  FileCreateFlags* {.size: sizeof(cint).} = set[FileCreateFlag]
+  FileCreateFlags* = set[FileCreateFlag]
 
 const
   FileCreateFlagsNone* = FileCreateFlags({})
@@ -2166,7 +2166,7 @@ type
   FileQueryInfoFlag* {.size: sizeof(cint), pure.} = enum
     nofollowSymlinks = 0
 
-  FileQueryInfoFlags* {.size: sizeof(cint).} = set[FileQueryInfoFlag]
+  FileQueryInfoFlags* = set[FileQueryInfoFlag]
 
 const
   FileQueryInfoFlagsNone* = FileQueryInfoFlags({})
@@ -3886,7 +3886,7 @@ type
   MountUnmountFlag* {.size: sizeof(cint), pure.} = enum
     force = 0
 
-  MountUnmountFlags* {.size: sizeof(cint).} = set[MountUnmountFlag]
+  MountUnmountFlags* = set[MountUnmountFlag]
 
 const
   MountUnmountFlagsNone* = MountUnmountFlags({})
@@ -4946,7 +4946,7 @@ type
     supportsUris = 1
     supportsStartupNotification = 2
 
-  AppInfoCreateFlags* {.size: sizeof(cint).} = set[AppInfoCreateFlag]
+  AppInfoCreateFlags* = set[AppInfoCreateFlag]
 
 const
   AppInfoCreateFlagsNone* = AppInfoCreateFlags({})
@@ -8782,7 +8782,7 @@ type
     copyWithFile = 0
     copyWhenMoved = 1
 
-  FileAttributeInfoFlags* {.size: sizeof(cint).} = set[FileAttributeInfoFlag]
+  FileAttributeInfoFlags* = set[FileAttributeInfoFlag]
 
 const
   FileAttributeInfoFlagsNone* = FileAttributeInfoFlags({})
@@ -8993,7 +8993,7 @@ type
     allowReplacement = 7
     replace = 8
 
-  ApplicationFlags* {.size: sizeof(cint).} = set[ApplicationFlag]
+  ApplicationFlags* = set[ApplicationFlag]
 
 const
   ApplicationFlagsNone* = ApplicationFlags({})
@@ -9455,7 +9455,7 @@ type
     closeSource = 0
     closeTarget = 1
 
-  OutputStreamSpliceFlags* {.size: sizeof(cint).} = set[OutputStreamSpliceFlag]
+  OutputStreamSpliceFlags* = set[OutputStreamSpliceFlag]
 
 const
   OutputStreamSpliceFlagsNone* = OutputStreamSpliceFlags({})
@@ -10150,7 +10150,7 @@ type
     noAutoStart = 0
     allowInteractiveAuthorization = 1
 
-  DBusCallFlags* {.size: sizeof(cint).} = set[DBusCallFlag]
+  DBusCallFlags* = set[DBusCallFlag]
 
 const
   DBusCallFlagsNone* = DBusCallFlags({})
@@ -10504,7 +10504,7 @@ type
   DBusCapabilityFlag* {.size: sizeof(cint), pure.} = enum
     unixFdPassing = 0
 
-  DBusCapabilityFlags* {.size: sizeof(cint).} = set[DBusCapabilityFlag]
+  DBusCapabilityFlags* = set[DBusCapabilityFlag]
 
 const
   DBusCapabilityFlagsNone* = DBusCapabilityFlags({})
@@ -10529,7 +10529,7 @@ type
     authenticationRequireSameUser = 5
     crossNamespace = 6
 
-  DBusConnectionFlags* {.size: sizeof(cint).} = set[DBusConnectionFlag]
+  DBusConnectionFlags* = set[DBusConnectionFlag]
 
 const
   DBusConnectionFlagsNone* = DBusConnectionFlags({})
@@ -11239,7 +11239,7 @@ type
   DBusSubtreeFlag* {.size: sizeof(cint), pure.} = enum
     dispatchToUnenumeratedNodes = 0
 
-  DBusSubtreeFlags* {.size: sizeof(cint).} = set[DBusSubtreeFlag]
+  DBusSubtreeFlags* = set[DBusSubtreeFlag]
 
 const
   DBusSubtreeFlagsNone* = DBusSubtreeFlags({})
@@ -12008,7 +12008,7 @@ type
   DBusSendMessageFlag* {.size: sizeof(cint), pure.} = enum
     preserveSerial = 0
 
-  DBusSendMessageFlags* {.size: sizeof(cint).} = set[DBusSendMessageFlag]
+  DBusSendMessageFlags* = set[DBusSendMessageFlag]
 
 const
   DBusSendMessageFlagsNone* = DBusSendMessageFlags({})
@@ -12092,7 +12092,7 @@ type
     noAutoStart = 1
     allowInteractiveAuthorization = 2
 
-  DBusMessageFlags* {.size: sizeof(cint).} = set[DBusMessageFlag]
+  DBusMessageFlags* = set[DBusMessageFlag]
 
 const
   DBusMessageFlagsNone* = DBusMessageFlags({})
@@ -12180,7 +12180,7 @@ type
     matchArg0Namespace = 1
     matchArg0Path = 2
 
-  DBusSignalFlags* {.size: sizeof(cint).} = set[DBusSignalFlag]
+  DBusSignalFlags* = set[DBusSignalFlag]
 
 const
   DBusSignalFlagsNone* = DBusSignalFlags({})
@@ -13095,7 +13095,7 @@ type
   DBusObjectManagerClientFlag* {.size: sizeof(cint), pure.} = enum
     doNotAutoStart = 0
 
-  DBusObjectManagerClientFlags* {.size: sizeof(cint).} = set[DBusObjectManagerClientFlag]
+  DBusObjectManagerClientFlags* = set[DBusObjectManagerClientFlag]
 
 const
   DBusObjectManagerClientFlagsNone* = DBusObjectManagerClientFlags({})
@@ -13126,7 +13126,7 @@ type
     doNotAutoStartAtConstruction = 4
     noMatchRule = 5
 
-  DBusProxyFlags* {.size: sizeof(cint).} = set[DBusProxyFlag]
+  DBusProxyFlags* = set[DBusProxyFlag]
 
 const
   DBusProxyFlagsNone* = DBusProxyFlags({})
@@ -14814,7 +14814,7 @@ type
     replace = 1
     doNotQueue = 2
 
-  BusNameOwnerFlags* {.size: sizeof(cint).} = set[BusNameOwnerFlag]
+  BusNameOwnerFlags* = set[BusNameOwnerFlag]
 
 const
   BusNameOwnerFlagsNone* = BusNameOwnerFlags({})
@@ -14827,7 +14827,7 @@ type
   BusNameWatcherFlag* {.size: sizeof(cint), pure.} = enum
     autoStart = 0
 
-  BusNameWatcherFlags* {.size: sizeof(cint).} = set[BusNameWatcherFlag]
+  BusNameWatcherFlags* = set[BusNameWatcherFlag]
 
 const
   BusNameWatcherFlagsNone* = BusNameWatcherFlags({})
@@ -15199,7 +15199,7 @@ type
     inputAtEnd = 0
     flush = 1
 
-  ConverterFlags* {.size: sizeof(cint).} = set[ConverterFlag]
+  ConverterFlags* = set[ConverterFlag]
 
 const
   ConverterFlagsNone* = ConverterFlags({})
@@ -16004,7 +16004,7 @@ type
   DBusInterfaceSkeletonFlag* {.size: sizeof(cint), pure.} = enum
     handleMethodInvocationsInThread = 0
 
-  DBusInterfaceSkeletonFlags* {.size: sizeof(cint).} = set[DBusInterfaceSkeletonFlag]
+  DBusInterfaceSkeletonFlags* = set[DBusInterfaceSkeletonFlag]
 
 const
   DBusInterfaceSkeletonFlagsNone* = DBusInterfaceSkeletonFlags({})
@@ -16632,7 +16632,7 @@ type
     readable = 0
     writable = 1
 
-  DBusPropertyInfoFlags* {.size: sizeof(cint).} = set[DBusPropertyInfoFlag]
+  DBusPropertyInfoFlags* = set[DBusPropertyInfoFlag]
 
 const
   DBusPropertyInfoFlagsNone* = DBusPropertyInfoFlags({})
@@ -16892,7 +16892,7 @@ type
     authenticationAllowAnonymous = 1
     authenticationRequireSameUser = 2
 
-  DBusServerFlags* {.size: sizeof(cint).} = set[DBusServerFlag]
+  DBusServerFlags* = set[DBusServerFlag]
 
 const
   DBusServerFlagsNone* = DBusServerFlags({})
@@ -22024,7 +22024,7 @@ type
   TlsDatabaseLookupFlag* {.size: sizeof(cint), pure.} = enum
     keypair = 0
 
-  TlsDatabaseLookupFlags* {.size: sizeof(cint).} = set[TlsDatabaseLookupFlag]
+  TlsDatabaseLookupFlags* = set[TlsDatabaseLookupFlag]
 
 const
   TlsDatabaseLookupFlagsNone* = TlsDatabaseLookupFlags({})
@@ -22257,7 +22257,7 @@ type
     pkcs11SecurityOfficer = 5
     pkcs11ContextSpecific = 6
 
-  TlsPasswordFlags* {.size: sizeof(cint).} = set[TlsPasswordFlag]
+  TlsPasswordFlags* = set[TlsPasswordFlag]
 
 const
   TlsPasswordFlagsNone* = TlsPasswordFlags({})
@@ -23741,7 +23741,7 @@ type
   IOModuleScopeFlag* {.size: sizeof(cint), pure.} = enum
     blockDuplicates = 0
 
-  IOModuleScopeFlags* {.size: sizeof(cint).} = set[IOModuleScopeFlag]
+  IOModuleScopeFlags* = set[IOModuleScopeFlag]
 
 const
   IOModuleScopeFlagsNone* = IOModuleScopeFlags({})
@@ -24451,7 +24451,7 @@ type
     inheritFds = 7
     searchPathFromEnvp = 8
 
-  SubprocessFlags* {.size: sizeof(cint).} = set[SubprocessFlag]
+  SubprocessFlags* = set[SubprocessFlag]
 
 const
   SubprocessFlagsNone* = SubprocessFlags({})
@@ -26686,7 +26686,7 @@ type
     ipv4Only = 0
     ipv6Only = 1
 
-  ResolverNameLookupFlags* {.size: sizeof(cint).} = set[ResolverNameLookupFlag]
+  ResolverNameLookupFlags* = set[ResolverNameLookupFlag]
 
 const
   ResolverNameLookupFlagsDefault* = ResolverNameLookupFlags({})
@@ -27069,7 +27069,7 @@ type
   ResourceFlag* {.size: sizeof(cint), pure.} = enum
     compressed = 0
 
-  ResourceFlags* {.size: sizeof(cint).} = set[ResourceFlag]
+  ResourceFlags* = set[ResourceFlag]
 
 const
   ResourceFlagsNone* = ResourceFlags({})
@@ -28072,7 +28072,7 @@ type
     getNoChanges = 3
     invertBoolean = 4
 
-  SettingsBindFlags* {.size: sizeof(cint).} = set[SettingsBindFlag]
+  SettingsBindFlags* = set[SettingsBindFlag]
 
 const
   SettingsBindFlagsDefault* = SettingsBindFlags({})
@@ -29317,7 +29317,7 @@ type
     peek = 1
     dontroute = 2
 
-  SocketMsgFlags* {.size: sizeof(cint).} = set[SocketMsgFlag]
+  SocketMsgFlags* = set[SocketMsgFlag]
 
 const
   SocketMsgFlagsNone* = SocketMsgFlags({})

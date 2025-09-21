@@ -20475,7 +20475,7 @@ type
     scrollbar = 6
     selection = 7
 
-  HitTestResultContext* {.size: sizeof(cint).} = set[HitTestResultContextFlag]
+  HitTestResultContext* = set[HitTestResultContextFlag]
 
 type
   UserMessageError* {.size: sizeof(cint), pure.} = enum

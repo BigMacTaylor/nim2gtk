@@ -8120,7 +8120,7 @@ type
     uppercaseSentences = 4
     inhibitOsk = 5
 
-  InputHints* {.size: sizeof(cint).} = set[InputHintsFlag]
+  InputHints* = set[InputHintsFlag]
 
 const
   InputHintsNone* = InputHints({})
@@ -10649,7 +10649,7 @@ type
     underline = 4
     strikethrough = 5
 
-  EditorTypingAttributes* {.size: sizeof(cint).} = set[EditorTypingAttributesFlag]
+  EditorTypingAttributes* = set[EditorTypingAttributesFlag]
 
 type
   FaviconDatabaseError* {.size: sizeof(cint), pure.} = enum
@@ -10665,7 +10665,7 @@ type
     backwards = 3
     wrapAround = 4
 
-  FindOptions* {.size: sizeof(cint).} = set[FindOptionsFlag]
+  FindOptions* = set[FindOptionsFlag]
 
 const
   FindOptionsNone* = FindOptions({})
@@ -10682,7 +10682,7 @@ type
     scrollbar = 6
     selection = 7
 
-  HitTestResultContext* {.size: sizeof(cint).} = set[HitTestResultContextFlag]
+  HitTestResultContext* = set[HitTestResultContextFlag]
 
 type
   JavascriptError* {.size: sizeof(cint), pure.} = enum
@@ -11633,7 +11633,7 @@ type
     ignorePaths = 2
     matchBidirectionally = 3
 
-  WebExtensionMatchPatternOptions* {.size: sizeof(cint).} = set[WebExtensionMatchPatternOptionsFlag]
+  WebExtensionMatchPatternOptions* = set[WebExtensionMatchPatternOptionsFlag]
 
 proc webkit_web_extension_match_pattern_matches_pattern(self: ptr WebExtensionMatchPattern00;
     pattern: ptr WebExtensionMatchPattern00; options: WebExtensionMatchPatternOptions): gboolean {.

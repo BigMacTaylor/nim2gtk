@@ -1161,7 +1161,7 @@ type
     oneByte = 0
     twoByte = 1
 
-  RTPHeaderExtensionFlags* {.size: sizeof(cint).} = set[RTPHeaderExtensionFlag]
+  RTPHeaderExtensionFlags* = set[RTPHeaderExtensionFlag]
 
 proc gst_rtp_header_extension_get_supported_flags(self: ptr RTPHeaderExtension00): RTPHeaderExtensionFlags {.
     importc, libprag.}
@@ -1712,7 +1712,7 @@ type
     redundant = 21
     last = 28
 
-  RTPBufferFlags* {.size: sizeof(cint).} = set[RTPBufferFlag]
+  RTPBufferFlags* = set[RTPBufferFlag]
 
 type
   RTPBufferMapFlag* {.size: sizeof(cint), pure.} = enum
@@ -1720,7 +1720,7 @@ type
     skipPadding = 16
     last = 24
 
-  RTPBufferMapFlags* {.size: sizeof(cint).} = set[RTPBufferMapFlag]
+  RTPBufferMapFlags* = set[RTPBufferMapFlag]
 
 type
   RTPPayload* {.size: sizeof(cint), pure.} = enum

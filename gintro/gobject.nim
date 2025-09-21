@@ -717,7 +717,7 @@ type
     syncCreate = 1
     invertBoolean = 2
 
-  BindingFlags* {.size: sizeof(cint).} = set[BindingFlag]
+  BindingFlags* = set[BindingFlag]
 
 const
   BindingFlagsDefault* = BindingFlags({})
@@ -934,7 +934,7 @@ type
     after = 0
     swapped = 1
 
-  ConnectFlags* {.size: sizeof(cint).} = set[ConnectFlag]
+  ConnectFlags* = set[ConnectFlag]
 
 const
   ConnectFlagsDefault* = ConnectFlags({})
@@ -974,7 +974,7 @@ type
     hup = 4
     nval = 5
 
-  IOCondition* {.size: sizeof(cint).} = set[IOCFlag]
+  IOCondition* = set[IOCFlag]
 
 type
   InitiallyUnowned* = ref object of Object
@@ -1040,7 +1040,7 @@ type
     final = 6
     deprecated = 7
 
-  TypeFlags* {.size: sizeof(cint).} = set[TypeFlag]
+  TypeFlags* = set[TypeFlag]
 
 const
   TypeFlagsNone* = TypeFlags({})
@@ -1415,6 +1415,8 @@ type
     impl*: ptr ParamSpecPool00
     ignoreFinalizer*: bool
 
+proc g_param_spec_pool_free*(self: ptr ParamSpecPool00) {.importc, libprag.}
+
 when defined(gcDestructors):
   proc `=destroy`*(self: var typeof(ParamSpecPool()[])) =
     when defined(gintroDebug):
@@ -1607,7 +1609,7 @@ type
     deprecated = 8
     accumulatorFirstRun = 17
 
-  SignalFlags* {.size: sizeof(cint).} = set[SignalFlag]
+  SignalFlags* = set[SignalFlag]
 
 type
   SignalGroup* = ref object of Object
@@ -1762,7 +1764,7 @@ type
     data = 4
     unblocked = 5
 
-  SignalMatchType* {.size: sizeof(cint).} = set[SignalMatchTypeFlag]
+  SignalMatchType* = set[SignalMatchTypeFlag]
 
 type
   SignalQuery* {.pure, byRef.} = object
@@ -1826,7 +1828,7 @@ type
     derivable = 2
     deepDerivable = 3
 
-  TypeFundamentalFlags* {.size: sizeof(cint).} = set[TypeFundamentalFlag]
+  TypeFundamentalFlags* = set[TypeFundamentalFlag]
 
 type
   TypeFundamentalInfo00* {.pure.} = object

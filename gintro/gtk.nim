@@ -430,7 +430,7 @@ type
     checked = 11
     dropActive = 12
 
-  StateFlags* {.size: sizeof(cint).} = set[StateFlag]
+  StateFlags* = set[StateFlag]
 
 const
   StateFlagsNormal* = StateFlags({})
@@ -5966,7 +5966,7 @@ type
     suspend = 2
     idle = 3
 
-  ApplicationInhibitFlags* {.size: sizeof(cint).} = set[ApplicationInhibitFlag]
+  ApplicationInhibitFlags* = set[ApplicationInhibitFlag]
 
 proc gtk_application_inhibit(self: ptr Application00; window: ptr Window00;
     flags: ApplicationInhibitFlags; reason: cstring): uint32 {.
@@ -7010,7 +7010,7 @@ type
     highlight = 1
     drop = 2
 
-  DestDefaults* {.size: sizeof(cint).} = set[DestFlag]
+  DestDefaults* = set[DestFlag]
 
 type
   TargetEntry00* {.pure.} = object
@@ -8527,7 +8527,7 @@ type
     only = 4
     sorted = 5
 
-  RegionFlags* {.size: sizeof(cint).} = set[RegionFlag]
+  RegionFlags* = set[RegionFlag]
 
 proc gtk_style_context_add_region(self: ptr StyleContext00; regionName: cstring;
     flags: RegionFlags) {.
@@ -9069,7 +9069,7 @@ type
     recurse = 0
     showStyle = 1
 
-  StyleContextPrintFlags* {.size: sizeof(cint).} = set[StyleContextPrintFlag]
+  StyleContextPrintFlags* = set[StyleContextPrintFlag]
 
 const
   StyleContextPrintFlagsNone* = StyleContextPrintFlags({})
@@ -9405,7 +9405,7 @@ type
     visible = 0
     locked = 1
 
-  AccelFlags* {.size: sizeof(cint).} = set[AccelFlag]
+  AccelFlags* = set[AccelFlag]
 
 proc gtk_widget_add_accelerator(self: ptr Widget00; accelSignal: cstring;
     accelGroup: ptr AccelGroup00; accelKey: uint32; accelMods: gdk.ModifierType;
@@ -11120,7 +11120,7 @@ type
     textOnly = 1
     caseInsensitive = 2
 
-  TextSearchFlags* {.size: sizeof(cint).} = set[TextSearchFlag]
+  TextSearchFlags* = set[TextSearchFlag]
 
 proc gtk_text_iter_backward_search(self: TextIter; str: cstring; flags: TextSearchFlags;
     matchStart: var TextIter; matchEnd: var TextIter; limit: TextIter): gboolean {.
@@ -17665,7 +17665,7 @@ type
     expandable = 5
     expanded = 6
 
-  CellRendererState* {.size: sizeof(cint).} = set[CellRendererStateFlag]
+  CellRendererState* = set[CellRendererStateFlag]
 
 proc gtk_cell_renderer_activate(self: ptr CellRenderer00; event: ptr gdk.Event00;
     widget: ptr Widget00; path: cstring; backgroundArea: gdk.Rectangle; cellArea: gdk.Rectangle;
@@ -18053,7 +18053,7 @@ type
     emoji = 9
     noEmoji = 10
 
-  InputHints* {.size: sizeof(cint).} = set[InputHintsFlag]
+  InputHints* = set[InputHintsFlag]
 
 const
   InputHintsNone* = InputHints({})
@@ -20224,7 +20224,7 @@ type
     itersPersist = 0
     listOnly = 1
 
-  TreeModelFlags* {.size: sizeof(cint).} = set[TreeModelFlag]
+  TreeModelFlags* = set[TreeModelFlag]
 
 proc gtk_tree_model_get_flags(self: ptr TreeModel00): TreeModelFlags {.
     importc, libprag.}
@@ -28316,7 +28316,7 @@ type
     destroyWithParent = 1
     useHeaderBar = 2
 
-  DialogFlags* {.size: sizeof(cint).} = set[DialogFlag]
+  DialogFlags* = set[DialogFlag]
 
 proc gtk_app_chooser_dialog_new(parent: ptr Window00; flags: DialogFlags;
     file: ptr gio.GFile00): ptr AppChooserDialog00 {.
@@ -29108,7 +29108,7 @@ type
     shrink = 1
     fill = 2
 
-  AttachOptions* {.size: sizeof(cint).} = set[AttachFlag]
+  AttachOptions* = set[AttachFlag]
 
 const BINARY_AGE* = 2441'i32
 
@@ -31300,7 +31300,7 @@ type
     newTab = 1
     newWindow = 2
 
-  PlacesOpenFlags* {.size: sizeof(cint).} = set[PlacesOpenFlag]
+  PlacesOpenFlags* = set[PlacesOpenFlag]
 
 type
   PlacesSidebar* = ref object of ScrolledWindow
@@ -46993,7 +46993,7 @@ type
     displayName = 2
     mimeType = 3
 
-  FileFilterFlags* {.size: sizeof(cint).} = set[FileFilterFlag]
+  FileFilterFlags* = set[FileFilterFlag]
 
 type
   FileFilterInfo* {.pure, byRef.} = object
@@ -47027,7 +47027,7 @@ type
     group = 4
     age = 5
 
-  RecentFilterFlags* {.size: sizeof(cint).} = set[RecentFilterFlag]
+  RecentFilterFlags* = set[RecentFilterFlag]
 
 type
   RecentFilterInfo* {.pure, byRef.} = object
@@ -47477,7 +47477,7 @@ type
     showWeekNumbers = 3
     showDetails = 5
 
-  CalendarDisplayOptions* {.size: sizeof(cint).} = set[CalendarDisplayOptionsFlag]
+  CalendarDisplayOptions* = set[CalendarDisplayOptionsFlag]
 
 proc gtk_calendar_get_display_options(self: ptr Calendar00): CalendarDisplayOptions {.
     importc, libprag.}
@@ -47510,7 +47510,7 @@ type
     accelerator = 8
     popupWithAccels = 9
 
-  UIManagerItemType* {.size: sizeof(cint).} = set[UIManagerItemTypeFlag]
+  UIManagerItemType* = set[UIManagerItemTypeFlag]
 
 const
   UIManagerItemTypeAuto* = UIManagerItemType({})
@@ -49010,7 +49010,7 @@ type
     resize = 20
     layout = 21
 
-  DebugFlag* {.size: sizeof(cint).} = set[DebugFlagFlag]
+  DebugFlag* = set[DebugFlagFlag]
 
 type
   Editable00* = object of gobject.Object00
@@ -51232,7 +51232,7 @@ type
     variations = 2
     features = 3
 
-  FontChooserLevel* {.size: sizeof(cint).} = set[FontChooserLevelFlag]
+  FontChooserLevel* = set[FontChooserLevelFlag]
 
 const
   FontChooserLevelFamily* = FontChooserLevel({})
@@ -53371,7 +53371,7 @@ type
     dirLtr = 7
     dirRtl = 8
 
-  IconLookupFlags* {.size: sizeof(cint).} = set[IconLookupFlag]
+  IconLookupFlags* = set[IconLookupFlag]
 
 proc gtk_icon_theme_choose_icon(self: ptr IconTheme00; iconNames: ptr cstring;
     size: int32; flags: IconLookupFlags): ptr IconInfo00 {.
@@ -57018,7 +57018,7 @@ type
     text = 2
     base = 3
 
-  RcFlags* {.size: sizeof(cint).} = set[RcFlag]
+  RcFlags* = set[RcFlag]
 
 type
   RcProperty* {.pure, byRef.} = object
@@ -58986,7 +58986,7 @@ type
     otherApp = 2
     otherWidget = 3
 
-  TargetFlags* {.size: sizeof(cint).} = set[TargetFlag]
+  TargetFlags* = set[TargetFlag]
 
 type
   TargetPair* {.pure, byRef.} = object

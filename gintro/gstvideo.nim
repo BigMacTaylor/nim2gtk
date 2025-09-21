@@ -1302,7 +1302,7 @@ type
     tiled = 8
     subtiles = 9
 
-  VideoFormatFlags* {.size: sizeof(cint).} = set[VideoFormatFlag]
+  VideoFormatFlags* = set[VideoFormatFlag]
 
 type
   VideoAggregatorParallelConvertPad* = ref object of VideoAggregatorConvertPad
@@ -1494,7 +1494,7 @@ type
   VideoChromaFlag* {.size: sizeof(cint), pure.} = enum
     interlaced = 0
 
-  VideoChromaFlags* {.size: sizeof(cint).} = set[VideoChromaFlag]
+  VideoChromaFlags* = set[VideoChromaFlag]
 
 const
   VideoChromaFlagsNone* = VideoChromaFlags({})
@@ -1662,7 +1662,7 @@ type
     forceKeyframeHeaders = 3
     corrupted = 4
 
-  VideoCodecFrameFlags* {.size: sizeof(cint).} = set[VideoCodecFrameFlag]
+  VideoCodecFrameFlags* = set[VideoCodecFrameFlag]
 
 type
   VideoCodecState00* {.pure.} = object
@@ -2487,7 +2487,7 @@ type
     discardInput = 0
     corruptOutput = 1
 
-  VideoDecoderRequestSyncPointFlags* {.size: sizeof(cint).} = set[VideoDecoderRequestSyncPointFlag]
+  VideoDecoderRequestSyncPointFlags* = set[VideoDecoderRequestSyncPointFlag]
 
 proc gst_video_decoder_request_sync_point(self: ptr VideoDecoder00; frame: ptr VideoCodecFrame00;
     flags: VideoDecoderRequestSyncPointFlags) {.
@@ -2544,7 +2544,7 @@ type
     interlaced = 0
     quantize = 1
 
-  VideoDitherFlags* {.size: sizeof(cint).} = set[VideoDitherFlag]
+  VideoDitherFlags* = set[VideoDitherFlag]
 
 const
   VideoDitherFlagsNone* = VideoDitherFlags({})
@@ -2834,7 +2834,7 @@ type
     variableFps = 0
     premultipliedAlpha = 1
 
-  VideoFlags* {.size: sizeof(cint).} = set[VideoFlag]
+  VideoFlags* = set[VideoFlag]
 
 const
   VideoFlagsNone* = VideoFlags({})
@@ -2845,7 +2845,7 @@ type
     truncateRange = 0
     interlaced = 1
 
-  VideoPackFlags* {.size: sizeof(cint).} = set[VideoPackFlag]
+  VideoPackFlags* = set[VideoPackFlag]
 
 const
   VideoPackFlagsNone* = VideoPackFlags({})
@@ -2856,7 +2856,7 @@ type
     zflipz_2x2 = 16
     linear = 17
 
-  VideoTileMode* {.size: sizeof(cint).} = set[VideoTileModeFlag]
+  VideoTileMode* = set[VideoTileModeFlag]
 
 const
   VideoTileModeUnknown* = VideoTileMode({})
@@ -2934,7 +2934,7 @@ type
     noRef = 16
     last = 24
 
-  VideoFrameMapFlags* {.size: sizeof(cint).} = set[VideoFrameMapFlag]
+  VideoFrameMapFlags* = set[VideoFrameMapFlag]
 
 type
   VideoGLTextureOrientation* {.size: sizeof(cint), pure.} = enum
@@ -3246,7 +3246,7 @@ type
     halfAspect = 14
     mixedMono = 15
 
-  VideoMultiviewFlags* {.size: sizeof(cint).} = set[VideoMultiviewFlag]
+  VideoMultiviewFlags* = set[VideoMultiviewFlag]
 
 const
   VideoMultiviewFlagsNone* = VideoMultiviewFlags({})
@@ -3638,7 +3638,7 @@ type
     premultipliedAlpha = 0
     globalAlpha = 1
 
-  VideoOverlayFormatFlags* {.size: sizeof(cint).} = set[VideoOverlayFormatFlag]
+  VideoOverlayFormatFlags* = set[VideoOverlayFormatFlag]
 
 const
   VideoOverlayFormatFlagsNone* = VideoOverlayFormatFlags({})
@@ -3825,7 +3825,7 @@ type
   VideoResamplerFlag* {.size: sizeof(cint), pure.} = enum
     halfTaps = 0
 
-  VideoResamplerFlags* {.size: sizeof(cint).} = set[VideoResamplerFlag]
+  VideoResamplerFlags* = set[VideoResamplerFlag]
 
 const
   VideoResamplerFlagsNone* = VideoResamplerFlags({})
@@ -3938,7 +3938,7 @@ type
   VideoScalerFlag* {.size: sizeof(cint), pure.} = enum
     interlaced = 0
 
-  VideoScalerFlags* {.size: sizeof(cint).} = set[VideoScalerFlag]
+  VideoScalerFlags* = set[VideoScalerFlag]
 
 const
   VideoScalerFlagsNone* = VideoScalerFlags({})
@@ -4236,7 +4236,7 @@ type
     dropFrame = 0
     interlaced = 1
 
-  VideoTimeCodeFlags* {.size: sizeof(cint).} = set[VideoTimeCodeFlag]
+  VideoTimeCodeFlags* = set[VideoTimeCodeFlag]
 
 const
   VideoTimeCodeFlagsNone* = VideoTimeCodeFlags({})

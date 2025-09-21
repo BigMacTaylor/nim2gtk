@@ -2019,7 +2019,7 @@ type
     generic = 6
     metadata = 7
 
-  PbUtilsCapsDescriptionFlags* {.size: sizeof(cint).} = set[PbUtilsCapsDescriptionFlag]
+  PbUtilsCapsDescriptionFlags* = set[PbUtilsCapsDescriptionFlag]
 
 proc gst_codec_utils_aac_caps_set_level_and_profile(caps: ptr gst.Caps00;
     audioConfig: ptr uint8; len: uint32): gboolean {.

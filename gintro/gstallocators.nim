@@ -340,7 +340,7 @@ type
     mapPrivate = 1
     dontClose = 2
 
-  FdMemoryFlags* {.size: sizeof(cint).} = set[FdMemoryFlag]
+  FdMemoryFlags* = set[FdMemoryFlag]
 
 const
   FdMemoryFlagsNone* = FdMemoryFlags({})

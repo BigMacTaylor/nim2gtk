@@ -312,7 +312,7 @@ type
     noSession = 5
     noCtty = 6
 
-  PtyFlags* {.size: sizeof(cint).} = set[PtyFlag]
+  PtyFlags* = set[PtyFlag]
 
 const
   PtyFlagsDefault* = PtyFlags({})

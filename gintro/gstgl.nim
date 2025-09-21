@@ -1523,7 +1523,7 @@ type
     download = 20
     upload = 21
 
-  GLBaseMemoryTransfer* {.size: sizeof(cint).} = set[GLBaseMemoryTransferFlag]
+  GLBaseMemoryTransfer* = set[GLBaseMemoryTransferFlag]
 
 type
   GLBaseMixer* = ref object of gstvideo.VideoAggregator
@@ -1937,7 +1937,7 @@ type
     pbuffer = 1
     pixmap = 2
 
-  GLConfigSurfaceType* {.size: sizeof(cint).} = set[GLConfigSurfaceTypeFlag]
+  GLConfigSurfaceType* = set[GLConfigSurfaceTypeFlag]
 
 const
   GLConfigSurfaceTypeNone* = GLConfigSurfaceType({})
