@@ -1,8 +1,8 @@
 # Package
 
-version       = "0.9.9"
-author        = "Stefan Salewski"
-description = "High level GObject-Introspection based GTK4/GTK3 bindings"
+version       = "1.0.0"
+author        = "Mac Taylor"
+description = "GTK bindings for Nim"
 license       = "MIT"
 skipDirs = @["examples", "tests"]
 
