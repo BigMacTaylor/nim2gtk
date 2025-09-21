@@ -16,6 +16,7 @@ nim c gaction2.nim
 nim c gaction.nim
 nim c gearsmenu.nim
 nim c glisttest.nim
+nim c groceryList.nim
 nim c gsettings.nim
 nim c gstBasicTutorial1.nim
 nim c handy.nim

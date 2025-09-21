@@ -16,6 +16,7 @@ nim c --gc:arc gaction2.nim
 nim c --gc:arc gaction.nim
 nim c --gc:arc gearsmenu.nim
 nim c --gc:arc glisttest.nim
+nim c --gc:arc groceryList.nim
 nim c --gc:arc gsettings.nim
 nim c --gc:arc gstBasicTutorial1.nim
 nim c --gc:arc handy.nim
