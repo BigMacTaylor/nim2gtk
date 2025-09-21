@@ -5,6 +5,7 @@ author        = "Mac Taylor"
 description   = "GTK bindings for Nim 2.0"
 license       = "MIT"
 skipDirs      = @["examples", "tests"]
+installDirs   = @["gtk2nim"]
 
 # Dependencies
 
@@ -19,4 +20,3 @@ when defined(nimdistros):
   #else: we don't know the names for all the other distributions
   #  foreignDep "openssl"
 
-srcDir = "gtk2nim"
