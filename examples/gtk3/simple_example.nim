@@ -8,7 +8,7 @@
 ##    simple-example 0 $(host -4 -t A stun.stunprotocol.org | awk '{ print $4 }')
 ##    simple-example 1 $(host -4 -t A stun.stunprotocol.org | awk '{ print $4 }')
 ##
-## this code contains the fixes of Mr. Tomohiro for Windows OS, see https://github.com/StefanSalewski/gintro/issues/99
+## this code contains the fixes of Mr. Tomohiro for Windows OS, see https://github.com/StefanSalewski/nim2gtk/issues/99
 
 ## The construct "when (compiles do: import ..." is fragile -- we let it in for now
 ## to support windows OS without a full gtk version available.
@@ -17,10 +17,10 @@
 # https://github.com/nim-lang/Nim/issues/16287
 # https://forum.nim-lang.org/t/3752
 #
-when (compiles do: import gintro/gtk):
-  import gintro/[gtk, glib, gobject, gio, nice]
+when (compiles do: import nim2gtk/gtk):
+  import nim2gtk/[gtk, glib, gobject, gio, nice]
 else:
-  import gintro/[dummygtk, glib, gobject, gio, nice] # For windows with glib but no gtk
+  import nim2gtk/[dummygtk, glib, gobject, gio, nice] # For windows with glib but no gtk
 
 from strutils import `%`, split
 from os import paramCount, paramStr

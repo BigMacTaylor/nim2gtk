@@ -1,5 +1,5 @@
 # nim c --gc:arc count_button.nim
-import gintro/[gtk, glib, gobject, gio]
+import nim2gtk/[gtk, glib, gobject, gio]
 
 type
   CountButton = ref object of Button

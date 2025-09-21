@@ -2,7 +2,7 @@
 ##  C. Eric Cashon
 
 # nim c css_colored_listview.nim
-import gintro/[gtk, gdk, glib, gobject]
+import nim2gtk/[gtk, gdk, glib, gobject]
 const # maybe we should use Nim's enum here?
   Id = 0
   Program = 1

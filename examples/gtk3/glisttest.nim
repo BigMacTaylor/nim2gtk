@@ -1,5 +1,5 @@
 # nim c --gc:arc glisttest.nim
-import gintro/[gtk, glib, gobject, gio]
+import nim2gtk/[gtk, glib, gobject, gio]
 
 proc buttonClicked (button: Button) =
   button.label = utf8Strreverse(button.label, -1)

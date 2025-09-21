@@ -1,7 +1,7 @@
 # gsettings.nim -- basic use of gsettings
 # nim c gsettings.nim
 # https://blog.gtk.org/2017/05/01/first-steps-with-gsettings/
-import gintro/[gtk, gobject, gio]
+import nim2gtk/[gtk, gobject, gio]
 
 # unused
 #proc toggle(b: CheckButton) = 

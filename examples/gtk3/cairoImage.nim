@@ -1,6 +1,6 @@
 # https://discourse.gnome.org/t/proper-zoom-pan-image-approach-for-large-images/1497/6
 # Nim version of the C example of C. Eric Cashon
-import gintro/[gtk, gobject, glib, cairo]
+import nim2gtk/[gtk, gobject, glib, cairo]
 from math import TAU
 import strutils
 

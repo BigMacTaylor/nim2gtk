@@ -1,4 +1,4 @@
-import gintro/cairo
+import nim2gtk/cairo
 import drawingarea
 from math import PI
 

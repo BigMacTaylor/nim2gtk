@@ -8,7 +8,7 @@
 
 # https://discourse.gnome.org/t/problem-with-gtkscrollbar-gtk-window-resize-and-gtk-adjustment-set-value/1081
 
-import gintro/[gtk, gdk, glib, gobject, gio, cairo]
+import nim2gtk/[gtk, gdk, glib, gobject, gio, cairo]
 
 const
   ZoomFactorMouseWheel = 1.1

@@ -1,7 +1,7 @@
 ##  https://github.com/GNOME/gtk/blob/gtk-3-24/tests/testspinbutton.c
 ##  gcc `pkg-config gtk+-3.0 --cflags` spinbutton.c -o spinbutton `pkg-config --libs gtk+-3.0`
 
-import gintro/[gtk, gdk, glib, gobject]
+import nim2gtk/[gtk, gdk, glib, gobject]
 
 var numWindows: int
 

@@ -1,7 +1,7 @@
 # nim c gaction.nim
 # https://github.com/GNOME/gtk/blob/mainline/tests/testgaction.c
 # gcc -Wall gaction.c -o gaction `pkg-config --cflags --libs gtk4`
-import gintro/[gtk, glib, gobject, gio]
+import nim2gtk/[gtk, glib, gobject, gio]
 
 const menuData = """
 <interface>

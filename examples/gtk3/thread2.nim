@@ -1,6 +1,6 @@
 # nim c --threads:on --gc:arc -r thread2.nim
 
-import gintro/[gtk, glib, gobject, gio]
+import nim2gtk/[gtk, glib, gobject, gio]
 from  os import sleep
 
 var workThread: system.Thread[void]

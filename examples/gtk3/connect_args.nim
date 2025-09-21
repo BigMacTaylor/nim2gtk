@@ -1,5 +1,5 @@
 # nim c connect_args.nim
-import gintro/[gtk, gobject, gio]
+import nim2gtk/[gtk, gobject, gio]
 
 type
   O = object

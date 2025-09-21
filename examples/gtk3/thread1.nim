@@ -1,7 +1,7 @@
 # https://nim-lang.org/docs/channels.html
 # nim c --threads:on --gc:arc -r thread1.nim
 
-import gintro/[gtk, glib, gobject, gio]
+import nim2gtk/[gtk, glib, gobject, gio]
 from  os import sleep
 
 var channel: Channel[int]

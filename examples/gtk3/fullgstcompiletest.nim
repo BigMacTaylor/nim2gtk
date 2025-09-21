@@ -1,5 +1,5 @@
 import
-  gintro/[gstallocators, 
+  nim2gtk/[gstallocators, 
   gstapp, 
   gstaudio, 
   gstbase, 

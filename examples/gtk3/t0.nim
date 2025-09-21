@@ -1,5 +1,5 @@
 # nim c t0.nim
-import gintro/[gtk, gobject]
+import nim2gtk/[gtk, gobject]
 
 proc bye(w: Window) =
   mainQuit()

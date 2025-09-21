@@ -1,5 +1,5 @@
 ## This test program was kindly provided by Mr. Tomohiro, see
-## https://github.com/StefanSalewski/gintro/issues/99
+## https://github.com/StefanSalewski/nim2gtk/issues/99
 
 # nim c libnice_simple_test.nim
 #
@@ -7,10 +7,10 @@
 #  If test succeeded, it prints "Test success".
 #  You don't need to run 2 processes of this program to test.
 
-when (compiles do: import gintro/gtk):
-  import gintro/[gtk, glib, gobject, gio, nice]
+when (compiles do: import nim2gtk/gtk):
+  import nim2gtk/[gtk, glib, gobject, gio, nice]
 else:
-  import gintro/[dummygtk, glib, gobject, gio, nice] # For system has glib but no gtk
+  import nim2gtk/[dummygtk, glib, gobject, gio, nice] # For system has glib but no gtk
 
 import strformat, nativesockets
 

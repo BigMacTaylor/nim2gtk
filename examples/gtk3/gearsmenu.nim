@@ -4,7 +4,7 @@
 # https://wiki.gnome.org/HowDoI/GAction
 # https://developer.gnome.org/gnome-devel-demos/stable/menubutton.c.html.en
 # nim c gearsmenu.nim
-import gintro/[gtk, glib, gobject, gio]
+import nim2gtk/[gtk, glib, gobject, gio]
 import strformat
 
 # https://github.com/GNOME/glib/blob/master/gio/tests/gapplication-example-actions.c

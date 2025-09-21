@@ -1,8 +1,8 @@
 # http://zetcode.com/gui/gtk2/gtktreeview/
 # dynamiclistview.c
 
-import gintro/[glib, gobject, gtk]
-import gintro/gio except ListStore
+import nim2gtk/[glib, gobject, gtk]
+import nim2gtk/gio except ListStore
 
 const    
   LIST_ITEM = 0

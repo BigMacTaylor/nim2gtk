@@ -1,6 +1,6 @@
 # https://gitlab.gnome.org/GNOME/libhandy/-/blob/master/examples/example.py
 # nim c --gc:arc handy.nim
-import gintro/[gtk, gobject, handy]
+import nim2gtk/[gtk, gobject, handy]
 
 proc main =
   gtk.init()

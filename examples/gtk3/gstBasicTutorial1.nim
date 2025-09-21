@@ -1,6 +1,6 @@
 # https://gstreamer.freedesktop.org/documentation/tutorials/basic/hello-world.html?gi-language=c
 # nim c gstBasicTutorial1.nim
-import gintro/gst
+import nim2gtk/gst
 
 proc main =
   var pipeline: gst.Element

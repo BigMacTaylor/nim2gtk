@@ -6,7 +6,7 @@
 ##  Copyright (C) 2008 Wim Taymans <wim.taymans@gmail.com>
 ##
 
-import gintro/[gtk, gst, gstapp, gobject, glib]
+import nim2gtk/[gtk, gst, gstapp, gobject, glib]
 from std/os import paramCount, paramStr
 from std/strutils import `%`
 

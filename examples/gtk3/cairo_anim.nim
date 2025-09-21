@@ -1,7 +1,7 @@
 # https://lists.cairographics.org/archives/cairo/2016-October/027791.html
 # Nim version of that plain cairo animation example
 
-import gintro/[gtk, glib, gobject, gio, cairo]
+import nim2gtk/[gtk, glib, gobject, gio, cairo]
 import math
 
 const

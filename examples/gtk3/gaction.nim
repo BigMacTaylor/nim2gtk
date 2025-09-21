@@ -1,6 +1,6 @@
 # https://wiki.gnome.org/HowDoI/GAction
 # nim c gaction.nim
-import gintro/[gtk, glib, gobject, gio]
+import nim2gtk/[gtk, glib, gobject, gio]
 
 proc saveCb(action: SimpleAction; v: Variant) =
   echo "saveCb"

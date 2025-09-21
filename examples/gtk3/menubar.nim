@@ -3,7 +3,7 @@
 # https://wiki.gnome.org/HowDoI/GMenu
 # https://wiki.gnome.org/HowDoI/GAction
 # nim c menubar.nim
-import gintro/[gtk, glib, gobject, gio]
+import nim2gtk/[gtk, glib, gobject, gio]
 from strutils import `%`, format
 
 # https://github.com/GNOME/glib/blob/master/gio/tests/gapplication-example-actions.c

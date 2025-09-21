@@ -1,5 +1,5 @@
 # nim c button.nim
-import gintro/[gtk, glib, gobject, gio, cairo]
+import nim2gtk/[gtk, glib, gobject, gio, cairo]
 from math import Tau
 
 type

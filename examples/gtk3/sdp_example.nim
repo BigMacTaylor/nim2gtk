@@ -12,10 +12,10 @@
 ## This is a legacy Nim libnice example. Deprecated, we may remove it, or improve the code...
 
 # https://forum.nim-lang.org/t/3752
-when (compiles do: import gintro/gtk):
-  import gintro/[gtk, glib, gobject, gio, nice]
+when (compiles do: import nim2gtk/gtk):
+  import nim2gtk/[gtk, glib, gobject, gio, nice]
 else:
-  import gintro/[dummygtk, glib, gobject, gio, nice] # For windows with glib but no gtk
+  import nim2gtk/[dummygtk, glib, gobject, gio, nice] # For windows with glib but no gtk
 
 from strutils import `%`
 from os import paramCount, paramStr

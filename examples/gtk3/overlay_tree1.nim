@@ -1,6 +1,6 @@
 # nim c overlayTree1.nim
 # https://discourse.gnome.org/t/gtk-how-to-draw-on-top-of-gtktreeview/1783/2
-import gintro/[gtk, gdk, glib, gobject, cairo]
+import nim2gtk/[gtk, gdk, glib, gobject, cairo]
 import strformat
 from strutils import parseInt
 const

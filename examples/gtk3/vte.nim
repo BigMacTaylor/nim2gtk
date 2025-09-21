@@ -1,5 +1,5 @@
 # https://vincent.bernat.im/en/blog/2017-write-own-terminal
-import gintro/[gtk, glib, gobject, gio, vte]
+import nim2gtk/[gtk, glib, gobject, gio, vte]
 
 proc appActivate(app: Application) =
   let window = newApplicationWindow(app)
