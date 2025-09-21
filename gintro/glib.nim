@@ -222,7 +222,7 @@ type
     upper = 9
     xdigit = 10
 
-  AsciiType* {.size: sizeof(cint).} = set[AsciiTypeFlag]
+  AsciiType* = set[AsciiTypeFlag]
 
 type
   AsyncQueue00* {.pure.} = object
@@ -2398,6 +2398,12 @@ type
     impl*: ptr Completion00
     ignoreFinalizer*: bool
 
+type
+  List* {.pure, byRef.} = object
+    data*: pointer
+    next*: ptr glib.List
+    prev*: ptr glib.List
+
 proc g_completion_free(self: ptr Completion00) {.
     importc, libprag.}
 
@@ -3094,7 +3100,7 @@ type
     durable = 1
     onlyExisting = 2
 
-  FileSetContentsFlags* {.size: sizeof(cint).} = set[FileSetContentsFlag]
+  FileSetContentsFlags* = set[FileSetContentsFlag]
 
 const
   FileSetContentsFlagsNone* = FileSetContentsFlags({})
@@ -3108,7 +3114,7 @@ type
     isExecutable = 3
     exists = 4
 
-  FileTest* {.size: sizeof(cint).} = set[FileTestFlag]
+  FileTest* = set[FileTestFlag]
 
 type
   FloatIEEE754* {.pure, byRef, union.} = object
@@ -3122,7 +3128,7 @@ type
     onlyValue = 3
     onlyUnit = 4
 
-  FormatSizeFlags* {.size: sizeof(cint).} = set[FormatSizeFlag]
+  FormatSizeFlags* = set[FormatSizeFlag]
 
 const
   FormatSizeFlagsDefault* = FormatSizeFlags({})
@@ -3815,7 +3821,7 @@ type
     hup = 4
     nval = 5
 
-  IOCondition* {.size: sizeof(cint).} = set[IOCFlag]
+  IOCondition* = set[IOCFlag]
 
 proc g_io_channel_get_buffer_condition(self: ptr IOChannel00): IOCondition {.
     importc, libprag.}
@@ -4837,7 +4843,7 @@ type
     keepComments = 0
     keepTranslations = 1
 
-  KeyFileFlags* {.size: sizeof(cint).} = set[KeyFileFlag]
+  KeyFileFlags* = set[KeyFileFlag]
 
 const
   KeyFileFlagsNone* = KeyFileFlags({})
@@ -4942,23 +4948,17 @@ const LOG_FATAL_MASK* = 5'i32
 
 const LOG_LEVEL_USER_SHIFT* = 8'i32
 
-type
-  List* {.pure, byRef.} = object
-    data*: pointer
-    next*: ptr glib.List
-    prev*: ptr glib.List
-
 proc g_list_free*(list: ptr glib.List) {.importc: "g_list_free", libprag.}
 
 proc g_list_prepend*(list: ptr glib.List; data: pointer): ptr glib.List  {.importc:  "g_list_prepend", libprag.}
 
-proc popAllocator*() {.
+proc listPopAllocator*() {.
     importc: "g_list_pop_allocator", libprag.}
 
 proc g_list_push_allocator(allocator: ptr Allocator00) {.
     importc, libprag.}
 
-proc pushAllocator*(allocator: Allocator) =
+proc listPushAllocator*(allocator: Allocator) =
   g_list_push_allocator(cast[ptr Allocator00](allocator.impl))
 
 type
@@ -5166,7 +5166,7 @@ type
   MainContextFlag* {.size: sizeof(cint), pure.} = enum
     ownerlessPolling = 0
 
-  MainContextFlags* {.size: sizeof(cint).} = set[MainContextFlag]
+  MainContextFlags* = set[MainContextFlag]
 
 const
   MainContextFlagsNone* = MainContextFlags({})
@@ -5840,6 +5840,11 @@ type
     impl*: ptr MarkupParseContext00
     ignoreFinalizer*: bool
 
+type
+  SList* {.pure, byRef.} = object
+    data*: pointer
+    next*: ptr glib.SList
+
 proc g_markup_parse_context_get_type*(): GType {.importc, gobjectlibprag.}
 
 proc gBoxedFreeGMarkupParseContext*(self: MarkupParseContext) =
@@ -5984,7 +5989,7 @@ type
     prefixErrorPosition = 2
     ignoreQualified = 3
 
-  MarkupParseFlags* {.size: sizeof(cint).} = set[MarkupParseFlag]
+  MarkupParseFlags* = set[MarkupParseFlag]
 
 const
   MarkupParseFlagsDefaultFlags* = MarkupParseFlags({})
@@ -6752,13 +6757,13 @@ proc g_node_unlink(self: ptr Node00) {.
 proc unlink*(self: Node) =
   g_node_unlink(cast[ptr Node00](self.impl))
 
-proc popAllocator*() {.
+proc nodePopAllocator*() {.
     importc: "g_node_pop_allocator", libprag.}
 
 proc g_node_push_allocator(allocator: ptr Allocator00) {.
     importc, libprag.}
 
-proc pushAllocator*(allocator: Allocator) =
+proc nodePushAllocator*(allocator: Allocator) =
   g_node_push_allocator(cast[ptr Allocator00](allocator.impl))
 
 type
@@ -7207,7 +7212,7 @@ type
     optionalArg = 5
     noalias = 6
 
-  OptionFlags* {.size: sizeof(cint).} = set[OptionFlag]
+  OptionFlags* = set[OptionFlag]
 
 const
   OptionFlagsNone* = OptionFlags({})
@@ -7997,22 +8002,17 @@ const SIZEOF_SSIZE_T* = 8'i32
 
 const SIZEOF_VOID_P* = 8'i32
 
-type
-  SList* {.pure, byRef.} = object
-    data*: pointer
-    next*: ptr glib.SList
-
 proc g_slist_free*(list: ptr glib.SList) {.importc: "g_slist_free", libprag.}
 
 proc g_slist_prepend*(list: ptr glib.SList; data: pointer): ptr glib.SList  {.importc:  "g_slist_prepend", libprag.}
 
-proc popAllocator*() {.
+proc slistPopAllocator*() {.
     importc: "g_slist_pop_allocator", libprag.}
 
 proc g_slist_push_allocator(allocator: ptr Allocator00) {.
     importc, libprag.}
 
-proc pushAllocator*(allocator: Allocator) =
+proc slistPushAllocator*(allocator: Allocator) =
   g_slist_push_allocator(cast[ptr Allocator00](allocator.impl))
 
 const SOURCE_CONTINUE* = true
@@ -8544,7 +8544,7 @@ type
     childInheritsStderr = 10
     stdinFromDevNull = 11
 
-  SpawnFlags* {.size: sizeof(cint).} = set[SpawnFlag]
+  SpawnFlags* = set[SpawnFlag]
 
 const
   SpawnFlagsDefault* = SpawnFlags({})
@@ -8863,7 +8863,7 @@ type
     inheritStdout = 1
     inheritStderr = 2
 
-  TestSubprocessFlags* {.size: sizeof(cint).} = set[TestSubprocessFlag]
+  TestSubprocessFlags* = set[TestSubprocessFlag]
 
 const
   TestSubprocessFlagsDefault* = TestSubprocessFlags({})
@@ -8917,7 +8917,7 @@ type
     silenceStderr = 8
     inheritStdin = 9
 
-  TestTrapFlags* {.size: sizeof(cint).} = set[TestTrapFlag]
+  TestTrapFlags* = set[TestTrapFlag]
 
 const
   TestTrapFlagsDefault* = TestTrapFlags({})
@@ -10140,7 +10140,7 @@ type
     query = 3
     fragment = 4
 
-  UriHideFlags* {.size: sizeof(cint).} = set[UriHideFlag]
+  UriHideFlags* = set[UriHideFlag]
 
 const
   UriHideFlagsNone* = UriHideFlags({})
@@ -10160,7 +10160,7 @@ type
     wwwForm = 1
     parseRelaxed = 2
 
-  UriParamsFlags* {.size: sizeof(cint).} = set[UriParamsFlag]
+  UriParamsFlags* = set[UriParamsFlag]
 
 const
   UriParamsFlagsNone* = UriParamsFlags({})
@@ -10182,7 +10182,7 @@ type
     encodedFragment = 7
     schemeNormalize = 8
 
-  UriFlags* {.size: sizeof(cint).} = set[UriFlag]
+  UriFlags* = set[UriFlag]
 
 const
   UriFlagsNone* = UriFlags({})

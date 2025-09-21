@@ -129,7 +129,15 @@ proc $1$2 {.cdecl.} =
         r1s.add(", cast[ptr $5](xdata)[]")
     r1s.add(")\n")
   else: # signals with multiple arguments and maybe using interface providers
-    (sn, wid, num, ahl, all) = sci.split(RecSep)
+    #(sn, wid, num, ahl, all) = sci.split(RecSep)
+    var sciSq: seq[string] = sci.split(RecSep)
+    (sn, wid, num, ahl, all) = (sciSq[0], sciSq[1], sciSq[2], sciSq[3], sciSq[4])
+    #let  s = sci.split(RecSep)
+    #var sn = s[0]
+    #var wid = s[1]
+    #var num = s[2]
+    #var ahl = s[3]
+    #var all = s[4]
     #echo "ttt ", ahl
     if ahl.contains("|"): # we have to handle interface providers
       var hargs = ahl.split(";") # handler arguments
@@ -169,9 +177,13 @@ proc $1$2 {.cdecl.} =
       var largslen = largs.len
       while i < largslen:
         if largs[i].endsWith("00Array"):
-          (names[i], types[i]) = largs[i].split(": ")
+          #(names[i], types[i]) = largs[i].split(": ")
+          var argSq: seq[string] = largs[i].split(": ")
+          (names[i], types[i]) = (argSq[0], argSq[1])
+          
           let al = largs[i + 1].split(": ")[0]
           var h = types[i]
+
           # h[0] = h[0].toLowerAscii # before v0.9.7
           let xxx = h.find('.') + 1 # since v0.9.7
           h[xxx] = h[xxx].toLowerAscii
@@ -182,12 +194,18 @@ proc $1$2 {.cdecl.} =
           largs.delete(i + 1)
           dec(largslen)
         elif largs[i].endsWith("00"):
-          (names[i], types[i]) = largs[i].split(": ptr ")
+          #(names[i], types[i]) = largs[i].split(": ptr ")
+          var argSq: seq[string] = largs[i].split(": ptr ")
+          (names[i], types[i]) = (argSq[0], argSq[1])
+          
           types[i].setLen(types[i].len - 2)
         else:
           types[i] = ""#nil # plain arg, no object
           var a1, a2: string
-          (a1, a2) = largs[i].split(": ")
+          #(a1, a2) = largs[i].split(": ")
+          var argSq: seq[string] = largs[i].split(": ")
+          (a1, a2) = (argSq[0], argSq[1])
+          
           let h = ct5nt(a2)
           if h.len > 0:
             a1 = h & "(" & a1 & ")"
@@ -243,7 +261,10 @@ proc $1$2 {.cdecl.} =
     var h = all.split(';')
     for el in mitems(h):
       var a, b: string
-      (a, b) = el.split(": ")
+      #(a, b) = el.split(": ")
+      var elSq: seq[string] = el.split(": ")
+      (a, b) = (elSq[0], elSq[1])
+      
       if b.find("Array") >= 0:
         b = "ptr " & b.replace("Array")
       el = a & ": " & b
@@ -283,7 +304,10 @@ proc $1$2 {.cdecl.} =
       # files: seq[gio.File]
       if hhh[i] .find("00Array") >= 0:
         var a, b: string
-        (a, b) = hhh[i].split(": ")
+        #(a, b) = hhh[i].split(": ")
+        var hhhSq: seq[string] = hhh[i].split(": ")
+        (a, b) = (hhhSq[0], hhhSq[1])
+        
         b = b.replace("00Array", "]")
         #if b == "File]":
         #  b = "gio.File]"
