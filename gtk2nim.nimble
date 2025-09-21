@@ -1,10 +1,11 @@
 # Package
 
-version       = "1.0.0"
+version       = "0.1.0"
 author        = "Mac Taylor"
-description = "GTK bindings for Nim 2.0"
+description   = "GTK bindings for Nim 2.0"
 license       = "MIT"
-skipDirs = @["examples", "tests"]
+skipDirs      = @["examples", "tests"]
+installDirs   = @["gintro"]
 
 # Dependencies
 
@@ -19,6 +20,4 @@ when defined(nimdistros):
   #else: we don't know the names for all the other distributions
   #  foreignDep "openssl"
 
-
-srcDir = "gintro" 
 
