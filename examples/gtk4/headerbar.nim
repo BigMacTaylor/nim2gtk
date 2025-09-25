@@ -5,7 +5,7 @@
 import nim2gtk/[gtk4, glib, gobject]
 
 const
-  Css = """
+  Css: cstring = """
  .main.background {
  background-image: linear-gradient(to bottom, red, blue);
  border-width: 0px;
@@ -106,7 +106,7 @@ proc main =
   let window = newWindow(MyWindow)
   addCssClass(window, "main") # gtk_widget_add_css_class (window, "main");
   let provider = newCssProvider()
-  provider.loadFromData(Css)
+  provider.loadFromData(Css, -1)
   addProviderForDisplay(getDisplay(window), provider, STYLE_PROVIDER_PRIORITY_USER)
   changeHeader(nil, window)
   let box = newBox(Orientation.vertical, 0)
