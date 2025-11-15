@@ -15,9 +15,7 @@ nimble install https://github.com/BigMacTaylor/nim2gtk.git
 
 
 ## 2 Import nim2gtk in the project
-[[app0.nim]]
-[source,nim]
-.app0.nim
+app0.nim
 ```nim
 # app0.nim -- minimal application style example
 # nim c app0.nim
