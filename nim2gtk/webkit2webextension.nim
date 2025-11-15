@@ -148,6 +148,625 @@ when defined(gcDestructors):
       g_object_remove_toggle_ref(self.impl, toggleNotify, addr(self))
       self.impl = nil
 
+proc webkit_context_menu_new(): ptr ContextMenu00 {.
+    importc, libprag.}
+
+proc newContextMenu*(): ContextMenu =
+  let gobj = webkit_context_menu_new()
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, webkit2webextension.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    if g_object_is_floating(result.impl).int != 0:
+      discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+proc newContextMenu*(tdesc: typedesc): tdesc =
+  assert(result is ContextMenu)
+  let gobj = webkit_context_menu_new()
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, webkit2webextension.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    if g_object_is_floating(result.impl).int != 0:
+      discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+proc initContextMenu*[T](result: var T) {.deprecated.} =
+  assert(result is ContextMenu)
+  let gobj = webkit_context_menu_new()
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, webkit2webextension.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    if g_object_is_floating(result.impl).int != 0:
+      discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+proc webkit_context_menu_get_event(self: ptr ContextMenu00): ptr gdk.Event00 {.
+    importc, libprag.}
+
+proc getEvent*(self: ContextMenu): gdk.Event =
+  fnew(result, gBoxedFreeGdkEvent)
+  result.impl = webkit_context_menu_get_event(cast[ptr ContextMenu00](self.impl))
+  result.impl = cast[typeof(result.impl)](g_boxed_copy(gdk_event_get_type(), result.impl))
+
+proc event*(self: ContextMenu): gdk.Event =
+  fnew(result, gBoxedFreeGdkEvent)
+  result.impl = webkit_context_menu_get_event(cast[ptr ContextMenu00](self.impl))
+  result.impl = cast[typeof(result.impl)](g_boxed_copy(gdk_event_get_type(), result.impl))
+
+proc webkit_context_menu_get_n_items(self: ptr ContextMenu00): uint32 {.
+    importc, libprag.}
+
+proc getNItems*(self: ContextMenu): int =
+  int(webkit_context_menu_get_n_items(cast[ptr ContextMenu00](self.impl)))
+
+proc nItems*(self: ContextMenu): int =
+  int(webkit_context_menu_get_n_items(cast[ptr ContextMenu00](self.impl)))
+
+proc webkit_context_menu_get_user_data(self: ptr ContextMenu00): ptr glib.Variant00 {.
+    importc, libprag.}
+
+proc getUserData*(self: ContextMenu): glib.Variant =
+  fnew(result, finalizerunref)
+  result.impl = webkit_context_menu_get_user_data(cast[ptr ContextMenu00](self.impl))
+  result.ignoreFinalizer = true # GVariant
+
+proc userData*(self: ContextMenu): glib.Variant =
+  fnew(result, finalizerunref)
+  result.impl = webkit_context_menu_get_user_data(cast[ptr ContextMenu00](self.impl))
+  result.ignoreFinalizer = true # GVariant
+
+proc webkit_context_menu_remove_all(self: ptr ContextMenu00) {.
+    importc, libprag.}
+
+proc removeAll*(self: ContextMenu) =
+  webkit_context_menu_remove_all(cast[ptr ContextMenu00](self.impl))
+
+proc webkit_context_menu_set_user_data(self: ptr ContextMenu00; userData: ptr glib.Variant00) {.
+    importc, libprag.}
+
+proc setUserData*(self: ContextMenu; userData: glib.Variant) =
+  webkit_context_menu_set_user_data(cast[ptr ContextMenu00](self.impl), cast[ptr glib.Variant00](userData.impl))
+
+proc `userData=`*(self: ContextMenu; userData: glib.Variant) =
+  webkit_context_menu_set_user_data(cast[ptr ContextMenu00](self.impl), cast[ptr glib.Variant00](userData.impl))
+
+type
+  ContextMenuItem* = ref object of gobject.InitiallyUnowned
+  ContextMenuItem00* = object of gobject.InitiallyUnowned00
+
+proc webkit_context_menu_item_get_type*(): GType {.importc, libprag.}
+
+when defined(gcDestructors):
+  proc `=destroy`*(self: var typeof(ContextMenuItem()[])) =
+    when defined(gintroDebug):
+      echo "destroy ", $typeof(self), ' ', cast[int](unsafeaddr self)
+    g_object_set_qdata(self.impl, Quark, nil)
+    if not self.ignoreFinalizer and self.impl != nil:
+      g_object_remove_toggle_ref(self.impl, toggleNotify, addr(self))
+      self.impl = nil
+
+proc webkit_context_menu_item_new(action: ptr gtk.Action00): ptr ContextMenuItem00 {.
+    importc, libprag.}
+
+proc newContextMenuItem*(action: gtk.Action): ContextMenuItem {.deprecated.}  =
+  let gobj = webkit_context_menu_item_new(cast[ptr gtk.Action00](action.impl))
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, webkit2webextension.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+proc newContextMenuItem*(tdesc: typedesc; action: gtk.Action): tdesc {.deprecated.}  =
+  assert(result is ContextMenuItem)
+  let gobj = webkit_context_menu_item_new(cast[ptr gtk.Action00](action.impl))
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, webkit2webextension.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+proc initContextMenuItem*[T](result: var T; action: gtk.Action) {.deprecated.} =
+  assert(result is ContextMenuItem)
+  let gobj = webkit_context_menu_item_new(cast[ptr gtk.Action00](action.impl))
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, webkit2webextension.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+proc webkit_context_menu_item_new_from_gaction(action: ptr gio.Action00;
+    label: cstring; target: ptr glib.Variant00): ptr ContextMenuItem00 {.
+    importc, libprag.}
+
+proc newContextMenuItemFromGaction*(action: gio.Action; label: cstring;
+    target: glib.Variant = nil): ContextMenuItem =
+  let gobj = webkit_context_menu_item_new_from_gaction(cast[ptr gio.Action00](action.impl), label, if target.isNil: nil else: cast[ptr glib.Variant00](target.impl))
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, webkit2webextension.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+proc newContextMenuItemFromGaction*(tdesc: typedesc; action: gio.Action; label: cstring;
+    target: glib.Variant = nil): tdesc =
+  assert(result is ContextMenuItem)
+  let gobj = webkit_context_menu_item_new_from_gaction(cast[ptr gio.Action00](action.impl), label, if target.isNil: nil else: cast[ptr glib.Variant00](target.impl))
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, webkit2webextension.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+proc initContextMenuItemFromGaction*[T](result: var T; action: gio.Action; label: cstring;
+    target: glib.Variant = nil) {.deprecated.} =
+  assert(result is ContextMenuItem)
+  let gobj = webkit_context_menu_item_new_from_gaction(cast[ptr gio.Action00](action.impl), label, if target.isNil: nil else: cast[ptr glib.Variant00](target.impl))
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, webkit2webextension.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+proc webkit_context_menu_item_new_separator(): ptr ContextMenuItem00 {.
+    importc, libprag.}
+
+proc newContextMenuItemSeparator*(): ContextMenuItem =
+  let gobj = webkit_context_menu_item_new_separator()
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, webkit2webextension.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+proc newContextMenuItemSeparator*(tdesc: typedesc): tdesc =
+  assert(result is ContextMenuItem)
+  let gobj = webkit_context_menu_item_new_separator()
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, webkit2webextension.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+proc initContextMenuItemSeparator*[T](result: var T) {.deprecated.} =
+  assert(result is ContextMenuItem)
+  let gobj = webkit_context_menu_item_new_separator()
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, webkit2webextension.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+proc webkit_context_menu_item_new_with_submenu(label: cstring; submenu: ptr ContextMenu00): ptr ContextMenuItem00 {.
+    importc, libprag.}
+
+proc newContextMenuItemWithSubmenu*(label: cstring; submenu: ContextMenu): ContextMenuItem =
+  let gobj = webkit_context_menu_item_new_with_submenu(label, cast[ptr ContextMenu00](submenu.impl))
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, webkit2webextension.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+proc newContextMenuItemWithSubmenu*(tdesc: typedesc; label: cstring; submenu: ContextMenu): tdesc =
+  assert(result is ContextMenuItem)
+  let gobj = webkit_context_menu_item_new_with_submenu(label, cast[ptr ContextMenu00](submenu.impl))
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, webkit2webextension.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+proc initContextMenuItemWithSubmenu*[T](result: var T; label: cstring; submenu: ContextMenu) {.deprecated.} =
+  assert(result is ContextMenuItem)
+  let gobj = webkit_context_menu_item_new_with_submenu(label, cast[ptr ContextMenu00](submenu.impl))
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, webkit2webextension.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+proc webkit_context_menu_item_get_action(self: ptr ContextMenuItem00): ptr gtk.Action00 {.
+    importc, libprag.}
+
+proc getAction*(self: ContextMenuItem): gtk.Action =
+  let gobj = webkit_context_menu_item_get_action(cast[ptr ContextMenuItem00](self.impl))
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, gtk.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+proc action*(self: ContextMenuItem): gtk.Action =
+  let gobj = webkit_context_menu_item_get_action(cast[ptr ContextMenuItem00](self.impl))
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, gtk.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+proc webkit_context_menu_item_get_gaction(self: ptr ContextMenuItem00): ptr gio.Action00 {.
+    importc, libprag.}
+
+proc getGaction*(self: ContextMenuItem): gio.Action =
+  let gobj = webkit_context_menu_item_get_gaction(cast[ptr ContextMenuItem00](self.impl))
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, gio.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+proc gaction*(self: ContextMenuItem): gio.Action =
+  let gobj = webkit_context_menu_item_get_gaction(cast[ptr ContextMenuItem00](self.impl))
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, gio.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+proc webkit_context_menu_item_get_submenu(self: ptr ContextMenuItem00): ptr ContextMenu00 {.
+    importc, libprag.}
+
+proc getSubmenu*(self: ContextMenuItem): ContextMenu =
+  let gobj = webkit_context_menu_item_get_submenu(cast[ptr ContextMenuItem00](self.impl))
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, webkit2webextension.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+proc submenu*(self: ContextMenuItem): ContextMenu =
+  let gobj = webkit_context_menu_item_get_submenu(cast[ptr ContextMenuItem00](self.impl))
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, webkit2webextension.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+proc webkit_context_menu_item_is_separator(self: ptr ContextMenuItem00): gboolean {.
+    importc, libprag.}
+
+proc isSeparator*(self: ContextMenuItem): bool =
+  toBool(webkit_context_menu_item_is_separator(cast[ptr ContextMenuItem00](self.impl)))
+
+proc webkit_context_menu_item_set_submenu(self: ptr ContextMenuItem00; submenu: ptr ContextMenu00) {.
+    importc, libprag.}
+
+proc setSubmenu*(self: ContextMenuItem; submenu: ContextMenu = nil) =
+  webkit_context_menu_item_set_submenu(cast[ptr ContextMenuItem00](self.impl), if submenu.isNil: nil else: cast[ptr ContextMenu00](submenu.impl))
+
+proc `submenu=`*(self: ContextMenuItem; submenu: ContextMenu = nil) =
+  webkit_context_menu_item_set_submenu(cast[ptr ContextMenuItem00](self.impl), if submenu.isNil: nil else: cast[ptr ContextMenu00](submenu.impl))
+
+proc webkit_context_menu_new_with_items(items: ptr glib.List): ptr ContextMenu00 {.
+    importc, libprag.}
+
+proc newContextMenuWithItems*(items: seq[ContextMenuItem]): ContextMenu =
+  var tempResGL = seq2GList(items)
+  let gobj = webkit_context_menu_new_with_items(tempResGL)
+  g_list_free(tempResGL)
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, webkit2webextension.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    if g_object_is_floating(result.impl).int != 0:
+      discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+proc newContextMenuWithItems*(tdesc: typedesc; items: seq[ContextMenuItem]): tdesc =
+  assert(result is ContextMenu)
+  var tempResGL = seq2GList(items)
+  let gobj = webkit_context_menu_new_with_items(tempResGL)
+  g_list_free(tempResGL)
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, webkit2webextension.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    if g_object_is_floating(result.impl).int != 0:
+      discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+proc initContextMenuWithItems*[T](result: var T; items: seq[ContextMenuItem]) {.deprecated.} =
+  assert(result is ContextMenu)
+  var tempResGL = seq2GList(items)
+  let gobj = webkit_context_menu_new_with_items(tempResGL)
+  g_list_free(tempResGL)
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, webkit2webextension.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    if g_object_is_floating(result.impl).int != 0:
+      discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+proc webkit_context_menu_append(self: ptr ContextMenu00; item: ptr ContextMenuItem00) {.
+    importc, libprag.}
+
+proc append*(self: ContextMenu; item: ContextMenuItem) =
+  webkit_context_menu_append(cast[ptr ContextMenu00](self.impl), cast[ptr ContextMenuItem00](item.impl))
+
+proc webkit_context_menu_first(self: ptr ContextMenu00): ptr ContextMenuItem00 {.
+    importc, libprag.}
+
+proc first*(self: ContextMenu): ContextMenuItem =
+  let gobj = webkit_context_menu_first(cast[ptr ContextMenu00](self.impl))
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, webkit2webextension.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+proc webkit_context_menu_get_item_at_position(self: ptr ContextMenu00; position: uint32): ptr ContextMenuItem00 {.
+    importc, libprag.}
+
+proc getItemAtPosition*(self: ContextMenu; position: int): ContextMenuItem =
+  let gobj = webkit_context_menu_get_item_at_position(cast[ptr ContextMenu00](self.impl), uint32(position))
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, webkit2webextension.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+proc webkit_context_menu_get_items(self: ptr ContextMenu00): ptr glib.List {.
+    importc, libprag.}
+
+proc getItems*(self: ContextMenu): seq[ContextMenuItem] =
+  result = glistObjects2seq(ContextMenuItem, webkit_context_menu_get_items(cast[ptr ContextMenu00](self.impl)), false)
+
+proc items*(self: ContextMenu): seq[ContextMenuItem] =
+  result = glistObjects2seq(ContextMenuItem, webkit_context_menu_get_items(cast[ptr ContextMenu00](self.impl)), false)
+
+proc webkit_context_menu_insert(self: ptr ContextMenu00; item: ptr ContextMenuItem00;
+    position: int32) {.
+    importc, libprag.}
+
+proc insert*(self: ContextMenu; item: ContextMenuItem;
+    position: int) =
+  webkit_context_menu_insert(cast[ptr ContextMenu00](self.impl), cast[ptr ContextMenuItem00](item.impl), int32(position))
+
+proc webkit_context_menu_last(self: ptr ContextMenu00): ptr ContextMenuItem00 {.
+    importc, libprag.}
+
+proc last*(self: ContextMenu): ContextMenuItem =
+  let gobj = webkit_context_menu_last(cast[ptr ContextMenu00](self.impl))
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, webkit2webextension.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+proc webkit_context_menu_move_item(self: ptr ContextMenu00; item: ptr ContextMenuItem00;
+    position: int32) {.
+    importc, libprag.}
+
+proc moveItem*(self: ContextMenu; item: ContextMenuItem;
+    position: int) =
+  webkit_context_menu_move_item(cast[ptr ContextMenu00](self.impl), cast[ptr ContextMenuItem00](item.impl), int32(position))
+
+proc webkit_context_menu_prepend(self: ptr ContextMenu00; item: ptr ContextMenuItem00) {.
+    importc, libprag.}
+
+proc prepend*(self: ContextMenu; item: ContextMenuItem) =
+  webkit_context_menu_prepend(cast[ptr ContextMenu00](self.impl), cast[ptr ContextMenuItem00](item.impl))
+
+proc webkit_context_menu_remove(self: ptr ContextMenu00; item: ptr ContextMenuItem00) {.
+    importc, libprag.}
+
+proc remove*(self: ContextMenu; item: ContextMenuItem) =
+  webkit_context_menu_remove(cast[ptr ContextMenu00](self.impl), cast[ptr ContextMenuItem00](item.impl))
+
 type
   ContextMenuAction* {.size: sizeof(cint), pure.} = enum
     noAction = 0
@@ -198,20 +817,124 @@ type
     pasteAsPlainText = 45
     custom = 10000
 
-type
-  ContextMenuItem* = ref object of gobject.InitiallyUnowned
-  ContextMenuItem00* = object of gobject.InitiallyUnowned00
+proc webkit_context_menu_item_new_from_stock_action(action: ContextMenuAction): ptr ContextMenuItem00 {.
+    importc, libprag.}
 
-proc webkit_context_menu_item_get_type*(): GType {.importc, libprag.}
+proc newContextMenuItemFromStockAction*(action: ContextMenuAction): ContextMenuItem =
+  let gobj = webkit_context_menu_item_new_from_stock_action(action)
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, webkit2webextension.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
 
-when defined(gcDestructors):
-  proc `=destroy`*(self: var typeof(ContextMenuItem()[])) =
-    when defined(gintroDebug):
-      echo "destroy ", $typeof(self), ' ', cast[int](unsafeaddr self)
-    g_object_set_qdata(self.impl, Quark, nil)
-    if not self.ignoreFinalizer and self.impl != nil:
-      g_object_remove_toggle_ref(self.impl, toggleNotify, addr(self))
-      self.impl = nil
+proc newContextMenuItemFromStockAction*(tdesc: typedesc; action: ContextMenuAction): tdesc =
+  assert(result is ContextMenuItem)
+  let gobj = webkit_context_menu_item_new_from_stock_action(action)
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, webkit2webextension.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+proc initContextMenuItemFromStockAction*[T](result: var T; action: ContextMenuAction) {.deprecated.} =
+  assert(result is ContextMenuItem)
+  let gobj = webkit_context_menu_item_new_from_stock_action(action)
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, webkit2webextension.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+proc webkit_context_menu_item_new_from_stock_action_with_label(action: ContextMenuAction;
+    label: cstring): ptr ContextMenuItem00 {.
+    importc, libprag.}
+
+proc newContextMenuItemFromStockActionWithLabel*(action: ContextMenuAction;
+    label: cstring): ContextMenuItem =
+  let gobj = webkit_context_menu_item_new_from_stock_action_with_label(action, label)
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, webkit2webextension.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+proc newContextMenuItemFromStockActionWithLabel*(tdesc: typedesc; action: ContextMenuAction;
+    label: cstring): tdesc =
+  assert(result is ContextMenuItem)
+  let gobj = webkit_context_menu_item_new_from_stock_action_with_label(action, label)
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, webkit2webextension.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+proc initContextMenuItemFromStockActionWithLabel*[T](result: var T; action: ContextMenuAction;
+    label: cstring) {.deprecated.} =
+  assert(result is ContextMenuItem)
+  let gobj = webkit_context_menu_item_new_from_stock_action_with_label(action, label)
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, webkit2webextension.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+proc webkit_context_menu_item_get_stock_action(self: ptr ContextMenuItem00): ContextMenuAction {.
+    importc, libprag.}
+
+proc getStockAction*(self: ContextMenuItem): ContextMenuAction =
+  webkit_context_menu_item_get_stock_action(cast[ptr ContextMenuItem00](self.impl))
+
+proc stockAction*(self: ContextMenuItem): ContextMenuAction =
+  webkit_context_menu_item_get_stock_action(cast[ptr ContextMenuItem00](self.impl))
 
 type
   DOMObject* = ref object of gobject.Object
@@ -19833,6 +20556,96 @@ when defined(gcDestructors):
       g_object_remove_toggle_ref(self.impl, toggleNotify, addr(self))
       self.impl = nil
 
+proc webkit_hit_test_result_context_is_editable(self: ptr HitTestResult00): gboolean {.
+    importc, libprag.}
+
+proc contextIsEditable*(self: HitTestResult): bool =
+  toBool(webkit_hit_test_result_context_is_editable(cast[ptr HitTestResult00](self.impl)))
+
+proc webkit_hit_test_result_context_is_image(self: ptr HitTestResult00): gboolean {.
+    importc, libprag.}
+
+proc contextIsImage*(self: HitTestResult): bool =
+  toBool(webkit_hit_test_result_context_is_image(cast[ptr HitTestResult00](self.impl)))
+
+proc webkit_hit_test_result_context_is_link(self: ptr HitTestResult00): gboolean {.
+    importc, libprag.}
+
+proc contextIsLink*(self: HitTestResult): bool =
+  toBool(webkit_hit_test_result_context_is_link(cast[ptr HitTestResult00](self.impl)))
+
+proc webkit_hit_test_result_context_is_media(self: ptr HitTestResult00): gboolean {.
+    importc, libprag.}
+
+proc contextIsMedia*(self: HitTestResult): bool =
+  toBool(webkit_hit_test_result_context_is_media(cast[ptr HitTestResult00](self.impl)))
+
+proc webkit_hit_test_result_context_is_scrollbar(self: ptr HitTestResult00): gboolean {.
+    importc, libprag.}
+
+proc contextIsScrollbar*(self: HitTestResult): bool =
+  toBool(webkit_hit_test_result_context_is_scrollbar(cast[ptr HitTestResult00](self.impl)))
+
+proc webkit_hit_test_result_context_is_selection(self: ptr HitTestResult00): gboolean {.
+    importc, libprag.}
+
+proc contextIsSelection*(self: HitTestResult): bool =
+  toBool(webkit_hit_test_result_context_is_selection(cast[ptr HitTestResult00](self.impl)))
+
+proc webkit_hit_test_result_get_context(self: ptr HitTestResult00): uint32 {.
+    importc, libprag.}
+
+proc getContext*(self: HitTestResult): int =
+  int(webkit_hit_test_result_get_context(cast[ptr HitTestResult00](self.impl)))
+
+proc context*(self: HitTestResult): int =
+  int(webkit_hit_test_result_get_context(cast[ptr HitTestResult00](self.impl)))
+
+proc webkit_hit_test_result_get_image_uri(self: ptr HitTestResult00): cstring {.
+    importc, libprag.}
+
+proc getImageUri*(self: HitTestResult): string =
+  result = $webkit_hit_test_result_get_image_uri(cast[ptr HitTestResult00](self.impl))
+
+proc imageUri*(self: HitTestResult): string =
+  result = $webkit_hit_test_result_get_image_uri(cast[ptr HitTestResult00](self.impl))
+
+proc webkit_hit_test_result_get_link_label(self: ptr HitTestResult00): cstring {.
+    importc, libprag.}
+
+proc getLinkLabel*(self: HitTestResult): string =
+  result = $webkit_hit_test_result_get_link_label(cast[ptr HitTestResult00](self.impl))
+
+proc linkLabel*(self: HitTestResult): string =
+  result = $webkit_hit_test_result_get_link_label(cast[ptr HitTestResult00](self.impl))
+
+proc webkit_hit_test_result_get_link_title(self: ptr HitTestResult00): cstring {.
+    importc, libprag.}
+
+proc getLinkTitle*(self: HitTestResult): string =
+  result = $webkit_hit_test_result_get_link_title(cast[ptr HitTestResult00](self.impl))
+
+proc linkTitle*(self: HitTestResult): string =
+  result = $webkit_hit_test_result_get_link_title(cast[ptr HitTestResult00](self.impl))
+
+proc webkit_hit_test_result_get_link_uri(self: ptr HitTestResult00): cstring {.
+    importc, libprag.}
+
+proc getLinkUri*(self: HitTestResult): string =
+  result = $webkit_hit_test_result_get_link_uri(cast[ptr HitTestResult00](self.impl))
+
+proc linkUri*(self: HitTestResult): string =
+  result = $webkit_hit_test_result_get_link_uri(cast[ptr HitTestResult00](self.impl))
+
+proc webkit_hit_test_result_get_media_uri(self: ptr HitTestResult00): cstring {.
+    importc, libprag.}
+
+proc getMediaUri*(self: HitTestResult): string =
+  result = $webkit_hit_test_result_get_media_uri(cast[ptr HitTestResult00](self.impl))
+
+proc mediaUri*(self: HitTestResult): string =
+  result = $webkit_hit_test_result_get_media_uri(cast[ptr HitTestResult00](self.impl))
+
 type
   WebHitTestResult* = ref object of HitTestResult
   WebHitTestResult00* = object of HitTestResult00
@@ -19898,6 +20711,102 @@ when defined(gcDestructors):
       g_object_remove_toggle_ref(self.impl, toggleNotify, addr(self))
       self.impl = nil
 
+proc webkit_uri_request_new(uri: cstring): ptr URIRequest00 {.
+    importc, libprag.}
+
+proc newURIRequest*(uri: cstring): URIRequest =
+  let gobj = webkit_uri_request_new(uri)
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, webkit2webextension.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    if g_object_is_floating(result.impl).int != 0:
+      discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+proc newURIRequest*(tdesc: typedesc; uri: cstring): tdesc =
+  assert(result is URIRequest)
+  let gobj = webkit_uri_request_new(uri)
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, webkit2webextension.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    if g_object_is_floating(result.impl).int != 0:
+      discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+proc initURIRequest*[T](result: var T; uri: cstring) {.deprecated.} =
+  assert(result is URIRequest)
+  let gobj = webkit_uri_request_new(uri)
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, webkit2webextension.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    if g_object_is_floating(result.impl).int != 0:
+      discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+proc webkit_uri_request_get_http_headers(self: ptr URIRequest00): ptr soup.MessageHeaders00 {.
+    importc, libprag.}
+
+proc getHttpHeaders*(self: URIRequest): soup.MessageHeaders =
+  fnew(result, gBoxedFreeSoupMessageHeaders)
+  result.impl = webkit_uri_request_get_http_headers(cast[ptr URIRequest00](self.impl))
+  result.impl = cast[typeof(result.impl)](g_boxed_copy(soup_message_headers_get_type(), result.impl))
+
+proc httpHeaders*(self: URIRequest): soup.MessageHeaders =
+  fnew(result, gBoxedFreeSoupMessageHeaders)
+  result.impl = webkit_uri_request_get_http_headers(cast[ptr URIRequest00](self.impl))
+  result.impl = cast[typeof(result.impl)](g_boxed_copy(soup_message_headers_get_type(), result.impl))
+
+proc webkit_uri_request_get_http_method(self: ptr URIRequest00): cstring {.
+    importc, libprag.}
+
+proc getHttpMethod*(self: URIRequest): string =
+  result = $webkit_uri_request_get_http_method(cast[ptr URIRequest00](self.impl))
+
+proc httpMethod*(self: URIRequest): string =
+  result = $webkit_uri_request_get_http_method(cast[ptr URIRequest00](self.impl))
+
+proc webkit_uri_request_get_uri(self: ptr URIRequest00): cstring {.
+    importc, libprag.}
+
+proc getUri*(self: URIRequest): string =
+  result = $webkit_uri_request_get_uri(cast[ptr URIRequest00](self.impl))
+
+proc uri*(self: URIRequest): string =
+  result = $webkit_uri_request_get_uri(cast[ptr URIRequest00](self.impl))
+
+proc webkit_uri_request_set_uri(self: ptr URIRequest00; uri: cstring) {.
+    importc, libprag.}
+
+proc setUri*(self: URIRequest; uri: cstring) =
+  webkit_uri_request_set_uri(cast[ptr URIRequest00](self.impl), uri)
+
+proc `uri=`*(self: URIRequest; uri: cstring) =
+  webkit_uri_request_set_uri(cast[ptr URIRequest00](self.impl), uri)
+
 type
   URIResponse* = ref object of gobject.Object
   URIResponse00* = object of gobject.Object00
@@ -19913,6 +20822,64 @@ when defined(gcDestructors):
       g_object_remove_toggle_ref(self.impl, toggleNotify, addr(self))
       self.impl = nil
 
+proc webkit_uri_response_get_content_length(self: ptr URIResponse00): uint64 {.
+    importc, libprag.}
+
+proc getContentLength*(self: URIResponse): uint64 =
+  webkit_uri_response_get_content_length(cast[ptr URIResponse00](self.impl))
+
+proc contentLength*(self: URIResponse): uint64 =
+  webkit_uri_response_get_content_length(cast[ptr URIResponse00](self.impl))
+
+proc webkit_uri_response_get_http_headers(self: ptr URIResponse00): ptr soup.MessageHeaders00 {.
+    importc, libprag.}
+
+proc getHttpHeaders*(self: URIResponse): soup.MessageHeaders =
+  fnew(result, gBoxedFreeSoupMessageHeaders)
+  result.impl = webkit_uri_response_get_http_headers(cast[ptr URIResponse00](self.impl))
+  result.impl = cast[typeof(result.impl)](g_boxed_copy(soup_message_headers_get_type(), result.impl))
+
+proc httpHeaders*(self: URIResponse): soup.MessageHeaders =
+  fnew(result, gBoxedFreeSoupMessageHeaders)
+  result.impl = webkit_uri_response_get_http_headers(cast[ptr URIResponse00](self.impl))
+  result.impl = cast[typeof(result.impl)](g_boxed_copy(soup_message_headers_get_type(), result.impl))
+
+proc webkit_uri_response_get_mime_type(self: ptr URIResponse00): cstring {.
+    importc, libprag.}
+
+proc getMimeType*(self: URIResponse): string =
+  result = $webkit_uri_response_get_mime_type(cast[ptr URIResponse00](self.impl))
+
+proc mimeType*(self: URIResponse): string =
+  result = $webkit_uri_response_get_mime_type(cast[ptr URIResponse00](self.impl))
+
+proc webkit_uri_response_get_status_code(self: ptr URIResponse00): uint32 {.
+    importc, libprag.}
+
+proc getStatusCode*(self: URIResponse): int =
+  int(webkit_uri_response_get_status_code(cast[ptr URIResponse00](self.impl)))
+
+proc statusCode*(self: URIResponse): int =
+  int(webkit_uri_response_get_status_code(cast[ptr URIResponse00](self.impl)))
+
+proc webkit_uri_response_get_suggested_filename(self: ptr URIResponse00): cstring {.
+    importc, libprag.}
+
+proc getSuggestedFilename*(self: URIResponse): string =
+  result = $webkit_uri_response_get_suggested_filename(cast[ptr URIResponse00](self.impl))
+
+proc suggestedFilename*(self: URIResponse): string =
+  result = $webkit_uri_response_get_suggested_filename(cast[ptr URIResponse00](self.impl))
+
+proc webkit_uri_response_get_uri(self: ptr URIResponse00): cstring {.
+    importc, libprag.}
+
+proc getUri*(self: URIResponse): string =
+  result = $webkit_uri_response_get_uri(cast[ptr URIResponse00](self.impl))
+
+proc uri*(self: URIResponse): string =
+  result = $webkit_uri_response_get_uri(cast[ptr URIResponse00](self.impl))
+
 type
   UserMessage* = ref object of gobject.InitiallyUnowned
   UserMessage00* = object of gobject.InitiallyUnowned00
@@ -19927,6 +20894,189 @@ when defined(gcDestructors):
     if not self.ignoreFinalizer and self.impl != nil:
       g_object_remove_toggle_ref(self.impl, toggleNotify, addr(self))
       self.impl = nil
+
+proc webkit_user_message_new(name: cstring; parameters: ptr glib.Variant00): ptr UserMessage00 {.
+    importc, libprag.}
+
+proc newUserMessage*(name: cstring; parameters: glib.Variant = nil): UserMessage =
+  let gobj = webkit_user_message_new(name, if parameters.isNil: nil else: cast[ptr glib.Variant00](parameters.impl))
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, webkit2webextension.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+proc newUserMessage*(tdesc: typedesc; name: cstring; parameters: glib.Variant = nil): tdesc =
+  assert(result is UserMessage)
+  let gobj = webkit_user_message_new(name, if parameters.isNil: nil else: cast[ptr glib.Variant00](parameters.impl))
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, webkit2webextension.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+proc initUserMessage*[T](result: var T; name: cstring; parameters: glib.Variant = nil) {.deprecated.} =
+  assert(result is UserMessage)
+  let gobj = webkit_user_message_new(name, if parameters.isNil: nil else: cast[ptr glib.Variant00](parameters.impl))
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, webkit2webextension.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+proc webkit_user_message_new_with_fd_list(name: cstring; parameters: ptr glib.Variant00;
+    fdList: ptr gio.UnixFDList00): ptr UserMessage00 {.
+    importc, libprag.}
+
+proc newUserMessageWithFdList*(name: cstring; parameters: glib.Variant = nil;
+    fdList: gio.UnixFDList = nil): UserMessage =
+  let gobj = webkit_user_message_new_with_fd_list(name, if parameters.isNil: nil else: cast[ptr glib.Variant00](parameters.impl), if fdList.isNil: nil else: cast[ptr gio.UnixFDList00](fdList.impl))
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, webkit2webextension.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+proc newUserMessageWithFdList*(tdesc: typedesc; name: cstring; parameters: glib.Variant = nil;
+    fdList: gio.UnixFDList = nil): tdesc =
+  assert(result is UserMessage)
+  let gobj = webkit_user_message_new_with_fd_list(name, if parameters.isNil: nil else: cast[ptr glib.Variant00](parameters.impl), if fdList.isNil: nil else: cast[ptr gio.UnixFDList00](fdList.impl))
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, webkit2webextension.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+proc initUserMessageWithFdList*[T](result: var T; name: cstring; parameters: glib.Variant = nil;
+    fdList: gio.UnixFDList = nil) {.deprecated.} =
+  assert(result is UserMessage)
+  let gobj = webkit_user_message_new_with_fd_list(name, if parameters.isNil: nil else: cast[ptr glib.Variant00](parameters.impl), if fdList.isNil: nil else: cast[ptr gio.UnixFDList00](fdList.impl))
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, webkit2webextension.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+proc webkit_user_message_get_fd_list(self: ptr UserMessage00): ptr gio.UnixFDList00 {.
+    importc, libprag.}
+
+proc getFdList*(self: UserMessage): gio.UnixFDList =
+  let gobj = webkit_user_message_get_fd_list(cast[ptr UserMessage00](self.impl))
+  if gobj.isNil:
+    return nil
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, gio.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+proc fdList*(self: UserMessage): gio.UnixFDList =
+  let gobj = webkit_user_message_get_fd_list(cast[ptr UserMessage00](self.impl))
+  if gobj.isNil:
+    return nil
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, gio.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+proc webkit_user_message_get_name(self: ptr UserMessage00): cstring {.
+    importc, libprag.}
+
+proc getName*(self: UserMessage): string =
+  result = $webkit_user_message_get_name(cast[ptr UserMessage00](self.impl))
+
+proc name*(self: UserMessage): string =
+  result = $webkit_user_message_get_name(cast[ptr UserMessage00](self.impl))
+
+proc webkit_user_message_get_parameters(self: ptr UserMessage00): ptr glib.Variant00 {.
+    importc, libprag.}
+
+proc getParameters*(self: UserMessage): glib.Variant =
+  let impl0 = webkit_user_message_get_parameters(cast[ptr UserMessage00](self.impl))
+  if impl0.isNil:
+    return nil
+  fnew(result, finalizerunref)
+  result.impl = impl0
+  result.ignoreFinalizer = true # GVariant
+
+proc parameters*(self: UserMessage): glib.Variant =
+  let impl0 = webkit_user_message_get_parameters(cast[ptr UserMessage00](self.impl))
+  if impl0.isNil:
+    return nil
+  fnew(result, finalizerunref)
+  result.impl = impl0
+  result.ignoreFinalizer = true # GVariant
+
+proc webkit_user_message_send_reply(self: ptr UserMessage00; reply: ptr UserMessage00) {.
+    importc, libprag.}
+
+proc sendReply*(self: UserMessage; reply: UserMessage) =
+  webkit_user_message_send_reply(cast[ptr UserMessage00](self.impl), cast[ptr UserMessage00](reply.impl))
 
 type
   WebPage* = ref object of gobject.Object

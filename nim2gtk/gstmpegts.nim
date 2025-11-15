@@ -1314,13 +1314,13 @@ proc gst_mpegts_descriptor_parse_dvb_service(self: ptr Descriptor00; serviceType
 
 proc parseDvbService*(self: Descriptor; serviceType: var DVBServiceType = cast[var DVBServiceType](nil);
     serviceName: var string = cast[var string](nil); providerName: var string = cast[var string](nil)): bool =
-  var serviceName_00: cstring
   var providerName_00: cstring
+  var serviceName_00: cstring
   result = toBool(gst_mpegts_descriptor_parse_dvb_service(cast[ptr Descriptor00](self.impl), serviceType, serviceName_00, providerName_00))
-  if serviceName.addr != nil:
-    serviceName = $(serviceName_00)
   if providerName.addr != nil:
     providerName = $(providerName_00)
+  if serviceName.addr != nil:
+    serviceName = $(serviceName_00)
 
 proc gst_mpegts_descriptor_parse_dvb_service_list(self: ptr Descriptor00;
     list: var ptr PtrArray00): gboolean {.
@@ -1335,16 +1335,16 @@ proc gst_mpegts_descriptor_parse_dvb_short_event(self: ptr Descriptor00;
 
 proc parseDvbShortEvent*(self: Descriptor; languageCode: var string = cast[var string](nil);
     eventName: var string = cast[var string](nil); text: var string = cast[var string](nil)): bool =
-  var languageCode_00: cstring
-  var text_00: cstring
   var eventName_00: cstring
+  var text_00: cstring
+  var languageCode_00: cstring
   result = toBool(gst_mpegts_descriptor_parse_dvb_short_event(cast[ptr Descriptor00](self.impl), languageCode_00, eventName_00, text_00))
-  if languageCode.addr != nil:
-    languageCode = $(languageCode_00)
-  if text.addr != nil:
-    text = $(text_00)
   if eventName.addr != nil:
     eventName = $(eventName_00)
+  if text.addr != nil:
+    text = $(text_00)
+  if languageCode.addr != nil:
+    languageCode = $(languageCode_00)
 
 proc gst_mpegts_descriptor_parse_dvb_stream_identifier(self: ptr Descriptor00;
     componentTag: var uint8): gboolean {.
@@ -1418,14 +1418,14 @@ proc gst_mpegts_descriptor_parse_registration(self: ptr Descriptor00; registrati
 
 proc parseRegistration*(self: Descriptor; registrationId: var int;
     additionalInfo: var seq[uint8] = cast[var seq[uint8]](nil); additionalInfoLength: var uint64 = cast[var uint64](nil)): bool =
-  var registrationId_00: uint32
   var additionalInfo_00: ptr uint8
+  var registrationId_00: uint32
   result = toBool(gst_mpegts_descriptor_parse_registration(cast[ptr Descriptor00](self.impl), registrationId_00, additionalInfo_00, additionalInfoLength))
-  if registrationId.addr != nil:
-    registrationId = int(registrationId_00)
   additionalInfo.setLen(additionalInfoLength)
   copyMem(unsafeaddr additionalInfo[0], additionalInfo_00, additionalInfoLength.int * sizeof(additionalInfo[0]))
   cogfree(additionalInfo_00)
+  if registrationId.addr != nil:
+    registrationId = int(registrationId_00)
 
 proc gst_mpegts_descriptor_from_custom(tag: uint8; data: ptr uint8; length: uint64): ptr Descriptor00 {.
     importc, libprag.}

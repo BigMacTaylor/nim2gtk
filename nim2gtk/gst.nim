@@ -3658,13 +3658,13 @@ proc gst_buffer_find_memory(self: ptr Buffer00; offset: uint64; size: uint64;
 
 proc findMemory*(self: Buffer; offset: uint64; size: uint64; idx: var int;
     length: var int; skip: var uint64): bool =
-  var length_00: uint32
   var idx_00: uint32
+  var length_00: uint32
   result = toBool(gst_buffer_find_memory(cast[ptr Buffer00](self.impl), offset, size, idx_00, length_00, skip))
-  if length.addr != nil:
-    length = int(length_00)
   if idx.addr != nil:
     idx = int(idx_00)
+  if length.addr != nil:
+    length = int(length_00)
 
 proc gst_buffer_get_all_memory(self: ptr Buffer00): ptr Memory00 {.
     importc, libprag.}
@@ -6539,13 +6539,13 @@ proc gst_query_parse_buffering_percent(self: ptr Query00; busy: var gboolean;
 
 proc parseBufferingPercent*(self: Query; busy: var bool = cast[var bool](nil);
     percent: var int = cast[var int](nil)) =
-  var percent_00: int32
   var busy_00: gboolean
+  var percent_00: int32
   gst_query_parse_buffering_percent(cast[ptr Query00](self.impl), busy_00, percent_00)
-  if percent.addr != nil:
-    percent = int(percent_00)
   if busy.addr != nil:
     busy = toBool(busy_00)
+  if percent.addr != nil:
+    percent = int(percent_00)
 
 proc gst_query_parse_caps(self: ptr Query00; filter: var ptr Caps00) {.
     importc, libprag.}
@@ -6960,13 +6960,13 @@ proc gst_query_parse_buffering_stats(self: ptr Query00; mode: var BufferingMode;
 proc parseBufferingStats*(self: Query; mode: var BufferingMode = cast[var BufferingMode](nil);
     avgIn: var int = cast[var int](nil); avgOut: var int = cast[var int](nil);
     bufferingLeft: var int64 = cast[var int64](nil)) =
-  var avgOut_00: int32
   var avgIn_00: int32
+  var avgOut_00: int32
   gst_query_parse_buffering_stats(cast[ptr Query00](self.impl), mode, avgIn_00, avgOut_00, bufferingLeft)
-  if avgOut.addr != nil:
-    avgOut = int(avgOut_00)
   if avgIn.addr != nil:
     avgIn = int(avgIn_00)
+  if avgOut.addr != nil:
+    avgOut = int(avgOut_00)
 
 proc gst_query_set_buffering_stats(self: ptr Query00; mode: BufferingMode;
     avgIn: int32; avgOut: int32; bufferingLeft: int64) {.
@@ -7100,16 +7100,16 @@ proc configGetParams*(config: Structure; caps: var Caps = cast[var Caps](nil);
     maxBuffers: var int = cast[var int](nil)): bool =
   if addr(caps) != nil:
     fnew(caps, gBoxedFreeGstCaps)
+  var size_00: uint32
   var minBuffers_00: uint32
   var maxBuffers_00: uint32
-  var size_00: uint32
   result = toBool(gst_buffer_pool_config_get_params(cast[ptr Structure00](config.impl), cast[var ptr Caps00](if addr(caps) == nil: nil else: addr caps.impl), size_00, minBuffers_00, maxBuffers_00))
+  if size.addr != nil:
+    size = int(size_00)
   if minBuffers.addr != nil:
     minBuffers = int(minBuffers_00)
   if maxBuffers.addr != nil:
     maxBuffers = int(maxBuffers_00)
-  if size.addr != nil:
-    size = int(size_00)
   if caps != nil and caps.impl == nil:
     caps.ignoreFinalizer = true
     caps = nil
@@ -7225,16 +7225,16 @@ proc parseNthAllocationPool*(self: Query; index: int; pool: var BufferPool = cas
     size: var int = cast[var int](nil); minBuffers: var int = cast[var int](nil);
     maxBuffers: var int = cast[var int](nil)) =
   var tmpoutgobjectarg: ptr BufferPool00
+  var size_00: uint32
   var minBuffers_00: uint32
   var maxBuffers_00: uint32
-  var size_00: uint32
   gst_query_parse_nth_allocation_pool(cast[ptr Query00](self.impl), uint32(index), cast[var ptr BufferPool00](if addr(pool) == nil: nil else: addr tmpoutgobjectarg), size_00, minBuffers_00, maxBuffers_00)
+  if size.addr != nil:
+    size = int(size_00)
   if minBuffers.addr != nil:
     minBuffers = int(minBuffers_00)
   if maxBuffers.addr != nil:
     maxBuffers = int(maxBuffers_00)
-  if size.addr != nil:
-    size = int(size_00)
 #  dothemagic(pool
   if addr(pool) != nil:
     pool = nil
@@ -7305,16 +7305,16 @@ proc gst_query_parse_scheduling(self: ptr Query00; flags: var SchedulingFlags;
 proc parseScheduling*(self: Query; flags: var SchedulingFlags = cast[var SchedulingFlags](nil);
     minsize: var int = cast[var int](nil); maxsize: var int = cast[var int](nil);
     align: var int = cast[var int](nil)) =
-  var align_00: int32
   var maxsize_00: int32
   var minsize_00: int32
+  var align_00: int32
   gst_query_parse_scheduling(cast[ptr Query00](self.impl), flags, minsize_00, maxsize_00, align_00)
-  if align.addr != nil:
-    align = int(align_00)
   if maxsize.addr != nil:
     maxsize = int(maxsize_00)
   if minsize.addr != nil:
     minsize = int(minsize_00)
+  if align.addr != nil:
+    align = int(align_00)
 
 proc gst_query_set_scheduling(self: ptr Query00; flags: SchedulingFlags;
     minsize: int32; maxsize: int32; align: int32) {.
@@ -13689,13 +13689,13 @@ proc gst_message_parse_buffering_stats(self: ptr Message00; mode: var BufferingM
 proc parseBufferingStats*(self: Message; mode: var BufferingMode = cast[var BufferingMode](nil);
     avgIn: var int = cast[var int](nil); avgOut: var int = cast[var int](nil);
     bufferingLeft: var int64 = cast[var int64](nil)) =
-  var avgOut_00: int32
   var avgIn_00: int32
+  var avgOut_00: int32
   gst_message_parse_buffering_stats(cast[ptr Message00](self.impl), mode, avgIn_00, avgOut_00, bufferingLeft)
-  if avgOut.addr != nil:
-    avgOut = int(avgOut_00)
   if avgIn.addr != nil:
     avgIn = int(avgIn_00)
+  if avgOut.addr != nil:
+    avgOut = int(avgOut_00)
 
 proc gst_message_parse_clock_lost(self: ptr Message00; clock: var ptr Clock00) {.
     importc, libprag.}
@@ -14210,16 +14210,16 @@ proc parseStepDone*(self: Message; format: var Format = cast[var Format](nil);
     amount: var uint64 = cast[var uint64](nil); rate: var cdouble = cast[var cdouble](nil);
     flush: var bool = cast[var bool](nil); intermediate: var bool = cast[var bool](nil);
     duration: var uint64 = cast[var uint64](nil); eos: var bool = cast[var bool](nil)) =
+  var eos_00: gboolean
   var intermediate_00: gboolean
   var flush_00: gboolean
-  var eos_00: gboolean
   gst_message_parse_step_done(cast[ptr Message00](self.impl), format, amount, rate, flush_00, intermediate_00, duration, eos_00)
+  if eos.addr != nil:
+    eos = toBool(eos_00)
   if intermediate.addr != nil:
     intermediate = toBool(intermediate_00)
   if flush.addr != nil:
     flush = toBool(flush_00)
-  if eos.addr != nil:
-    eos = toBool(eos_00)
 
 proc gst_message_parse_step_start(self: ptr Message00; active: var gboolean;
     format: var Format; amount: var uint64; rate: var cdouble; flush: var gboolean;
@@ -14231,15 +14231,15 @@ proc parseStepStart*(self: Message; active: var bool = cast[var bool](nil);
     rate: var cdouble = cast[var cdouble](nil); flush: var bool = cast[var bool](nil);
     intermediate: var bool = cast[var bool](nil)) =
   var intermediate_00: gboolean
-  var flush_00: gboolean
   var active_00: gboolean
+  var flush_00: gboolean
   gst_message_parse_step_start(cast[ptr Message00](self.impl), active_00, format, amount, rate, flush_00, intermediate_00)
   if intermediate.addr != nil:
     intermediate = toBool(intermediate_00)
-  if flush.addr != nil:
-    flush = toBool(flush_00)
   if active.addr != nil:
     active = toBool(active_00)
+  if flush.addr != nil:
+    flush = toBool(flush_00)
 
 proc gst_message_parse_stream_collection(self: ptr Message00; collection: var ptr StreamCollection00) {.
     importc, libprag.}
@@ -14963,13 +14963,13 @@ proc gst_message_parse_progress(self: ptr Message00; `type`: var ProgressType;
 
 proc parseProgress*(self: Message; `type`: var ProgressType = cast[var ProgressType](nil);
     code: var string = cast[var string](nil); text: var string = cast[var string](nil)) =
-  var code_00: cstring
   var text_00: cstring
+  var code_00: cstring
   gst_message_parse_progress(cast[ptr Message00](self.impl), `type`, code_00, text_00)
-  if code.addr != nil:
-    code = $(code_00)
   if text.addr != nil:
     text = $(text_00)
+  if code.addr != nil:
+    code = $(code_00)
 
 proc gst_bus_add_watch_full*(self: ptr Bus00; priority: int32; `func`: BusFunc;
     userData: pointer; notify: DestroyNotify): uint32 {.
@@ -18548,13 +18548,13 @@ proc gst_util_double_to_fraction(src: cdouble; destN: var int32; destD: var int3
     importc, libprag.}
 
 proc utilDoubleToFraction*(src: cdouble; destN: var int; destD: var int) =
-  var destD_00: int32
   var destN_00: int32
+  var destD_00: int32
   gst_util_double_to_fraction(src, destN_00, destD_00)
-  if destD.addr != nil:
-    destD = int(destD_00)
   if destN.addr != nil:
     destN = int(destN_00)
+  if destD.addr != nil:
+    destD = int(destD_00)
 
 proc gst_util_dump_buffer(buf: ptr Buffer00) {.
     importc, libprag.}
@@ -18581,13 +18581,13 @@ proc gst_util_fraction_add(aN: int32; aD: int32; bN: int32; bD: int32; resN: var
 
 proc utilFractionAdd*(aN: int; aD: int; bN: int; bD: int; resN: var int;
     resD: var int): bool =
-  var resN_00: int32
   var resD_00: int32
+  var resN_00: int32
   result = toBool(gst_util_fraction_add(int32(aN), int32(aD), int32(bN), int32(bD), resN_00, resD_00))
-  if resN.addr != nil:
-    resN = int(resN_00)
   if resD.addr != nil:
     resD = int(resD_00)
+  if resN.addr != nil:
+    resN = int(resN_00)
 
 proc gst_util_fraction_compare(aN: int32; aD: int32; bN: int32; bD: int32): int32 {.
     importc, libprag.}
@@ -18601,13 +18601,13 @@ proc gst_util_fraction_multiply(aN: int32; aD: int32; bN: int32; bD: int32;
 
 proc utilFractionMultiply*(aN: int; aD: int; bN: int; bD: int; resN: var int;
     resD: var int): bool =
-  var resN_00: int32
   var resD_00: int32
+  var resN_00: int32
   result = toBool(gst_util_fraction_multiply(int32(aN), int32(aD), int32(bN), int32(bD), resN_00, resD_00))
-  if resN.addr != nil:
-    resN = int(resN_00)
   if resD.addr != nil:
     resD = int(resD_00)
+  if resN.addr != nil:
+    resN = int(resN_00)
 
 proc gst_util_fraction_to_double(srcN: int32; srcD: int32; dest: var cdouble) {.
     importc, libprag.}
@@ -18993,19 +18993,19 @@ proc gst_version(major: var uint32; minor: var uint32; micro: var uint32;
     importc, libprag.}
 
 proc version*(major: var int; minor: var int; micro: var int; nano: var int) =
-  var nano_00: uint32
   var major_00: uint32
   var minor_00: uint32
   var micro_00: uint32
+  var nano_00: uint32
   gst_version(major_00, minor_00, micro_00, nano_00)
-  if nano.addr != nil:
-    nano = int(nano_00)
   if major.addr != nil:
     major = int(major_00)
   if minor.addr != nil:
     minor = int(minor_00)
   if micro.addr != nil:
     micro = int(micro_00)
+  if nano.addr != nil:
+    nano = int(nano_00)
 
 proc gst_version_string(): cstring {.
     importc, libprag.}

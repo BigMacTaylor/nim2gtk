@@ -983,13 +983,13 @@ proc gst_base_sink_query_latency(self: ptr BaseSink00; live: var gboolean;
 proc queryLatency*(self: BaseSink; live: var bool = cast[var bool](nil);
     upstreamLive: var bool = cast[var bool](nil); minLatency: var uint64 = cast[var uint64](nil);
     maxLatency: var uint64 = cast[var uint64](nil)): bool =
-  var upstreamLive_00: gboolean
   var live_00: gboolean
+  var upstreamLive_00: gboolean
   result = toBool(gst_base_sink_query_latency(cast[ptr BaseSink00](self.impl), live_00, upstreamLive_00, minLatency, maxLatency))
-  if upstreamLive.addr != nil:
-    upstreamLive = toBool(upstreamLive_00)
   if live.addr != nil:
     live = toBool(live_00)
+  if upstreamLive.addr != nil:
+    upstreamLive = toBool(upstreamLive_00)
 
 proc gst_base_sink_set_async_enabled(self: ptr BaseSink00; enabled: gboolean) {.
     importc, libprag.}
@@ -1861,27 +1861,27 @@ proc gst_byte_reader_dup_data(self: ptr ByteReader00; size: var uint32; val: var
     importc, libprag.}
 
 proc dupData*(self: ByteReader; size: var int; val: var (seq[uint8] | string)): bool =
-  var val_00: ptr uint8
   var size_00: uint32
+  var val_00: ptr uint8
   result = toBool(gst_byte_reader_dup_data(cast[ptr ByteReader00](self.impl), size_00, val_00))
+  if size.addr != nil:
+    size = int(size_00)
   val.setLen(size)
   copyMem(unsafeaddr val[0], val_00, size.int * sizeof(val[0]))
   cogfree(val_00)
-  if size.addr != nil:
-    size = int(size_00)
 
 proc gst_byte_reader_get_data(self: ptr ByteReader00; size: var uint32; val: var ptr uint8): gboolean {.
     importc, libprag.}
 
 proc getData*(self: ByteReader; size: var int; val: var (seq[uint8] | string)): bool =
-  var val_00: ptr uint8
   var size_00: uint32
+  var val_00: ptr uint8
   result = toBool(gst_byte_reader_get_data(cast[ptr ByteReader00](self.impl), size_00, val_00))
+  if size.addr != nil:
+    size = int(size_00)
   val.setLen(size)
   copyMem(unsafeaddr val[0], val_00, size.int * sizeof(val[0]))
   cogfree(val_00)
-  if size.addr != nil:
-    size = int(size_00)
 
 proc gst_byte_reader_get_float32_be(self: ptr ByteReader00; val: var cfloat): gboolean {.
     importc, libprag.}
@@ -2108,14 +2108,14 @@ proc gst_byte_reader_peek_data(self: ptr ByteReader00; size: var uint32;
     importc, libprag.}
 
 proc peekData*(self: ByteReader; size: var int; val: var (seq[uint8] | string)): bool =
-  var val_00: ptr uint8
   var size_00: uint32
+  var val_00: ptr uint8
   result = toBool(gst_byte_reader_peek_data(cast[ptr ByteReader00](self.impl), size_00, val_00))
+  if size.addr != nil:
+    size = int(size_00)
   val.setLen(size)
   copyMem(unsafeaddr val[0], val_00, size.int * sizeof(val[0]))
   cogfree(val_00)
-  if size.addr != nil:
-    size = int(size_00)
 
 proc gst_byte_reader_peek_float32_be(self: ptr ByteReader00; val: var cfloat): gboolean {.
     importc, libprag.}

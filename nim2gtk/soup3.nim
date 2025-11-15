@@ -5862,4 +5862,4 @@ proc websocketServerProcessHandshake*(msg: ServerMessage; expectedOrigin: cstrin
 
 # Extern interfaces: (we don't use converters, but explicit procs for now.)
 
-proc pollableInputStream*(x: soup.MultipartInputStream): gio.PollableInputStream = cast[gio.PollableInputStream](x)
+proc pollableInputStream*(x: soup3.MultipartInputStream): gio.PollableInputStream = cast[gio.PollableInputStream](x)

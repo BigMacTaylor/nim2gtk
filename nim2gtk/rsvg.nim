@@ -526,7 +526,7 @@ type
     flagUnlimited = 0
     flagKeepImageData = 1
 
-  HandleFlags* {.size: sizeof(cint).} = set[HandleFlag]
+  HandleFlags* = set[HandleFlag]
 
 const
   HandleFlagsFlagsNone* = HandleFlags({})

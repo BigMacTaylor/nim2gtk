@@ -759,19 +759,19 @@ proc gst_player_video_overlay_video_renderer_get_render_rectangle(self: ptr Play
 proc getRenderRectangle*(self: PlayerVideoOverlayVideoRenderer;
     x: var int = cast[var int](nil); y: var int = cast[var int](nil); width: var int = cast[var int](nil);
     height: var int = cast[var int](nil)) =
-  var width_00: int32
-  var y_00: int32
   var x_00: int32
   var height_00: int32
+  var y_00: int32
+  var width_00: int32
   gst_player_video_overlay_video_renderer_get_render_rectangle(cast[ptr PlayerVideoOverlayVideoRenderer00](self.impl), x_00, y_00, width_00, height_00)
-  if width.addr != nil:
-    width = int(width_00)
-  if y.addr != nil:
-    y = int(y_00)
   if x.addr != nil:
     x = int(x_00)
   if height.addr != nil:
     height = int(height_00)
+  if y.addr != nil:
+    y = int(y_00)
+  if width.addr != nil:
+    width = int(width_00)
 
 proc gst_player_video_overlay_video_renderer_get_window_handle(self: ptr PlayerVideoOverlayVideoRenderer00): pointer {.
     importc, libprag.}
@@ -1362,13 +1362,13 @@ proc gst_player_video_info_get_pixel_aspect_ratio(self: ptr PlayerVideoInfo00;
 
 proc getPixelAspectRatio*(self: PlayerVideoInfo;
     parN: var int; parD: var int) =
-  var parN_00: uint32
   var parD_00: uint32
+  var parN_00: uint32
   gst_player_video_info_get_pixel_aspect_ratio(cast[ptr PlayerVideoInfo00](self.impl), parN_00, parD_00)
-  if parN.addr != nil:
-    parN = int(parN_00)
   if parD.addr != nil:
     parD = int(parD_00)
+  if parN.addr != nil:
+    parN = int(parN_00)
 
 proc gst_player_video_info_get_width(self: ptr PlayerVideoInfo00): int32 {.
     importc, libprag.}

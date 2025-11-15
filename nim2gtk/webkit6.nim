@@ -1,31 +1,30 @@
 # dependencies:
-# HarfBuzz-0.0
-# GdkPixbuf-2.0
-# xlib-2.0
-# freetype2-2.0
-# JavaScriptCore-4.1
-# GLib-2.0
-# Soup-3.0
 # GModule-2.0
-# Gtk-3.0
-# cairo-1.0
+# HarfBuzz-0.0
+# JavaScriptCore-6.0
 # GObject-2.0
-# Gdk-3.0
+# Gdk-4.0
+# Gsk-4.0
+# freetype2-2.0
+# Soup-3.0
+# GLib-2.0
+# cairo-1.0
+# Gtk-4.0
 # Gio-2.0
-# Atk-1.0
 # Pango-1.0
+# Graphene-1.0
+# PangoCairo-1.0
+# GdkPixbuf-2.0
 # immediate dependencies:
 # Soup-3.0
-# JavaScriptCore-4.1
-# Gtk-3.0
+# JavaScriptCore-6.0
+# Gtk-4.0
 # libraries:
-# libwebkit2gtk-4.1.so.0,libjavascriptcoregtk-4.1.so.0
+# libwebkitgtk-6.0.so.4,libjavascriptcoregtk-6.0.so.1
 {.warning[UnusedImport]: off.}
-import harfbuzz, gdkpixbuf, xlib, freetype2, javascriptcore, glib, soup3, gmodule, gtk, cairo, gobject, gdk, gio, atk, pango
-const Lib = "libwebkit2gtk-4.1.so.0"
+import gmodule, harfbuzz, javascriptcore6, gobject, gdk4, gsk, freetype2, soup3, glib, cairo, gtk4, gio, pango, graphene, pangocairo, gdkpixbuf
+const Lib = "libwebkitgtk-6.0.so.4"
 {.pragma: libprag, cdecl, dynlib: Lib.}
-from atk import ImplementorIface
-
 
 proc finalizeGObject*[T](o: ref T) =
   if not o.ignoreFinalizer:
@@ -535,12 +534,6 @@ proc protocol*(self: SecurityOrigin): string =
     return
   result = $resul0
 
-proc webkit_security_origin_is_opaque(self: ptr SecurityOrigin00): gboolean {.
-    importc, libprag.}
-
-proc isOpaque*(self: SecurityOrigin): bool =
-  toBool(webkit_security_origin_is_opaque(cast[ptr SecurityOrigin00](self.impl)))
-
 proc webkit_security_origin_ref(self: ptr SecurityOrigin00): ptr SecurityOrigin00 {.
     importc, libprag.}
 
@@ -592,8 +585,8 @@ type
     tab = 1
 
 type
-  WebViewBase* = ref object of gtk.Container
-  WebViewBase00* = object of gtk.Container00
+  WebViewBase* = ref object of gtk4.Widget
+  WebViewBase00* = object of gtk4.Widget00
 
 proc webkit_web_view_base_get_type*(): GType {.importc, libprag.}
 
@@ -631,7 +624,7 @@ proc newContextMenu*(): ContextMenu =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -649,7 +642,7 @@ proc newContextMenu*(tdesc: typedesc): tdesc =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -667,7 +660,7 @@ proc initContextMenu*[T](result: var T) {.deprecated.} =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -677,18 +670,18 @@ proc initContextMenu*[T](result: var T) {.deprecated.} =
     assert(g_object_get_qdata(result.impl, Quark) == nil)
     g_object_set_qdata(result.impl, Quark, addr(result[]))
 
-proc webkit_context_menu_get_event(self: ptr ContextMenu00): ptr gdk.Event00 {.
+proc webkit_context_menu_get_event(self: ptr ContextMenu00): ptr gdk4.Event00 {.
     importc, libprag.}
 
-proc getEvent*(self: ContextMenu): gdk.Event =
-  fnew(result, gBoxedFreeGdkEvent)
+proc getEvent*(self: ContextMenu): gdk4.Event =
+  fnew(result, generic_gdk_event_unref)
   result.impl = webkit_context_menu_get_event(cast[ptr ContextMenu00](self.impl))
-  result.impl = cast[typeof(result.impl)](g_boxed_copy(gdk_event_get_type(), result.impl))
+  result.impl = cast[typeof(result.impl)](gdk_event_ref(result.impl))
 
-proc event*(self: ContextMenu): gdk.Event =
-  fnew(result, gBoxedFreeGdkEvent)
+proc event*(self: ContextMenu): gdk4.Event =
+  fnew(result, generic_gdk_event_unref)
   result.impl = webkit_context_menu_get_event(cast[ptr ContextMenu00](self.impl))
-  result.impl = cast[typeof(result.impl)](g_boxed_copy(gdk_event_get_type(), result.impl))
+  result.impl = cast[typeof(result.impl)](gdk_event_ref(result.impl))
 
 proc webkit_context_menu_get_n_items(self: ptr ContextMenu00): uint32 {.
     importc, libprag.}
@@ -976,127 +969,6 @@ type
   PermissionRequest* = ref object of gobject.Object
 
 type
-  PrintCustomWidget* = ref object of gobject.Object
-  PrintCustomWidget00* = object of gobject.Object00
-
-proc webkit_print_custom_widget_get_type*(): GType {.importc, libprag.}
-
-when defined(gcDestructors):
-  proc `=destroy`*(self: var typeof(PrintCustomWidget()[])) =
-    when defined(gintroDebug):
-      echo "destroy ", $typeof(self), ' ', cast[int](unsafeaddr self)
-    g_object_set_qdata(self.impl, Quark, nil)
-    if not self.ignoreFinalizer and self.impl != nil:
-      g_object_remove_toggle_ref(self.impl, toggleNotify, addr(self))
-      self.impl = nil
-
-proc scApply*(self: PrintCustomWidget;  p: proc (self: ptr gobject.Object00; xdata: pointer) {.cdecl.}, xdata: pointer, cf: gobject.ConnectFlags): culong =
-  g_signal_connect_data(self.impl, "apply", cast[GCallback](p), xdata, nil, cf)
-
-proc scUpdate*(self: PrintCustomWidget;  p: proc (self: ptr PrintCustomWidget00; pageSetup: ptr gtk.PageSetup00; printSettings: ptr gtk.PrintSettings00; xdata: pointer) {.cdecl.}, xdata: pointer, cf: gobject.ConnectFlags): culong =
-  g_signal_connect_data(self.impl, "update", cast[GCallback](p), xdata, nil, cf)
-
-proc webkit_print_custom_widget_new(widget: ptr gtk.Widget00; title: cstring): ptr PrintCustomWidget00 {.
-    importc, libprag.}
-
-proc newPrintCustomWidget*(widget: gtk.Widget; title: cstring): PrintCustomWidget {.deprecated.}  =
-  let gobj = webkit_print_custom_widget_new(cast[ptr gtk.Widget00](widget.impl), title)
-  let qdata = g_object_get_qdata(gobj, Quark)
-  if qdata != nil:
-    result = cast[type(result)](qdata)
-    assert(result.impl == gobj)
-  else:
-    fnew(result, webkit2.finalizeGObject)
-    result.impl = gobj
-    GC_ref(result)
-    if g_object_is_floating(result.impl).int != 0:
-      discard g_object_ref_sink(result.impl)
-    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
-    g_object_unref(result.impl)
-    assert(g_object_get_qdata(result.impl, Quark) == nil)
-    g_object_set_qdata(result.impl, Quark, addr(result[]))
-
-proc newPrintCustomWidget*(tdesc: typedesc; widget: gtk.Widget; title: cstring): tdesc {.deprecated.}  =
-  assert(result is PrintCustomWidget)
-  let gobj = webkit_print_custom_widget_new(cast[ptr gtk.Widget00](widget.impl), title)
-  let qdata = g_object_get_qdata(gobj, Quark)
-  if qdata != nil:
-    result = cast[type(result)](qdata)
-    assert(result.impl == gobj)
-  else:
-    fnew(result, webkit2.finalizeGObject)
-    result.impl = gobj
-    GC_ref(result)
-    if g_object_is_floating(result.impl).int != 0:
-      discard g_object_ref_sink(result.impl)
-    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
-    g_object_unref(result.impl)
-    assert(g_object_get_qdata(result.impl, Quark) == nil)
-    g_object_set_qdata(result.impl, Quark, addr(result[]))
-
-proc initPrintCustomWidget*[T](result: var T; widget: gtk.Widget; title: cstring) {.deprecated.} =
-  assert(result is PrintCustomWidget)
-  let gobj = webkit_print_custom_widget_new(cast[ptr gtk.Widget00](widget.impl), title)
-  let qdata = g_object_get_qdata(gobj, Quark)
-  if qdata != nil:
-    result = cast[type(result)](qdata)
-    assert(result.impl == gobj)
-  else:
-    fnew(result, webkit2.finalizeGObject)
-    result.impl = gobj
-    GC_ref(result)
-    if g_object_is_floating(result.impl).int != 0:
-      discard g_object_ref_sink(result.impl)
-    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
-    g_object_unref(result.impl)
-    assert(g_object_get_qdata(result.impl, Quark) == nil)
-    g_object_set_qdata(result.impl, Quark, addr(result[]))
-
-proc webkit_print_custom_widget_get_title(self: ptr PrintCustomWidget00): cstring {.
-    importc, libprag.}
-
-proc getTitle*(self: PrintCustomWidget): string =
-  result = $webkit_print_custom_widget_get_title(cast[ptr PrintCustomWidget00](self.impl))
-
-proc title*(self: PrintCustomWidget): string =
-  result = $webkit_print_custom_widget_get_title(cast[ptr PrintCustomWidget00](self.impl))
-
-proc webkit_print_custom_widget_get_widget(self: ptr PrintCustomWidget00): ptr gtk.Widget00 {.
-    importc, libprag.}
-
-proc getWidget*(self: PrintCustomWidget): gtk.Widget =
-  let gobj = webkit_print_custom_widget_get_widget(cast[ptr PrintCustomWidget00](self.impl))
-  let qdata = g_object_get_qdata(gobj, Quark)
-  if qdata != nil:
-    result = cast[type(result)](qdata)
-    assert(result.impl == gobj)
-  else:
-    fnew(result, gtk.finalizeGObject)
-    result.impl = gobj
-    GC_ref(result)
-    discard g_object_ref_sink(result.impl)
-    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
-    g_object_unref(result.impl)
-    assert(g_object_get_qdata(result.impl, Quark) == nil)
-    g_object_set_qdata(result.impl, Quark, addr(result[]))
-
-proc widget*(self: PrintCustomWidget): gtk.Widget =
-  let gobj = webkit_print_custom_widget_get_widget(cast[ptr PrintCustomWidget00](self.impl))
-  let qdata = g_object_get_qdata(gobj, Quark)
-  if qdata != nil:
-    result = cast[type(result)](qdata)
-    assert(result.impl == gobj)
-  else:
-    fnew(result, gtk.finalizeGObject)
-    result.impl = gobj
-    GC_ref(result)
-    discard g_object_ref_sink(result.impl)
-    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
-    g_object_unref(result.impl)
-    assert(g_object_get_qdata(result.impl, Quark) == nil)
-    g_object_set_qdata(result.impl, Quark, addr(result[]))
-
-type
   PrintOperation* = ref object of gobject.Object
   PrintOperation00* = object of gobject.Object00
 
@@ -1111,26 +983,23 @@ when defined(gcDestructors):
       g_object_remove_toggle_ref(self.impl, toggleNotify, addr(self))
       self.impl = nil
 
-proc scCreateCustomWidget*(self: PrintOperation;  p: proc (self: ptr PrintOperation00; xdata: pointer): ptr PrintCustomWidget00 {.cdecl.}, xdata: pointer, cf: gobject.ConnectFlags): culong =
-  g_signal_connect_data(self.impl, "create-custom-widget", cast[GCallback](p), xdata, nil, cf)
-
 proc scFailed*(self: PrintOperation;  p: proc (self: ptr PrintOperation00; error: ptr glib.Error; xdata: pointer) {.cdecl.}, xdata: pointer, cf: gobject.ConnectFlags): culong =
   g_signal_connect_data(self.impl, "failed", cast[GCallback](p), xdata, nil, cf)
 
 proc scFinished*(self: PrintOperation;  p: proc (self: ptr gobject.Object00; xdata: pointer) {.cdecl.}, xdata: pointer, cf: gobject.ConnectFlags): culong =
   g_signal_connect_data(self.impl, "finished", cast[GCallback](p), xdata, nil, cf)
 
-proc webkit_print_operation_get_page_setup(self: ptr PrintOperation00): ptr gtk.PageSetup00 {.
+proc webkit_print_operation_get_page_setup(self: ptr PrintOperation00): ptr gtk4.PageSetup00 {.
     importc, libprag.}
 
-proc getPageSetup*(self: PrintOperation): gtk.PageSetup =
+proc getPageSetup*(self: PrintOperation): gtk4.PageSetup =
   let gobj = webkit_print_operation_get_page_setup(cast[ptr PrintOperation00](self.impl))
   let qdata = g_object_get_qdata(gobj, Quark)
   if qdata != nil:
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, gtk.finalizeGObject)
+    fnew(result, gtk4.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -1139,14 +1008,14 @@ proc getPageSetup*(self: PrintOperation): gtk.PageSetup =
     assert(g_object_get_qdata(result.impl, Quark) == nil)
     g_object_set_qdata(result.impl, Quark, addr(result[]))
 
-proc pageSetup*(self: PrintOperation): gtk.PageSetup =
+proc pageSetup*(self: PrintOperation): gtk4.PageSetup =
   let gobj = webkit_print_operation_get_page_setup(cast[ptr PrintOperation00](self.impl))
   let qdata = g_object_get_qdata(gobj, Quark)
   if qdata != nil:
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, gtk.finalizeGObject)
+    fnew(result, gtk4.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -1155,17 +1024,17 @@ proc pageSetup*(self: PrintOperation): gtk.PageSetup =
     assert(g_object_get_qdata(result.impl, Quark) == nil)
     g_object_set_qdata(result.impl, Quark, addr(result[]))
 
-proc webkit_print_operation_get_print_settings(self: ptr PrintOperation00): ptr gtk.PrintSettings00 {.
+proc webkit_print_operation_get_print_settings(self: ptr PrintOperation00): ptr gtk4.PrintSettings00 {.
     importc, libprag.}
 
-proc getPrintSettings*(self: PrintOperation): gtk.PrintSettings =
+proc getPrintSettings*(self: PrintOperation): gtk4.PrintSettings =
   let gobj = webkit_print_operation_get_print_settings(cast[ptr PrintOperation00](self.impl))
   let qdata = g_object_get_qdata(gobj, Quark)
   if qdata != nil:
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, gtk.finalizeGObject)
+    fnew(result, gtk4.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -1174,14 +1043,14 @@ proc getPrintSettings*(self: PrintOperation): gtk.PrintSettings =
     assert(g_object_get_qdata(result.impl, Quark) == nil)
     g_object_set_qdata(result.impl, Quark, addr(result[]))
 
-proc printSettings*(self: PrintOperation): gtk.PrintSettings =
+proc printSettings*(self: PrintOperation): gtk4.PrintSettings =
   let gobj = webkit_print_operation_get_print_settings(cast[ptr PrintOperation00](self.impl))
   let qdata = g_object_get_qdata(gobj, Quark)
   if qdata != nil:
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, gtk.finalizeGObject)
+    fnew(result, gtk4.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -1196,24 +1065,24 @@ proc webkit_print_operation_print(self: ptr PrintOperation00) {.
 proc print*(self: PrintOperation) =
   webkit_print_operation_print(cast[ptr PrintOperation00](self.impl))
 
-proc webkit_print_operation_set_page_setup(self: ptr PrintOperation00; pageSetup: ptr gtk.PageSetup00) {.
+proc webkit_print_operation_set_page_setup(self: ptr PrintOperation00; pageSetup: ptr gtk4.PageSetup00) {.
     importc, libprag.}
 
-proc setPageSetup*(self: PrintOperation; pageSetup: gtk.PageSetup) =
-  webkit_print_operation_set_page_setup(cast[ptr PrintOperation00](self.impl), cast[ptr gtk.PageSetup00](pageSetup.impl))
+proc setPageSetup*(self: PrintOperation; pageSetup: gtk4.PageSetup) =
+  webkit_print_operation_set_page_setup(cast[ptr PrintOperation00](self.impl), cast[ptr gtk4.PageSetup00](pageSetup.impl))
 
-proc `pageSetup=`*(self: PrintOperation; pageSetup: gtk.PageSetup) =
-  webkit_print_operation_set_page_setup(cast[ptr PrintOperation00](self.impl), cast[ptr gtk.PageSetup00](pageSetup.impl))
+proc `pageSetup=`*(self: PrintOperation; pageSetup: gtk4.PageSetup) =
+  webkit_print_operation_set_page_setup(cast[ptr PrintOperation00](self.impl), cast[ptr gtk4.PageSetup00](pageSetup.impl))
 
 proc webkit_print_operation_set_print_settings(self: ptr PrintOperation00;
-    printSettings: ptr gtk.PrintSettings00) {.
+    printSettings: ptr gtk4.PrintSettings00) {.
     importc, libprag.}
 
-proc setPrintSettings*(self: PrintOperation; printSettings: gtk.PrintSettings) =
-  webkit_print_operation_set_print_settings(cast[ptr PrintOperation00](self.impl), cast[ptr gtk.PrintSettings00](printSettings.impl))
+proc setPrintSettings*(self: PrintOperation; printSettings: gtk4.PrintSettings) =
+  webkit_print_operation_set_print_settings(cast[ptr PrintOperation00](self.impl), cast[ptr gtk4.PrintSettings00](printSettings.impl))
 
-proc `printSettings=`*(self: PrintOperation; printSettings: gtk.PrintSettings) =
-  webkit_print_operation_set_print_settings(cast[ptr PrintOperation00](self.impl), cast[ptr gtk.PrintSettings00](printSettings.impl))
+proc `printSettings=`*(self: PrintOperation; printSettings: gtk4.PrintSettings) =
+  webkit_print_operation_set_print_settings(cast[ptr PrintOperation00](self.impl), cast[ptr gtk4.PrintSettings00](printSettings.impl))
 
 type
   PermissionStateQuery00* {.pure.} = object
@@ -1298,11 +1167,11 @@ type
     print = 0
     cancel = 1
 
-proc webkit_print_operation_run_dialog(self: ptr PrintOperation00; parent: ptr gtk.Window00): PrintOperationResponse {.
+proc webkit_print_operation_run_dialog(self: ptr PrintOperation00; parent: ptr gtk4.Window00): PrintOperationResponse {.
     importc, libprag.}
 
-proc runDialog*(self: PrintOperation; parent: gtk.Window = nil): PrintOperationResponse =
-  webkit_print_operation_run_dialog(cast[ptr PrintOperation00](self.impl), if parent.isNil: nil else: cast[ptr gtk.Window00](parent.impl))
+proc runDialog*(self: PrintOperation; parent: gtk4.Window = nil): PrintOperationResponse =
+  webkit_print_operation_run_dialog(cast[ptr PrintOperation00](self.impl), if parent.isNil: nil else: cast[ptr gtk4.Window00](parent.impl))
 
 type
   UserMediaPermissionRequest* = ref object of gobject.Object
@@ -1312,45 +1181,6 @@ proc webkit_user_media_permission_request_get_type*(): GType {.importc, libprag.
 
 when defined(gcDestructors):
   proc `=destroy`*(self: var typeof(UserMediaPermissionRequest()[])) =
-    when defined(gintroDebug):
-      echo "destroy ", $typeof(self), ' ', cast[int](unsafeaddr self)
-    g_object_set_qdata(self.impl, Quark, nil)
-    if not self.ignoreFinalizer and self.impl != nil:
-      g_object_remove_toggle_ref(self.impl, toggleNotify, addr(self))
-      self.impl = nil
-
-type
-  InstallMissingMediaPluginsPermissionRequest* = ref object of gobject.Object
-  InstallMissingMediaPluginsPermissionRequest00* = object of gobject.Object00
-
-proc webkit_install_missing_media_plugins_permission_request_get_type*(): GType {.importc, libprag.}
-
-when defined(gcDestructors):
-  proc `=destroy`*(self: var typeof(InstallMissingMediaPluginsPermissionRequest()[])) =
-    when defined(gintroDebug):
-      echo "destroy ", $typeof(self), ' ', cast[int](unsafeaddr self)
-    g_object_set_qdata(self.impl, Quark, nil)
-    if not self.ignoreFinalizer and self.impl != nil:
-      g_object_remove_toggle_ref(self.impl, toggleNotify, addr(self))
-      self.impl = nil
-
-proc webkit_install_missing_media_plugins_permission_request_get_description(self: ptr InstallMissingMediaPluginsPermissionRequest00): cstring {.
-    importc, libprag.}
-
-proc getDescription*(self: InstallMissingMediaPluginsPermissionRequest): string =
-  result = $webkit_install_missing_media_plugins_permission_request_get_description(cast[ptr InstallMissingMediaPluginsPermissionRequest00](self.impl))
-
-proc description*(self: InstallMissingMediaPluginsPermissionRequest): string =
-  result = $webkit_install_missing_media_plugins_permission_request_get_description(cast[ptr InstallMissingMediaPluginsPermissionRequest00](self.impl))
-
-type
-  MediaKeySystemPermissionRequest* = ref object of gobject.Object
-  MediaKeySystemPermissionRequest00* = object of gobject.Object00
-
-proc webkit_media_key_system_permission_request_get_type*(): GType {.importc, libprag.}
-
-when defined(gcDestructors):
-  proc `=destroy`*(self: var typeof(MediaKeySystemPermissionRequest()[])) =
     when defined(gintroDebug):
       echo "destroy ", $typeof(self), ' ', cast[int](unsafeaddr self)
     g_object_set_qdata(self.impl, Quark, nil)
@@ -1405,6 +1235,21 @@ proc getRequestingDomain*(self: WebsiteDataAccessPermissionRequest): string =
 
 proc requestingDomain*(self: WebsiteDataAccessPermissionRequest): string =
   result = $webkit_website_data_access_permission_request_get_requesting_domain(cast[ptr WebsiteDataAccessPermissionRequest00](self.impl))
+
+type
+  MediaKeySystemPermissionRequest* = ref object of gobject.Object
+  MediaKeySystemPermissionRequest00* = object of gobject.Object00
+
+proc webkit_media_key_system_permission_request_get_type*(): GType {.importc, libprag.}
+
+when defined(gcDestructors):
+  proc `=destroy`*(self: var typeof(MediaKeySystemPermissionRequest()[])) =
+    when defined(gintroDebug):
+      echo "destroy ", $typeof(self), ' ', cast[int](unsafeaddr self)
+    g_object_set_qdata(self.impl, Quark, nil)
+    if not self.ignoreFinalizer and self.impl != nil:
+      g_object_remove_toggle_ref(self.impl, toggleNotify, addr(self))
+      self.impl = nil
 
 type
   DeviceInfoPermissionRequest* = ref object of gobject.Object
@@ -1469,13 +1314,13 @@ when defined(gcDestructors):
 proc webkit_permission_request_allow(self: ptr PermissionRequest00) {.
     importc, libprag.}
 
-proc allow*(self: PermissionRequest | UserMediaPermissionRequest | InstallMissingMediaPluginsPermissionRequest | MediaKeySystemPermissionRequest | NotificationPermissionRequest | WebsiteDataAccessPermissionRequest | DeviceInfoPermissionRequest | PointerLockPermissionRequest | GeolocationPermissionRequest | ClipboardPermissionRequest) =
+proc allow*(self: PermissionRequest | UserMediaPermissionRequest | NotificationPermissionRequest | WebsiteDataAccessPermissionRequest | MediaKeySystemPermissionRequest | DeviceInfoPermissionRequest | PointerLockPermissionRequest | GeolocationPermissionRequest | ClipboardPermissionRequest) =
   webkit_permission_request_allow(cast[ptr PermissionRequest00](self.impl))
 
 proc webkit_permission_request_deny(self: ptr PermissionRequest00) {.
     importc, libprag.}
 
-proc deny*(self: PermissionRequest | UserMediaPermissionRequest | InstallMissingMediaPluginsPermissionRequest | MediaKeySystemPermissionRequest | NotificationPermissionRequest | WebsiteDataAccessPermissionRequest | DeviceInfoPermissionRequest | PointerLockPermissionRequest | GeolocationPermissionRequest | ClipboardPermissionRequest) =
+proc deny*(self: PermissionRequest | UserMediaPermissionRequest | NotificationPermissionRequest | WebsiteDataAccessPermissionRequest | MediaKeySystemPermissionRequest | DeviceInfoPermissionRequest | PointerLockPermissionRequest | GeolocationPermissionRequest | ClipboardPermissionRequest) =
   webkit_permission_request_deny(cast[ptr PermissionRequest00](self.impl))
 
 type
@@ -1503,7 +1348,7 @@ proc newWebsitePolicies*(): WebsitePolicies =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -1521,7 +1366,7 @@ proc newWebsitePolicies*(tdesc: typedesc): tdesc =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -1539,7 +1384,7 @@ proc initWebsitePolicies*[T](result: var T) {.deprecated.} =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -1614,7 +1459,7 @@ proc newURIRequest*(uri: cstring): URIRequest =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -1632,7 +1477,7 @@ proc newURIRequest*(tdesc: typedesc; uri: cstring): tdesc =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -1650,7 +1495,7 @@ proc initURIRequest*[T](result: var T; uri: cstring) {.deprecated.} =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -1710,7 +1555,7 @@ proc getRequest*(self: NavigationAction): URIRequest =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -1726,7 +1571,7 @@ proc request*(self: NavigationAction): URIRequest =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -1832,9 +1677,6 @@ proc scFailedWithTlsErrors*(self: WebResource;  p: proc (self: ptr WebResource00
 proc scFinished*(self: WebResource;  p: proc (self: ptr gobject.Object00; xdata: pointer) {.cdecl.}, xdata: pointer, cf: gobject.ConnectFlags): culong =
   g_signal_connect_data(self.impl, "finished", cast[GCallback](p), xdata, nil, cf)
 
-proc scReceivedData*(self: WebResource;  p: proc (self: ptr WebResource00; dataLength: uint64; xdata: pointer) {.cdecl.}, xdata: pointer, cf: gobject.ConnectFlags): culong =
-  g_signal_connect_data(self.impl, "received-data", cast[GCallback](p), xdata, nil, cf)
-
 proc scSentRequest*(self: WebResource;  p: proc (self: ptr WebResource00; request: ptr URIRequest00; redirectedResponse: ptr URIResponse00; xdata: pointer) {.cdecl.}, xdata: pointer, cf: gobject.ConnectFlags): culong =
   g_signal_connect_data(self.impl, "sent-request", cast[GCallback](p), xdata, nil, cf)
 
@@ -1871,7 +1713,7 @@ proc getResponse*(self: WebResource): URIResponse =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -1887,7 +1729,7 @@ proc response*(self: WebResource): URIResponse =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -1936,34 +1778,34 @@ proc finish*(self: ColorChooserRequest) =
   webkit_color_chooser_request_finish(cast[ptr ColorChooserRequest00](self.impl))
 
 proc webkit_color_chooser_request_get_element_rectangle(self: ptr ColorChooserRequest00;
-    rect: var gdk.Rectangle) {.
+    rect: var gdk4.Rectangle) {.
     importc, libprag.}
 
 proc getElementRectangle*(self: ColorChooserRequest;
-    rect: var gdk.Rectangle) =
+    rect: var gdk4.Rectangle) =
   webkit_color_chooser_request_get_element_rectangle(cast[ptr ColorChooserRequest00](self.impl), rect)
 
-proc getElementRectangle*(self: ColorChooserRequest): gdk.Rectangle =
+proc getElementRectangle*(self: ColorChooserRequest): gdk4.Rectangle =
   webkit_color_chooser_request_get_element_rectangle(cast[ptr ColorChooserRequest00](self.impl), result)
 
 proc webkit_color_chooser_request_get_rgba(self: ptr ColorChooserRequest00;
-    rgba: var gdk.RGBA) {.
+    rgba: var gdk4.RGBA) {.
     importc, libprag.}
 
-proc getRgba*(self: ColorChooserRequest; rgba: var gdk.RGBA) =
+proc getRgba*(self: ColorChooserRequest; rgba: var gdk4.RGBA) =
   webkit_color_chooser_request_get_rgba(cast[ptr ColorChooserRequest00](self.impl), rgba)
 
-proc getRgba*(self: ColorChooserRequest): gdk.RGBA =
+proc getRgba*(self: ColorChooserRequest): gdk4.RGBA =
   webkit_color_chooser_request_get_rgba(cast[ptr ColorChooserRequest00](self.impl), result)
 
 proc webkit_color_chooser_request_set_rgba(self: ptr ColorChooserRequest00;
-    rgba: gdk.RGBA) {.
+    rgba: gdk4.RGBA) {.
     importc, libprag.}
 
-proc setRgba*(self: ColorChooserRequest; rgba: gdk.RGBA) =
+proc setRgba*(self: ColorChooserRequest; rgba: gdk4.RGBA) =
   webkit_color_chooser_request_set_rgba(cast[ptr ColorChooserRequest00](self.impl), rgba)
 
-proc `rgba=`*(self: ColorChooserRequest; rgba: gdk.RGBA) =
+proc `rgba=`*(self: ColorChooserRequest; rgba: gdk4.RGBA) =
   webkit_color_chooser_request_set_rgba(cast[ptr ColorChooserRequest00](self.impl), rgba)
 
 type
@@ -1996,17 +1838,17 @@ proc getMimeTypes*(self: FileChooserRequest): seq[string] =
 proc mimeTypes*(self: FileChooserRequest): seq[string] =
   cstringArrayToSeq(webkit_file_chooser_request_get_mime_types(cast[ptr FileChooserRequest00](self.impl)))
 
-proc webkit_file_chooser_request_get_mime_types_filter(self: ptr FileChooserRequest00): ptr gtk.FileFilter00 {.
+proc webkit_file_chooser_request_get_mime_types_filter(self: ptr FileChooserRequest00): ptr gtk4.FileFilter00 {.
     importc, libprag.}
 
-proc getMimeTypesFilter*(self: FileChooserRequest): gtk.FileFilter =
+proc getMimeTypesFilter*(self: FileChooserRequest): gtk4.FileFilter =
   let gobj = webkit_file_chooser_request_get_mime_types_filter(cast[ptr FileChooserRequest00](self.impl))
   let qdata = g_object_get_qdata(gobj, Quark)
   if qdata != nil:
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, gtk.finalizeGObject)
+    fnew(result, gtk4.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -2015,14 +1857,14 @@ proc getMimeTypesFilter*(self: FileChooserRequest): gtk.FileFilter =
     assert(g_object_get_qdata(result.impl, Quark) == nil)
     g_object_set_qdata(result.impl, Quark, addr(result[]))
 
-proc mimeTypesFilter*(self: FileChooserRequest): gtk.FileFilter =
+proc mimeTypesFilter*(self: FileChooserRequest): gtk4.FileFilter =
   let gobj = webkit_file_chooser_request_get_mime_types_filter(cast[ptr FileChooserRequest00](self.impl))
   let qdata = g_object_get_qdata(gobj, Quark)
   if qdata != nil:
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, gtk.finalizeGObject)
+    fnew(result, gtk4.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -2240,18 +2082,18 @@ proc webkit_option_menu_close(self: ptr OptionMenu00) {.
 proc close*(self: OptionMenu) =
   webkit_option_menu_close(cast[ptr OptionMenu00](self.impl))
 
-proc webkit_option_menu_get_event(self: ptr OptionMenu00): ptr gdk.Event00 {.
+proc webkit_option_menu_get_event(self: ptr OptionMenu00): ptr gdk4.Event00 {.
     importc, libprag.}
 
-proc getEvent*(self: OptionMenu): gdk.Event =
-  fnew(result, gBoxedFreeGdkEvent)
+proc getEvent*(self: OptionMenu): gdk4.Event =
+  fnew(result, generic_gdk_event_unref)
   result.impl = webkit_option_menu_get_event(cast[ptr OptionMenu00](self.impl))
-  result.impl = cast[typeof(result.impl)](g_boxed_copy(gdk_event_get_type(), result.impl))
+  result.impl = cast[typeof(result.impl)](gdk_event_ref(result.impl))
 
-proc event*(self: OptionMenu): gdk.Event =
-  fnew(result, gBoxedFreeGdkEvent)
+proc event*(self: OptionMenu): gdk4.Event =
+  fnew(result, generic_gdk_event_unref)
   result.impl = webkit_option_menu_get_event(cast[ptr OptionMenu00](self.impl))
-  result.impl = cast[typeof(result.impl)](g_boxed_copy(gdk_event_get_type(), result.impl))
+  result.impl = cast[typeof(result.impl)](gdk_event_ref(result.impl))
 
 proc webkit_option_menu_get_n_items(self: ptr OptionMenu00): uint32 {.
     importc, libprag.}
@@ -2282,15 +2124,6 @@ when defined(gcDestructors):
     if not self.ignoreFinalizer and self.impl != nil:
       g_object_remove_toggle_ref(self.impl, toggleNotify, addr(self))
       self.impl = nil
-
-proc webkit_form_submission_request_get_text_fields(self: ptr FormSubmissionRequest00): ptr HashTable00 {.
-    importc, libprag.}
-
-proc getTextFields*(self: FormSubmissionRequest): ptr HashTable00 =
-  webkit_form_submission_request_get_text_fields(cast[ptr FormSubmissionRequest00](self.impl))
-
-proc textFields*(self: FormSubmissionRequest): ptr HashTable00 =
-  webkit_form_submission_request_get_text_fields(cast[ptr FormSubmissionRequest00](self.impl))
 
 proc webkit_form_submission_request_list_text_fields(self: ptr FormSubmissionRequest00;
     fieldNames: var ptr PtrArray00; fieldValues: var ptr PtrArray00): gboolean {.
@@ -2331,7 +2164,7 @@ proc newUserMessage*(name: cstring; parameters: glib.Variant = nil): UserMessage
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -2348,7 +2181,7 @@ proc newUserMessage*(tdesc: typedesc; name: cstring; parameters: glib.Variant = 
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -2365,7 +2198,7 @@ proc initUserMessage*[T](result: var T; name: cstring; parameters: glib.Variant 
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -2386,7 +2219,7 @@ proc newUserMessageWithFdList*(name: cstring; parameters: glib.Variant = nil;
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -2404,7 +2237,7 @@ proc newUserMessageWithFdList*(tdesc: typedesc; name: cstring; parameters: glib.
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -2422,7 +2255,7 @@ proc initUserMessageWithFdList*[T](result: var T; name: cstring; parameters: gli
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -2531,13 +2364,13 @@ proc scAuthenticate*(self: WebView;  p: proc (self: ptr WebView00; request: ptr 
 proc scClose*(self: WebView;  p: proc (self: ptr gobject.Object00; xdata: pointer) {.cdecl.}, xdata: pointer, cf: gobject.ConnectFlags): culong =
   g_signal_connect_data(self.impl, "close", cast[GCallback](p), xdata, nil, cf)
 
-proc scContextMenu*(self: WebView;  p: proc (self: ptr WebView00; contextMenu: ptr ContextMenu00; event: ptr gdk.Event00; hitTestResult: ptr HitTestResult00; xdata: pointer): gboolean {.cdecl.}, xdata: pointer, cf: gobject.ConnectFlags): culong =
+proc scContextMenu*(self: WebView;  p: proc (self: ptr WebView00; contextMenu: ptr ContextMenu00; hitTestResult: ptr HitTestResult00; xdata: pointer): gboolean {.cdecl.}, xdata: pointer, cf: gobject.ConnectFlags): culong =
   g_signal_connect_data(self.impl, "context-menu", cast[GCallback](p), xdata, nil, cf)
 
 proc scContextMenuDismissed*(self: WebView;  p: proc (self: ptr gobject.Object00; xdata: pointer) {.cdecl.}, xdata: pointer, cf: gobject.ConnectFlags): culong =
   g_signal_connect_data(self.impl, "context-menu-dismissed", cast[GCallback](p), xdata, nil, cf)
 
-proc scCreate*(self: WebView;  p: proc (self: ptr WebView00; navigationAction: ptr NavigationAction00; xdata: pointer): ptr gtk.Widget00 {.cdecl.}, xdata: pointer, cf: gobject.ConnectFlags): culong =
+proc scCreate*(self: WebView;  p: proc (self: ptr WebView00; navigationAction: ptr NavigationAction00; xdata: pointer): ptr gtk4.Widget00 {.cdecl.}, xdata: pointer, cf: gobject.ConnectFlags): culong =
   g_signal_connect_data(self.impl, "create", cast[GCallback](p), xdata, nil, cf)
 
 proc scDecidePolicy*(self: WebView;  p: proc (self: ptr WebView00; decision: ptr PolicyDecision00; decisionType: PolicyDecisionType; xdata: pointer): gboolean {.cdecl.}, xdata: pointer, cf: gobject.ConnectFlags): culong =
@@ -2594,7 +2427,7 @@ proc scScriptDialog*(self: WebView;  p: proc (self: ptr WebView00; dialog: ptr S
 proc scShowNotification*(self: WebView;  p: proc (self: ptr WebView00; notification: ptr Notification00; xdata: pointer): gboolean {.cdecl.}, xdata: pointer, cf: gobject.ConnectFlags): culong =
   g_signal_connect_data(self.impl, "show-notification", cast[GCallback](p), xdata, nil, cf)
 
-proc scShowOptionMenu*(self: WebView;  p: proc (self: ptr WebView00; menu: ptr OptionMenu00; event: ptr gdk.Event00; rectangle: gdk.Rectangle; xdata: pointer): gboolean {.cdecl.}, xdata: pointer, cf: gobject.ConnectFlags): culong =
+proc scShowOptionMenu*(self: WebView;  p: proc (self: ptr WebView00; menu: ptr OptionMenu00; rectangle: gdk4.Rectangle; xdata: pointer): gboolean {.cdecl.}, xdata: pointer, cf: gobject.ConnectFlags): culong =
   g_signal_connect_data(self.impl, "show-option-menu", cast[GCallback](p), xdata, nil, cf)
 
 proc scSubmitForm*(self: WebView;  p: proc (self: ptr WebView00; request: ptr FormSubmissionRequest00; xdata: pointer) {.cdecl.}, xdata: pointer, cf: gobject.ConnectFlags): culong =
@@ -2602,9 +2435,6 @@ proc scSubmitForm*(self: WebView;  p: proc (self: ptr WebView00; request: ptr Fo
 
 proc scUserMessageReceived*(self: WebView;  p: proc (self: ptr WebView00; message: ptr UserMessage00; xdata: pointer): gboolean {.cdecl.}, xdata: pointer, cf: gobject.ConnectFlags): culong =
   g_signal_connect_data(self.impl, "user-message-received", cast[GCallback](p), xdata, nil, cf)
-
-proc scWebProcessCrashed*(self: WebView;  p: proc (self: ptr WebView00; xdata: pointer): gboolean {.cdecl.}, xdata: pointer, cf: gobject.ConnectFlags): culong =
-  g_signal_connect_data(self.impl, "web-process-crashed", cast[GCallback](p), xdata, nil, cf)
 
 proc scWebProcessTerminated*(self: WebView;  p: proc (self: ptr WebView00; reason: WebProcessTerminationReason; xdata: pointer) {.cdecl.}, xdata: pointer, cf: gobject.ConnectFlags): culong =
   g_signal_connect_data(self.impl, "web-process-terminated", cast[GCallback](p), xdata, nil, cf)
@@ -2619,7 +2449,7 @@ proc newWebView*(): WebView =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, gtk.finalizeGObject)
+    fnew(result, gtk4.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -2636,7 +2466,7 @@ proc newWebView*(tdesc: typedesc): tdesc =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, gtk.finalizeGObject)
+    fnew(result, gtk4.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -2653,66 +2483,10 @@ proc initWebView*[T](result: var T) {.deprecated.} =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, gtk.finalizeGObject)
+    fnew(result, gtk4.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
-    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
-    g_object_unref(result.impl)
-    assert(g_object_get_qdata(result.impl, Quark) == nil)
-    g_object_set_qdata(result.impl, Quark, addr(result[]))
-
-proc webkit_web_view_new_with_related_view(webView: ptr WebView00): ptr WebView00 {.
-    importc, libprag.}
-
-proc newWebViewWithRelatedView*(webView: WebView): WebView =
-  let gobj = webkit_web_view_new_with_related_view(cast[ptr WebView00](webView.impl))
-  let qdata = g_object_get_qdata(gobj, Quark)
-  if qdata != nil:
-    result = cast[type(result)](qdata)
-    assert(result.impl == gobj)
-  else:
-    fnew(result, gtk.finalizeGObject)
-    result.impl = gobj
-    GC_ref(result)
-    if g_object_is_floating(result.impl).int != 0:
-      discard g_object_ref_sink(result.impl)
-    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
-    g_object_unref(result.impl)
-    assert(g_object_get_qdata(result.impl, Quark) == nil)
-    g_object_set_qdata(result.impl, Quark, addr(result[]))
-
-proc newWebViewWithRelatedView*(tdesc: typedesc; webView: WebView): tdesc =
-  assert(result is WebView)
-  let gobj = webkit_web_view_new_with_related_view(cast[ptr WebView00](webView.impl))
-  let qdata = g_object_get_qdata(gobj, Quark)
-  if qdata != nil:
-    result = cast[type(result)](qdata)
-    assert(result.impl == gobj)
-  else:
-    fnew(result, gtk.finalizeGObject)
-    result.impl = gobj
-    GC_ref(result)
-    if g_object_is_floating(result.impl).int != 0:
-      discard g_object_ref_sink(result.impl)
-    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
-    g_object_unref(result.impl)
-    assert(g_object_get_qdata(result.impl, Quark) == nil)
-    g_object_set_qdata(result.impl, Quark, addr(result[]))
-
-proc initWebViewWithRelatedView*[T](result: var T; webView: WebView) {.deprecated.} =
-  assert(result is WebView)
-  let gobj = webkit_web_view_new_with_related_view(cast[ptr WebView00](webView.impl))
-  let qdata = g_object_get_qdata(gobj, Quark)
-  if qdata != nil:
-    result = cast[type(result)](qdata)
-    assert(result.impl == gobj)
-  else:
-    fnew(result, gtk.finalizeGObject)
-    result.impl = gobj
-    GC_ref(result)
-    if g_object_is_floating(result.impl).int != 0:
-      discard g_object_ref_sink(result.impl)
     g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
     g_object_unref(result.impl)
     assert(g_object_get_qdata(result.impl, Quark) == nil)
@@ -2731,11 +2505,11 @@ proc callAsyncJavascriptFunction*(self: WebView; body: cstring;
   webkit_web_view_call_async_javascript_function(cast[ptr WebView00](self.impl), body, length, if arguments.isNil: nil else: cast[ptr glib.Variant00](arguments.impl), worldName, sourceUri, if cancellable.isNil: nil else: cast[ptr gio.Cancellable00](cancellable.impl), callback, userData)
 
 proc webkit_web_view_call_async_javascript_function_finish(self: ptr WebView00;
-    resu: ptr gio.AsyncResult00; error: ptr ptr glib.Error = nil): ptr javascriptcore.Value00 {.
+    resu: ptr gio.AsyncResult00; error: ptr ptr glib.Error = nil): ptr javascriptcore6.Value00 {.
     importc, libprag.}
 
 proc callAsyncJavascriptFunctionFinish*(self: WebView;
-    resu: gio.AsyncResult): javascriptcore.Value =
+    resu: gio.AsyncResult): javascriptcore6.Value =
   var gerror: ptr glib.Error
   let gobj = webkit_web_view_call_async_javascript_function_finish(cast[ptr WebView00](self.impl), cast[ptr gio.AsyncResult00](resu.impl), addr gerror)
   if gerror != nil:
@@ -2747,7 +2521,7 @@ proc callAsyncJavascriptFunctionFinish*(self: WebView;
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -2807,10 +2581,10 @@ proc evaluateJavascript*(self: WebView; script: cstring;
   webkit_web_view_evaluate_javascript(cast[ptr WebView00](self.impl), script, length, worldName, sourceUri, if cancellable.isNil: nil else: cast[ptr gio.Cancellable00](cancellable.impl), callback, userData)
 
 proc webkit_web_view_evaluate_javascript_finish(self: ptr WebView00; resu: ptr gio.AsyncResult00;
-    error: ptr ptr glib.Error = nil): ptr javascriptcore.Value00 {.
+    error: ptr ptr glib.Error = nil): ptr javascriptcore6.Value00 {.
     importc, libprag.}
 
-proc evaluateJavascriptFinish*(self: WebView; resu: gio.AsyncResult): javascriptcore.Value =
+proc evaluateJavascriptFinish*(self: WebView; resu: gio.AsyncResult): javascriptcore6.Value =
   var gerror: ptr glib.Error
   let gobj = webkit_web_view_evaluate_javascript_finish(cast[ptr WebView00](self.impl), cast[ptr gio.AsyncResult00](resu.impl), addr gerror)
   if gerror != nil:
@@ -2822,7 +2596,7 @@ proc evaluateJavascriptFinish*(self: WebView; resu: gio.AsyncResult): javascript
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -2855,13 +2629,13 @@ proc getAutomationPresentationType*(self: WebView): AutomationBrowsingContextPre
 proc automationPresentationType*(self: WebView): AutomationBrowsingContextPresentation =
   webkit_web_view_get_automation_presentation_type(cast[ptr WebView00](self.impl))
 
-proc webkit_web_view_get_background_color(self: ptr WebView00; rgba: var gdk.RGBA) {.
+proc webkit_web_view_get_background_color(self: ptr WebView00; rgba: var gdk4.RGBA) {.
     importc, libprag.}
 
-proc getBackgroundColor*(self: WebView; rgba: var gdk.RGBA) =
+proc getBackgroundColor*(self: WebView; rgba: var gdk4.RGBA) =
   webkit_web_view_get_background_color(cast[ptr WebView00](self.impl), rgba)
 
-proc getBackgroundColor*(self: WebView): gdk.RGBA =
+proc getBackgroundColor*(self: WebView): gdk4.RGBA =
   webkit_web_view_get_background_color(cast[ptr WebView00](self.impl), result)
 
 proc webkit_web_view_get_custom_charset(self: ptr WebView00): cstring {.
@@ -2897,18 +2671,40 @@ proc getEstimatedLoadProgress*(self: WebView): cdouble =
 proc estimatedLoadProgress*(self: WebView): cdouble =
   webkit_web_view_get_estimated_load_progress(cast[ptr WebView00](self.impl))
 
-proc webkit_web_view_get_favicon(self: ptr WebView00): ptr cairo.Surface00 {.
+proc webkit_web_view_get_favicon(self: ptr WebView00): ptr gdk4.Texture00 {.
     importc, libprag.}
 
-proc getFavicon*(self: WebView): cairo.Surface =
-  fnew(result, gBoxedFreeCairoSurface)
-  result.impl = webkit_web_view_get_favicon(cast[ptr WebView00](self.impl))
-  result.impl = cast[typeof(result.impl)](g_boxed_copy(cairo_gobject_surface_get_type(), result.impl))
+proc getFavicon*(self: WebView): gdk4.Texture =
+  let gobj = webkit_web_view_get_favicon(cast[ptr WebView00](self.impl))
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, gdk4.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
 
-proc favicon*(self: WebView): cairo.Surface =
-  fnew(result, gBoxedFreeCairoSurface)
-  result.impl = webkit_web_view_get_favicon(cast[ptr WebView00](self.impl))
-  result.impl = cast[typeof(result.impl)](g_boxed_copy(cairo_gobject_surface_get_type(), result.impl))
+proc favicon*(self: WebView): gdk4.Texture =
+  let gobj = webkit_web_view_get_favicon(cast[ptr WebView00](self.impl))
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, gdk4.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
 
 proc webkit_web_view_get_is_muted(self: ptr WebView00): gboolean {.
     importc, libprag.}
@@ -2938,7 +2734,7 @@ proc getMainResource*(self: WebView): WebResource =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -2954,7 +2750,7 @@ proc mainResource*(self: WebView): WebResource =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -2973,18 +2769,30 @@ proc pageId*(self: WebView): uint64 =
   webkit_web_view_get_page_id(cast[ptr WebView00](self.impl))
 
 proc webkit_web_view_get_snapshot_finish(self: ptr WebView00; resu: ptr gio.AsyncResult00;
-    error: ptr ptr glib.Error = nil): ptr cairo.Surface00 {.
+    error: ptr ptr glib.Error = nil): ptr gdk4.Texture00 {.
     importc, libprag.}
 
-proc getSnapshotFinish*(self: WebView; resu: gio.AsyncResult): cairo.Surface =
+proc getSnapshotFinish*(self: WebView; resu: gio.AsyncResult): gdk4.Texture =
   var gerror: ptr glib.Error
-  let impl0 = webkit_web_view_get_snapshot_finish(cast[ptr WebView00](self.impl), cast[ptr gio.AsyncResult00](resu.impl), addr gerror)
+  let gobj = webkit_web_view_get_snapshot_finish(cast[ptr WebView00](self.impl), cast[ptr gio.AsyncResult00](resu.impl), addr gerror)
   if gerror != nil:
     let msg = $gerror.message
     g_error_free(gerror[])
     raise newException(GException, msg)
-  fnew(result, gBoxedFreeCairoSurface)
-  result.impl = impl0
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, gdk4.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    if g_object_is_floating(result.impl).int != 0:
+      discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
 
 proc webkit_web_view_get_title(self: ptr WebView00): cstring {.
     importc, libprag.}
@@ -3009,7 +2817,7 @@ proc getTlsInfo*(self: WebView; certificate: var gio.TlsCertificate;
     certificate = cast[type(certificate)](argqdata)
     assert(certificate.impl == tmpoutgobjectarg)
   else:
-    fnew(certificate, webkit2.finalizeGObject)
+    fnew(certificate, webkit6.finalizeGObject)
     certificate.impl = tmpoutgobjectarg
     GC_ref(certificate)
     if g_object_is_floating(certificate.impl).int != 0:
@@ -3039,7 +2847,7 @@ proc getWebsitePolicies*(self: WebView): WebsitePolicies =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -3055,7 +2863,7 @@ proc websitePolicies*(self: WebView): WebsitePolicies =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -3096,12 +2904,6 @@ proc webkit_web_view_is_editable(self: ptr WebView00): gboolean {.
 
 proc isEditable*(self: WebView): bool =
   toBool(webkit_web_view_is_editable(cast[ptr WebView00](self.impl)))
-
-proc webkit_web_view_is_ephemeral(self: ptr WebView00): gboolean {.
-    importc, libprag.}
-
-proc isEphemeral*(self: WebView): bool =
-  toBool(webkit_web_view_is_ephemeral(cast[ptr WebView00](self.impl)))
 
 proc webkit_web_view_is_loading(self: ptr WebView00): gboolean {.
     importc, libprag.}
@@ -3167,42 +2969,6 @@ proc webkit_web_view_reload_bypass_cache(self: ptr WebView00) {.
 proc reloadBypassCache*(self: WebView) =
   webkit_web_view_reload_bypass_cache(cast[ptr WebView00](self.impl))
 
-proc webkit_web_view_run_async_javascript_function_in_world(self: ptr WebView00;
-    body: cstring; arguments: ptr glib.Variant00; worldName: cstring; cancellable: ptr gio.Cancellable00;
-    callback: AsyncReadyCallback; userData: pointer) {.
-    importc, libprag.}
-
-proc runAsyncJavascriptFunctionInWorld*(self: WebView;
-    body: cstring; arguments: glib.Variant; worldName: cstring = nil; cancellable: gio.Cancellable = nil;
-    callback: AsyncReadyCallback; userData: pointer) =
-  webkit_web_view_run_async_javascript_function_in_world(cast[ptr WebView00](self.impl), body, cast[ptr glib.Variant00](arguments.impl), worldName, if cancellable.isNil: nil else: cast[ptr gio.Cancellable00](cancellable.impl), callback, userData)
-
-proc webkit_web_view_run_javascript(self: ptr WebView00; script: cstring;
-    cancellable: ptr gio.Cancellable00; callback: AsyncReadyCallback; userData: pointer) {.
-    importc, libprag.}
-
-proc runJavascript*(self: WebView; script: cstring; cancellable: gio.Cancellable = nil;
-    callback: AsyncReadyCallback; userData: pointer) =
-  webkit_web_view_run_javascript(cast[ptr WebView00](self.impl), script, if cancellable.isNil: nil else: cast[ptr gio.Cancellable00](cancellable.impl), callback, userData)
-
-proc webkit_web_view_run_javascript_from_gresource(self: ptr WebView00; resource: cstring;
-    cancellable: ptr gio.Cancellable00; callback: AsyncReadyCallback; userData: pointer) {.
-    importc, libprag.}
-
-proc runJavascriptFromGresource*(self: WebView; resource: cstring;
-    cancellable: gio.Cancellable = nil; callback: AsyncReadyCallback; userData: pointer) =
-  webkit_web_view_run_javascript_from_gresource(cast[ptr WebView00](self.impl), resource, if cancellable.isNil: nil else: cast[ptr gio.Cancellable00](cancellable.impl), callback, userData)
-
-proc webkit_web_view_run_javascript_in_world(self: ptr WebView00; script: cstring;
-    worldName: cstring; cancellable: ptr gio.Cancellable00; callback: AsyncReadyCallback;
-    userData: pointer) {.
-    importc, libprag.}
-
-proc runJavascriptInWorld*(self: WebView; script: cstring;
-    worldName: cstring; cancellable: gio.Cancellable = nil; callback: AsyncReadyCallback;
-    userData: pointer) =
-  webkit_web_view_run_javascript_in_world(cast[ptr WebView00](self.impl), script, worldName, if cancellable.isNil: nil else: cast[ptr gio.Cancellable00](cancellable.impl), callback, userData)
-
 proc webkit_web_view_save_finish(self: ptr WebView00; resu: ptr gio.AsyncResult00;
     error: ptr ptr glib.Error = nil): ptr gio.InputStream00 {.
     importc, libprag.}
@@ -3266,7 +3032,7 @@ proc sendMessageToPageFinish*(self: WebView; resu: gio.AsyncResult): UserMessage
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -3276,13 +3042,13 @@ proc sendMessageToPageFinish*(self: WebView; resu: gio.AsyncResult): UserMessage
     assert(g_object_get_qdata(result.impl, Quark) == nil)
     g_object_set_qdata(result.impl, Quark, addr(result[]))
 
-proc webkit_web_view_set_background_color(self: ptr WebView00; rgba: gdk.RGBA) {.
+proc webkit_web_view_set_background_color(self: ptr WebView00; rgba: gdk4.RGBA) {.
     importc, libprag.}
 
-proc setBackgroundColor*(self: WebView; rgba: gdk.RGBA) =
+proc setBackgroundColor*(self: WebView; rgba: gdk4.RGBA) =
   webkit_web_view_set_background_color(cast[ptr WebView00](self.impl), rgba)
 
-proc `backgroundColor=`*(self: WebView; rgba: gdk.RGBA) =
+proc `backgroundColor=`*(self: WebView; rgba: gdk4.RGBA) =
   webkit_web_view_set_background_color(cast[ptr WebView00](self.impl), rgba)
 
 proc webkit_web_view_set_cors_allowlist(self: ptr WebView00; allowlist: ptr cstring) {.
@@ -3417,7 +3183,7 @@ proc newPrintOperation*(webView: WebView): PrintOperation =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -3435,7 +3201,7 @@ proc newPrintOperation*(tdesc: typedesc; webView: WebView): tdesc =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -3453,7 +3219,7 @@ proc initPrintOperation*[T](result: var T; webView: WebView) {.deprecated.} =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -3560,7 +3326,7 @@ proc getRequest*(self: Download): URIRequest =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -3576,7 +3342,7 @@ proc request*(self: Download): URIRequest =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -3595,7 +3361,7 @@ proc getResponse*(self: Download): URIResponse =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -3611,7 +3377,7 @@ proc response*(self: Download): URIResponse =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -3630,7 +3396,7 @@ proc getWebView*(self: Download): WebView =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -3646,7 +3412,7 @@ proc webView*(self: Download): WebView =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -3683,7 +3449,7 @@ proc downloadUri*(self: WebView; uri: cstring): Download =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -3711,14 +3477,11 @@ when defined(gcDestructors):
 proc scAutomationStarted*(self: WebContext;  p: proc (self: ptr WebContext00; session: ptr AutomationSession00; xdata: pointer) {.cdecl.}, xdata: pointer, cf: gobject.ConnectFlags): culong =
   g_signal_connect_data(self.impl, "automation-started", cast[GCallback](p), xdata, nil, cf)
 
-proc scDownloadStarted*(self: WebContext;  p: proc (self: ptr WebContext00; download: ptr Download00; xdata: pointer) {.cdecl.}, xdata: pointer, cf: gobject.ConnectFlags): culong =
-  g_signal_connect_data(self.impl, "download-started", cast[GCallback](p), xdata, nil, cf)
-
 proc scInitializeNotificationPermissions*(self: WebContext;  p: proc (self: ptr gobject.Object00; xdata: pointer) {.cdecl.}, xdata: pointer, cf: gobject.ConnectFlags): culong =
   g_signal_connect_data(self.impl, "initialize-notification-permissions", cast[GCallback](p), xdata, nil, cf)
 
-proc scInitializeWebExtensions*(self: WebContext;  p: proc (self: ptr gobject.Object00; xdata: pointer) {.cdecl.}, xdata: pointer, cf: gobject.ConnectFlags): culong =
-  g_signal_connect_data(self.impl, "initialize-web-extensions", cast[GCallback](p), xdata, nil, cf)
+proc scInitializeWebProcessExtensions*(self: WebContext;  p: proc (self: ptr gobject.Object00; xdata: pointer) {.cdecl.}, xdata: pointer, cf: gobject.ConnectFlags): culong =
+  g_signal_connect_data(self.impl, "initialize-web-process-extensions", cast[GCallback](p), xdata, nil, cf)
 
 proc scUserMessageReceived*(self: WebContext;  p: proc (self: ptr WebContext00; message: ptr UserMessage00; xdata: pointer): gboolean {.cdecl.}, xdata: pointer, cf: gobject.ConnectFlags): culong =
   g_signal_connect_data(self.impl, "user-message-received", cast[GCallback](p), xdata, nil, cf)
@@ -3733,7 +3496,7 @@ proc newWebContext*(): WebContext =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -3751,7 +3514,7 @@ proc newWebContext*(tdesc: typedesc): tdesc =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -3769,63 +3532,7 @@ proc initWebContext*[T](result: var T) {.deprecated.} =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
-    result.impl = gobj
-    GC_ref(result)
-    if g_object_is_floating(result.impl).int != 0:
-      discard g_object_ref_sink(result.impl)
-    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
-    g_object_unref(result.impl)
-    assert(g_object_get_qdata(result.impl, Quark) == nil)
-    g_object_set_qdata(result.impl, Quark, addr(result[]))
-
-proc webkit_web_context_new_ephemeral(): ptr WebContext00 {.
-    importc, libprag.}
-
-proc newWebContextEphemeral*(): WebContext =
-  let gobj = webkit_web_context_new_ephemeral()
-  let qdata = g_object_get_qdata(gobj, Quark)
-  if qdata != nil:
-    result = cast[type(result)](qdata)
-    assert(result.impl == gobj)
-  else:
-    fnew(result, webkit2.finalizeGObject)
-    result.impl = gobj
-    GC_ref(result)
-    if g_object_is_floating(result.impl).int != 0:
-      discard g_object_ref_sink(result.impl)
-    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
-    g_object_unref(result.impl)
-    assert(g_object_get_qdata(result.impl, Quark) == nil)
-    g_object_set_qdata(result.impl, Quark, addr(result[]))
-
-proc newWebContextEphemeral*(tdesc: typedesc): tdesc =
-  assert(result is WebContext)
-  let gobj = webkit_web_context_new_ephemeral()
-  let qdata = g_object_get_qdata(gobj, Quark)
-  if qdata != nil:
-    result = cast[type(result)](qdata)
-    assert(result.impl == gobj)
-  else:
-    fnew(result, webkit2.finalizeGObject)
-    result.impl = gobj
-    GC_ref(result)
-    if g_object_is_floating(result.impl).int != 0:
-      discard g_object_ref_sink(result.impl)
-    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
-    g_object_unref(result.impl)
-    assert(g_object_get_qdata(result.impl, Quark) == nil)
-    g_object_set_qdata(result.impl, Quark, addr(result[]))
-
-proc initWebContextEphemeral*[T](result: var T) {.deprecated.} =
-  assert(result is WebContext)
-  let gobj = webkit_web_context_new_ephemeral()
-  let qdata = g_object_get_qdata(gobj, Quark)
-  if qdata != nil:
-    result = cast[type(result)](qdata)
-    assert(result.impl == gobj)
-  else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -3845,7 +3552,7 @@ proc getDefaultWebContext*(): WebContext =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -3861,66 +3568,6 @@ proc webkit_web_context_add_path_to_sandbox(self: ptr WebContext00; path: cstrin
 proc addPathToSandbox*(self: WebContext; path: cstring;
     readOnly: bool) =
   webkit_web_context_add_path_to_sandbox(cast[ptr WebContext00](self.impl), path, gboolean(readOnly))
-
-proc webkit_web_context_allow_tls_certificate_for_host(self: ptr WebContext00;
-    certificate: ptr gio.TlsCertificate00; host: cstring) {.
-    importc, libprag.}
-
-proc allowTlsCertificateForHost*(self: WebContext;
-    certificate: gio.TlsCertificate; host: cstring) =
-  webkit_web_context_allow_tls_certificate_for_host(cast[ptr WebContext00](self.impl), cast[ptr gio.TlsCertificate00](certificate.impl), host)
-
-proc webkit_web_context_clear_cache(self: ptr WebContext00) {.
-    importc, libprag.}
-
-proc clearCache*(self: WebContext) =
-  webkit_web_context_clear_cache(cast[ptr WebContext00](self.impl))
-
-proc webkit_web_context_download_uri(self: ptr WebContext00; uri: cstring): ptr Download00 {.
-    importc, libprag.}
-
-proc downloadUri*(self: WebContext; uri: cstring): Download =
-  let gobj = webkit_web_context_download_uri(cast[ptr WebContext00](self.impl), uri)
-  let qdata = g_object_get_qdata(gobj, Quark)
-  if qdata != nil:
-    result = cast[type(result)](qdata)
-    assert(result.impl == gobj)
-  else:
-    fnew(result, webkit2.finalizeGObject)
-    result.impl = gobj
-    GC_ref(result)
-    if g_object_is_floating(result.impl).int != 0:
-      discard g_object_ref_sink(result.impl)
-    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
-    g_object_unref(result.impl)
-    assert(g_object_get_qdata(result.impl, Quark) == nil)
-    g_object_set_qdata(result.impl, Quark, addr(result[]))
-
-proc webkit_web_context_get_favicon_database_directory(self: ptr WebContext00): cstring {.
-    importc, libprag.}
-
-proc getFaviconDatabaseDirectory*(self: WebContext): string =
-  result = $webkit_web_context_get_favicon_database_directory(cast[ptr WebContext00](self.impl))
-
-proc faviconDatabaseDirectory*(self: WebContext): string =
-  result = $webkit_web_context_get_favicon_database_directory(cast[ptr WebContext00](self.impl))
-
-proc webkit_web_context_get_plugins(self: ptr WebContext00; cancellable: ptr gio.Cancellable00;
-    callback: AsyncReadyCallback; userData: pointer) {.
-    importc, libprag.}
-
-proc getPlugins*(self: WebContext; cancellable: gio.Cancellable = nil;
-    callback: AsyncReadyCallback; userData: pointer) =
-  webkit_web_context_get_plugins(cast[ptr WebContext00](self.impl), if cancellable.isNil: nil else: cast[ptr gio.Cancellable00](cancellable.impl), callback, userData)
-
-proc webkit_web_context_get_sandbox_enabled(self: ptr WebContext00): gboolean {.
-    importc, libprag.}
-
-proc getSandboxEnabled*(self: WebContext): bool =
-  toBool(webkit_web_context_get_sandbox_enabled(cast[ptr WebContext00](self.impl)))
-
-proc sandboxEnabled*(self: WebContext): bool =
-  toBool(webkit_web_context_get_sandbox_enabled(cast[ptr WebContext00](self.impl)))
 
 proc webkit_web_context_get_spell_checking_enabled(self: ptr WebContext00): gboolean {.
     importc, libprag.}
@@ -3949,24 +3596,6 @@ proc getTimeZoneOverride*(self: WebContext): string =
 proc timeZoneOverride*(self: WebContext): string =
   result = $webkit_web_context_get_time_zone_override(cast[ptr WebContext00](self.impl))
 
-proc webkit_web_context_get_use_system_appearance_for_scrollbars(self: ptr WebContext00): gboolean {.
-    importc, libprag.}
-
-proc getUseSystemAppearanceForScrollbars*(self: WebContext): bool =
-  toBool(webkit_web_context_get_use_system_appearance_for_scrollbars(cast[ptr WebContext00](self.impl)))
-
-proc useSystemAppearanceForScrollbars*(self: WebContext): bool =
-  toBool(webkit_web_context_get_use_system_appearance_for_scrollbars(cast[ptr WebContext00](self.impl)))
-
-proc webkit_web_context_get_web_process_count_limit(self: ptr WebContext00): uint32 {.
-    importc, libprag.}
-
-proc getWebProcessCountLimit*(self: WebContext): int =
-  int(webkit_web_context_get_web_process_count_limit(cast[ptr WebContext00](self.impl)))
-
-proc webProcessCountLimit*(self: WebContext): int =
-  int(webkit_web_context_get_web_process_count_limit(cast[ptr WebContext00](self.impl)))
-
 proc webkit_web_context_initialize_notification_permissions(self: ptr WebContext00;
     allowedOrigins: ptr glib.List; disallowedOrigins: ptr glib.List) {.
     importc, libprag.}
@@ -3983,18 +3612,6 @@ proc webkit_web_context_is_automation_allowed(self: ptr WebContext00): gboolean 
 proc isAutomationAllowed*(self: WebContext): bool =
   toBool(webkit_web_context_is_automation_allowed(cast[ptr WebContext00](self.impl)))
 
-proc webkit_web_context_is_ephemeral(self: ptr WebContext00): gboolean {.
-    importc, libprag.}
-
-proc isEphemeral*(self: WebContext): bool =
-  toBool(webkit_web_context_is_ephemeral(cast[ptr WebContext00](self.impl)))
-
-proc webkit_web_context_prefetch_dns(self: ptr WebContext00; hostname: cstring) {.
-    importc, libprag.}
-
-proc prefetchDns*(self: WebContext; hostname: cstring) =
-  webkit_web_context_prefetch_dns(cast[ptr WebContext00](self.impl), hostname)
-
 proc webkit_web_context_send_message_to_all_extensions(self: ptr WebContext00;
     message: ptr UserMessage00) {.
     importc, libprag.}
@@ -4002,18 +3619,6 @@ proc webkit_web_context_send_message_to_all_extensions(self: ptr WebContext00;
 proc sendMessageToAllExtensions*(self: WebContext;
     message: UserMessage) =
   webkit_web_context_send_message_to_all_extensions(cast[ptr WebContext00](self.impl), cast[ptr UserMessage00](message.impl))
-
-proc webkit_web_context_set_additional_plugins_directory(self: ptr WebContext00;
-    directory: cstring) {.
-    importc, libprag.}
-
-proc setAdditionalPluginsDirectory*(self: WebContext;
-    directory: cstring) =
-  webkit_web_context_set_additional_plugins_directory(cast[ptr WebContext00](self.impl), directory)
-
-proc `additionalPluginsDirectory=`*(self: WebContext;
-    directory: cstring) =
-  webkit_web_context_set_additional_plugins_directory(cast[ptr WebContext00](self.impl), directory)
 
 proc webkit_web_context_set_automation_allowed(self: ptr WebContext00; allowed: gboolean) {.
     importc, libprag.}
@@ -4023,28 +3628,6 @@ proc setAutomationAllowed*(self: WebContext; allowed: bool = true) =
 
 proc `automationAllowed=`*(self: WebContext; allowed: bool) =
   webkit_web_context_set_automation_allowed(cast[ptr WebContext00](self.impl), gboolean(allowed))
-
-proc webkit_web_context_set_disk_cache_directory(self: ptr WebContext00;
-    directory: cstring) {.
-    importc, libprag.}
-
-proc setDiskCacheDirectory*(self: WebContext; directory: cstring) =
-  webkit_web_context_set_disk_cache_directory(cast[ptr WebContext00](self.impl), directory)
-
-proc `diskCacheDirectory=`*(self: WebContext; directory: cstring) =
-  webkit_web_context_set_disk_cache_directory(cast[ptr WebContext00](self.impl), directory)
-
-proc webkit_web_context_set_favicon_database_directory(self: ptr WebContext00;
-    path: cstring) {.
-    importc, libprag.}
-
-proc setFaviconDatabaseDirectory*(self: WebContext;
-    path: cstring = nil) =
-  webkit_web_context_set_favicon_database_directory(cast[ptr WebContext00](self.impl), path)
-
-proc `faviconDatabaseDirectory=`*(self: WebContext;
-    path: cstring = nil) =
-  webkit_web_context_set_favicon_database_directory(cast[ptr WebContext00](self.impl), path)
 
 proc webkit_web_context_set_preferred_languages(self: ptr WebContext00; languages: ptr cstring) {.
     importc, libprag.}
@@ -4058,15 +3641,6 @@ proc `preferredLanguages=`*(self: WebContext; languages: varargs[string, `$`]) =
   var fs469n23x: array[256, pointer]
   var fs469n23: cstringArray = cast[cstringArray](addr fs469n23x)
   webkit_web_context_set_preferred_languages(cast[ptr WebContext00](self.impl), seq2CstringArray(languages, fs469n23))
-
-proc webkit_web_context_set_sandbox_enabled(self: ptr WebContext00; enabled: gboolean) {.
-    importc, libprag.}
-
-proc setSandboxEnabled*(self: WebContext; enabled: bool = true) =
-  webkit_web_context_set_sandbox_enabled(cast[ptr WebContext00](self.impl), gboolean(enabled))
-
-proc `sandboxEnabled=`*(self: WebContext; enabled: bool) =
-  webkit_web_context_set_sandbox_enabled(cast[ptr WebContext00](self.impl), gboolean(enabled))
 
 proc webkit_web_context_set_spell_checking_enabled(self: ptr WebContext00;
     enabled: gboolean) {.
@@ -4092,102 +3666,29 @@ proc `spellCheckingLanguages=`*(self: WebContext; languages: varargs[string, `$`
   var fs469n23: cstringArray = cast[cstringArray](addr fs469n23x)
   webkit_web_context_set_spell_checking_languages(cast[ptr WebContext00](self.impl), seq2CstringArray(languages, fs469n23))
 
-proc webkit_web_context_set_use_system_appearance_for_scrollbars(self: ptr WebContext00;
-    enabled: gboolean) {.
-    importc, libprag.}
-
-proc setUseSystemAppearanceForScrollbars*(self: WebContext;
-    enabled: bool = true) =
-  webkit_web_context_set_use_system_appearance_for_scrollbars(cast[ptr WebContext00](self.impl), gboolean(enabled))
-
-proc `useSystemAppearanceForScrollbars=`*(self: WebContext;
-    enabled: bool) =
-  webkit_web_context_set_use_system_appearance_for_scrollbars(cast[ptr WebContext00](self.impl), gboolean(enabled))
-
-proc webkit_web_context_set_web_extensions_directory(self: ptr WebContext00;
+proc webkit_web_context_set_web_process_extensions_directory(self: ptr WebContext00;
     directory: cstring) {.
     importc, libprag.}
 
-proc setWebExtensionsDirectory*(self: WebContext; directory: cstring) =
-  webkit_web_context_set_web_extensions_directory(cast[ptr WebContext00](self.impl), directory)
+proc setWebProcessExtensionsDirectory*(self: WebContext;
+    directory: cstring) =
+  webkit_web_context_set_web_process_extensions_directory(cast[ptr WebContext00](self.impl), directory)
 
-proc `webExtensionsDirectory=`*(self: WebContext; directory: cstring) =
-  webkit_web_context_set_web_extensions_directory(cast[ptr WebContext00](self.impl), directory)
+proc `webProcessExtensionsDirectory=`*(self: WebContext;
+    directory: cstring) =
+  webkit_web_context_set_web_process_extensions_directory(cast[ptr WebContext00](self.impl), directory)
 
-proc webkit_web_context_set_web_extensions_initialization_user_data(self: ptr WebContext00;
+proc webkit_web_context_set_web_process_extensions_initialization_user_data(self: ptr WebContext00;
     userData: ptr glib.Variant00) {.
     importc, libprag.}
 
-proc setWebExtensionsInitializationUserData*(self: WebContext;
+proc setWebProcessExtensionsInitializationUserData*(self: WebContext;
     userData: glib.Variant) =
-  webkit_web_context_set_web_extensions_initialization_user_data(cast[ptr WebContext00](self.impl), cast[ptr glib.Variant00](userData.impl))
+  webkit_web_context_set_web_process_extensions_initialization_user_data(cast[ptr WebContext00](self.impl), cast[ptr glib.Variant00](userData.impl))
 
-proc `webExtensionsInitializationUserData=`*(self: WebContext;
+proc `webProcessExtensionsInitializationUserData=`*(self: WebContext;
     userData: glib.Variant) =
-  webkit_web_context_set_web_extensions_initialization_user_data(cast[ptr WebContext00](self.impl), cast[ptr glib.Variant00](userData.impl))
-
-proc webkit_web_context_set_web_process_count_limit(self: ptr WebContext00;
-    limit: uint32) {.
-    importc, libprag.}
-
-proc setWebProcessCountLimit*(self: WebContext; limit: int) =
-  webkit_web_context_set_web_process_count_limit(cast[ptr WebContext00](self.impl), uint32(limit))
-
-proc `webProcessCountLimit=`*(self: WebContext; limit: int) =
-  webkit_web_context_set_web_process_count_limit(cast[ptr WebContext00](self.impl), uint32(limit))
-
-proc webkit_web_view_new_with_context(context: ptr WebContext00): ptr WebView00 {.
-    importc, libprag.}
-
-proc newWebViewWithContext*(context: WebContext): WebView =
-  let gobj = webkit_web_view_new_with_context(cast[ptr WebContext00](context.impl))
-  let qdata = g_object_get_qdata(gobj, Quark)
-  if qdata != nil:
-    result = cast[type(result)](qdata)
-    assert(result.impl == gobj)
-  else:
-    fnew(result, gtk.finalizeGObject)
-    result.impl = gobj
-    GC_ref(result)
-    discard g_object_ref_sink(result.impl)
-    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
-    g_object_unref(result.impl)
-    assert(g_object_get_qdata(result.impl, Quark) == nil)
-    g_object_set_qdata(result.impl, Quark, addr(result[]))
-
-proc newWebViewWithContext*(tdesc: typedesc; context: WebContext): tdesc =
-  assert(result is WebView)
-  let gobj = webkit_web_view_new_with_context(cast[ptr WebContext00](context.impl))
-  let qdata = g_object_get_qdata(gobj, Quark)
-  if qdata != nil:
-    result = cast[type(result)](qdata)
-    assert(result.impl == gobj)
-  else:
-    fnew(result, gtk.finalizeGObject)
-    result.impl = gobj
-    GC_ref(result)
-    discard g_object_ref_sink(result.impl)
-    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
-    g_object_unref(result.impl)
-    assert(g_object_get_qdata(result.impl, Quark) == nil)
-    g_object_set_qdata(result.impl, Quark, addr(result[]))
-
-proc initWebViewWithContext*[T](result: var T; context: WebContext) {.deprecated.} =
-  assert(result is WebView)
-  let gobj = webkit_web_view_new_with_context(cast[ptr WebContext00](context.impl))
-  let qdata = g_object_get_qdata(gobj, Quark)
-  if qdata != nil:
-    result = cast[type(result)](qdata)
-    assert(result.impl == gobj)
-  else:
-    fnew(result, gtk.finalizeGObject)
-    result.impl = gobj
-    GC_ref(result)
-    discard g_object_ref_sink(result.impl)
-    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
-    g_object_unref(result.impl)
-    assert(g_object_get_qdata(result.impl, Quark) == nil)
-    g_object_set_qdata(result.impl, Quark, addr(result[]))
+  webkit_web_context_set_web_process_extensions_initialization_user_data(cast[ptr WebContext00](self.impl), cast[ptr glib.Variant00](userData.impl))
 
 proc webkit_web_view_get_context(self: ptr WebView00): ptr WebContext00 {.
     importc, libprag.}
@@ -4199,7 +3700,7 @@ proc getContext*(self: WebView): WebContext =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -4215,345 +3716,7 @@ proc context*(self: WebView): WebContext =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
-    result.impl = gobj
-    GC_ref(result)
-    discard g_object_ref_sink(result.impl)
-    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
-    g_object_unref(result.impl)
-    assert(g_object_get_qdata(result.impl, Quark) == nil)
-    g_object_set_qdata(result.impl, Quark, addr(result[]))
-
-type
-  CookieManager* = ref object of gobject.Object
-  CookieManager00* = object of gobject.Object00
-
-proc webkit_cookie_manager_get_type*(): GType {.importc, libprag.}
-
-when defined(gcDestructors):
-  proc `=destroy`*(self: var typeof(CookieManager()[])) =
-    when defined(gintroDebug):
-      echo "destroy ", $typeof(self), ' ', cast[int](unsafeaddr self)
-    g_object_set_qdata(self.impl, Quark, nil)
-    if not self.ignoreFinalizer and self.impl != nil:
-      g_object_remove_toggle_ref(self.impl, toggleNotify, addr(self))
-      self.impl = nil
-
-proc scChanged*(self: CookieManager;  p: proc (self: ptr gobject.Object00; xdata: pointer) {.cdecl.}, xdata: pointer, cf: gobject.ConnectFlags): culong =
-  g_signal_connect_data(self.impl, "changed", cast[GCallback](p), xdata, nil, cf)
-
-proc webkit_cookie_manager_add_cookie(self: ptr CookieManager00; cookie: ptr soup3.Cookie00;
-    cancellable: ptr gio.Cancellable00; callback: AsyncReadyCallback; userData: pointer) {.
-    importc, libprag.}
-
-proc addCookie*(self: CookieManager; cookie: soup3.Cookie;
-    cancellable: gio.Cancellable = nil; callback: AsyncReadyCallback; userData: pointer) =
-  webkit_cookie_manager_add_cookie(cast[ptr CookieManager00](self.impl), cast[ptr soup3.Cookie00](cookie.impl), if cancellable.isNil: nil else: cast[ptr gio.Cancellable00](cancellable.impl), callback, userData)
-
-proc webkit_cookie_manager_add_cookie_finish(self: ptr CookieManager00; resu: ptr gio.AsyncResult00;
-    error: ptr ptr glib.Error = nil): gboolean {.
-    importc, libprag.}
-
-proc addCookieFinish*(self: CookieManager; resu: gio.AsyncResult): bool =
-  var gerror: ptr glib.Error
-  let resul0 = webkit_cookie_manager_add_cookie_finish(cast[ptr CookieManager00](self.impl), cast[ptr gio.AsyncResult00](resu.impl), addr gerror)
-  if gerror != nil:
-    let msg = $gerror.message
-    g_error_free(gerror[])
-    raise newException(GException, msg)
-  result = toBool(resul0)
-
-proc webkit_cookie_manager_delete_all_cookies(self: ptr CookieManager00) {.
-    importc, libprag.}
-
-proc deleteAllCookies*(self: CookieManager) =
-  webkit_cookie_manager_delete_all_cookies(cast[ptr CookieManager00](self.impl))
-
-proc webkit_cookie_manager_delete_cookie(self: ptr CookieManager00; cookie: ptr soup3.Cookie00;
-    cancellable: ptr gio.Cancellable00; callback: AsyncReadyCallback; userData: pointer) {.
-    importc, libprag.}
-
-proc deleteCookie*(self: CookieManager; cookie: soup3.Cookie;
-    cancellable: gio.Cancellable = nil; callback: AsyncReadyCallback; userData: pointer) =
-  webkit_cookie_manager_delete_cookie(cast[ptr CookieManager00](self.impl), cast[ptr soup3.Cookie00](cookie.impl), if cancellable.isNil: nil else: cast[ptr gio.Cancellable00](cancellable.impl), callback, userData)
-
-proc webkit_cookie_manager_delete_cookie_finish(self: ptr CookieManager00;
-    resu: ptr gio.AsyncResult00; error: ptr ptr glib.Error = nil): gboolean {.
-    importc, libprag.}
-
-proc deleteCookieFinish*(self: CookieManager; resu: gio.AsyncResult): bool =
-  var gerror: ptr glib.Error
-  let resul0 = webkit_cookie_manager_delete_cookie_finish(cast[ptr CookieManager00](self.impl), cast[ptr gio.AsyncResult00](resu.impl), addr gerror)
-  if gerror != nil:
-    let msg = $gerror.message
-    g_error_free(gerror[])
-    raise newException(GException, msg)
-  result = toBool(resul0)
-
-proc webkit_cookie_manager_delete_cookies_for_domain(self: ptr CookieManager00;
-    domain: cstring) {.
-    importc, libprag.}
-
-proc deleteCookiesForDomain*(self: CookieManager;
-    domain: cstring) =
-  webkit_cookie_manager_delete_cookies_for_domain(cast[ptr CookieManager00](self.impl), domain)
-
-proc webkit_cookie_manager_get_accept_policy(self: ptr CookieManager00; cancellable: ptr gio.Cancellable00;
-    callback: AsyncReadyCallback; userData: pointer) {.
-    importc, libprag.}
-
-proc getAcceptPolicy*(self: CookieManager; cancellable: gio.Cancellable = nil;
-    callback: AsyncReadyCallback; userData: pointer) =
-  webkit_cookie_manager_get_accept_policy(cast[ptr CookieManager00](self.impl), if cancellable.isNil: nil else: cast[ptr gio.Cancellable00](cancellable.impl), callback, userData)
-
-proc webkit_cookie_manager_get_all_cookies(self: ptr CookieManager00; cancellable: ptr gio.Cancellable00;
-    callback: AsyncReadyCallback; userData: pointer) {.
-    importc, libprag.}
-
-proc getAllCookies*(self: CookieManager; cancellable: gio.Cancellable = nil;
-    callback: AsyncReadyCallback; userData: pointer) =
-  webkit_cookie_manager_get_all_cookies(cast[ptr CookieManager00](self.impl), if cancellable.isNil: nil else: cast[ptr gio.Cancellable00](cancellable.impl), callback, userData)
-
-proc webkit_cookie_manager_get_all_cookies_finish(self: ptr CookieManager00;
-    resu: ptr gio.AsyncResult00; error: ptr ptr glib.Error = nil): ptr glib.List {.
-    importc, libprag.}
-
-proc getAllCookiesFinish*(self: CookieManager; resu: gio.AsyncResult): seq[soup3.Cookie] =
-  var gerror: ptr glib.Error
-  let resul0 = webkit_cookie_manager_get_all_cookies_finish(cast[ptr CookieManager00](self.impl), cast[ptr gio.AsyncResult00](resu.impl), addr gerror)
-  if gerror != nil:
-    let msg = $gerror.message
-    g_error_free(gerror[])
-    raise newException(GException, msg)
-  result = glistStructs2seq[soup3.Cookie](resul0, false)
-  g_list_free(resul0)
-
-proc webkit_cookie_manager_get_cookies(self: ptr CookieManager00; uri: cstring;
-    cancellable: ptr gio.Cancellable00; callback: AsyncReadyCallback; userData: pointer) {.
-    importc, libprag.}
-
-proc getCookies*(self: CookieManager; uri: cstring;
-    cancellable: gio.Cancellable = nil; callback: AsyncReadyCallback; userData: pointer) =
-  webkit_cookie_manager_get_cookies(cast[ptr CookieManager00](self.impl), uri, if cancellable.isNil: nil else: cast[ptr gio.Cancellable00](cancellable.impl), callback, userData)
-
-proc webkit_cookie_manager_get_cookies_finish(self: ptr CookieManager00;
-    resu: ptr gio.AsyncResult00; error: ptr ptr glib.Error = nil): ptr glib.List {.
-    importc, libprag.}
-
-proc getCookiesFinish*(self: CookieManager; resu: gio.AsyncResult): seq[soup3.Cookie] =
-  var gerror: ptr glib.Error
-  let resul0 = webkit_cookie_manager_get_cookies_finish(cast[ptr CookieManager00](self.impl), cast[ptr gio.AsyncResult00](resu.impl), addr gerror)
-  if gerror != nil:
-    let msg = $gerror.message
-    g_error_free(gerror[])
-    raise newException(GException, msg)
-  result = glistStructs2seq[soup3.Cookie](resul0, false)
-  g_list_free(resul0)
-
-proc webkit_cookie_manager_get_domains_with_cookies(self: ptr CookieManager00;
-    cancellable: ptr gio.Cancellable00; callback: AsyncReadyCallback; userData: pointer) {.
-    importc, libprag.}
-
-proc getDomainsWithCookies*(self: CookieManager;
-    cancellable: gio.Cancellable = nil; callback: AsyncReadyCallback; userData: pointer) =
-  webkit_cookie_manager_get_domains_with_cookies(cast[ptr CookieManager00](self.impl), if cancellable.isNil: nil else: cast[ptr gio.Cancellable00](cancellable.impl), callback, userData)
-
-proc webkit_cookie_manager_get_domains_with_cookies_finish(self: ptr CookieManager00;
-    resu: ptr gio.AsyncResult00; error: ptr ptr glib.Error = nil): ptr cstring {.
-    importc, libprag.}
-
-proc getDomainsWithCookiesFinish*(self: CookieManager;
-    resu: gio.AsyncResult): seq[string] =
-  var gerror: ptr glib.Error
-  let resul0 = webkit_cookie_manager_get_domains_with_cookies_finish(cast[ptr CookieManager00](self.impl), cast[ptr gio.AsyncResult00](resu.impl), addr gerror)
-  if gerror != nil:
-    let msg = $gerror.message
-    g_error_free(gerror[])
-    raise newException(GException, msg)
-  result = cstringArrayToSeq(resul0)
-
-proc webkit_cookie_manager_replace_cookies(self: ptr CookieManager00; cookies: ptr glib.List;
-    cancellable: ptr gio.Cancellable00; callback: AsyncReadyCallback; userData: pointer) {.
-    importc, libprag.}
-
-proc replaceCookies*(self: CookieManager; cookies: seq[soup3.Cookie];
-    cancellable: gio.Cancellable = nil; callback: AsyncReadyCallback; userData: pointer) =
-  var tempResGL = seq2GList(cookies)
-  webkit_cookie_manager_replace_cookies(cast[ptr CookieManager00](self.impl), tempResGL, if cancellable.isNil: nil else: cast[ptr gio.Cancellable00](cancellable.impl), callback, userData)
-  g_list_free(tempResGL)
-
-proc webkit_cookie_manager_replace_cookies_finish(self: ptr CookieManager00;
-    resu: ptr gio.AsyncResult00; error: ptr ptr glib.Error = nil): gboolean {.
-    importc, libprag.}
-
-proc replaceCookiesFinish*(self: CookieManager; resu: gio.AsyncResult): bool =
-  var gerror: ptr glib.Error
-  let resul0 = webkit_cookie_manager_replace_cookies_finish(cast[ptr CookieManager00](self.impl), cast[ptr gio.AsyncResult00](resu.impl), addr gerror)
-  if gerror != nil:
-    let msg = $gerror.message
-    g_error_free(gerror[])
-    raise newException(GException, msg)
-  result = toBool(resul0)
-
-proc webkit_web_context_get_cookie_manager(self: ptr WebContext00): ptr CookieManager00 {.
-    importc, libprag.}
-
-proc getCookieManager*(self: WebContext): CookieManager =
-  let gobj = webkit_web_context_get_cookie_manager(cast[ptr WebContext00](self.impl))
-  let qdata = g_object_get_qdata(gobj, Quark)
-  if qdata != nil:
-    result = cast[type(result)](qdata)
-    assert(result.impl == gobj)
-  else:
-    fnew(result, webkit2.finalizeGObject)
-    result.impl = gobj
-    GC_ref(result)
-    discard g_object_ref_sink(result.impl)
-    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
-    g_object_unref(result.impl)
-    assert(g_object_get_qdata(result.impl, Quark) == nil)
-    g_object_set_qdata(result.impl, Quark, addr(result[]))
-
-proc cookieManager*(self: WebContext): CookieManager =
-  let gobj = webkit_web_context_get_cookie_manager(cast[ptr WebContext00](self.impl))
-  let qdata = g_object_get_qdata(gobj, Quark)
-  if qdata != nil:
-    result = cast[type(result)](qdata)
-    assert(result.impl == gobj)
-  else:
-    fnew(result, webkit2.finalizeGObject)
-    result.impl = gobj
-    GC_ref(result)
-    discard g_object_ref_sink(result.impl)
-    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
-    g_object_unref(result.impl)
-    assert(g_object_get_qdata(result.impl, Quark) == nil)
-    g_object_set_qdata(result.impl, Quark, addr(result[]))
-
-type
-  CookieAcceptPolicy* {.size: sizeof(cint), pure.} = enum
-    always = 0
-    never = 1
-    noThirdParty = 2
-
-proc webkit_cookie_manager_get_accept_policy_finish(self: ptr CookieManager00;
-    resu: ptr gio.AsyncResult00; error: ptr ptr glib.Error = nil): CookieAcceptPolicy {.
-    importc, libprag.}
-
-proc getAcceptPolicyFinish*(self: CookieManager;
-    resu: gio.AsyncResult): CookieAcceptPolicy =
-  var gerror: ptr glib.Error
-  let resul0 = webkit_cookie_manager_get_accept_policy_finish(cast[ptr CookieManager00](self.impl), cast[ptr gio.AsyncResult00](resu.impl), addr gerror)
-  if gerror != nil:
-    let msg = $gerror.message
-    g_error_free(gerror[])
-    raise newException(GException, msg)
-  result = resul0
-
-proc webkit_cookie_manager_set_accept_policy(self: ptr CookieManager00; policy: CookieAcceptPolicy) {.
-    importc, libprag.}
-
-proc setAcceptPolicy*(self: CookieManager; policy: CookieAcceptPolicy) =
-  webkit_cookie_manager_set_accept_policy(cast[ptr CookieManager00](self.impl), policy)
-
-proc `acceptPolicy=`*(self: CookieManager; policy: CookieAcceptPolicy) =
-  webkit_cookie_manager_set_accept_policy(cast[ptr CookieManager00](self.impl), policy)
-
-type
-  CookiePersistentStorage* {.size: sizeof(cint), pure.} = enum
-    text = 0
-    sqlite = 1
-
-proc webkit_cookie_manager_set_persistent_storage(self: ptr CookieManager00;
-    filename: cstring; storage: CookiePersistentStorage) {.
-    importc, libprag.}
-
-proc setPersistentStorage*(self: CookieManager; filename: cstring;
-    storage: CookiePersistentStorage) =
-  webkit_cookie_manager_set_persistent_storage(cast[ptr CookieManager00](self.impl), filename, storage)
-
-type
-  FaviconDatabase* = ref object of gobject.Object
-  FaviconDatabase00* = object of gobject.Object00
-
-proc webkit_favicon_database_get_type*(): GType {.importc, libprag.}
-
-when defined(gcDestructors):
-  proc `=destroy`*(self: var typeof(FaviconDatabase()[])) =
-    when defined(gintroDebug):
-      echo "destroy ", $typeof(self), ' ', cast[int](unsafeaddr self)
-    g_object_set_qdata(self.impl, Quark, nil)
-    if not self.ignoreFinalizer and self.impl != nil:
-      g_object_remove_toggle_ref(self.impl, toggleNotify, addr(self))
-      self.impl = nil
-
-proc scFaviconChanged*(self: FaviconDatabase;  p: proc (self: ptr FaviconDatabase00; pageUri: cstring; faviconUri: cstring; xdata: pointer) {.cdecl.}, xdata: pointer, cf: gobject.ConnectFlags): culong =
-  g_signal_connect_data(self.impl, "favicon-changed", cast[GCallback](p), xdata, nil, cf)
-
-proc webkit_favicon_database_clear(self: ptr FaviconDatabase00) {.
-    importc, libprag.}
-
-proc clear*(self: FaviconDatabase) =
-  webkit_favicon_database_clear(cast[ptr FaviconDatabase00](self.impl))
-
-proc webkit_favicon_database_get_favicon(self: ptr FaviconDatabase00; pageUri: cstring;
-    cancellable: ptr gio.Cancellable00; callback: AsyncReadyCallback; userData: pointer) {.
-    importc, libprag.}
-
-proc getFavicon*(self: FaviconDatabase; pageUri: cstring;
-    cancellable: gio.Cancellable = nil; callback: AsyncReadyCallback; userData: pointer) =
-  webkit_favicon_database_get_favicon(cast[ptr FaviconDatabase00](self.impl), pageUri, if cancellable.isNil: nil else: cast[ptr gio.Cancellable00](cancellable.impl), callback, userData)
-
-proc webkit_favicon_database_get_favicon_finish(self: ptr FaviconDatabase00;
-    resu: ptr gio.AsyncResult00; error: ptr ptr glib.Error = nil): ptr cairo.Surface00 {.
-    importc, libprag.}
-
-proc getFaviconFinish*(self: FaviconDatabase; resu: gio.AsyncResult): cairo.Surface =
-  var gerror: ptr glib.Error
-  let impl0 = webkit_favicon_database_get_favicon_finish(cast[ptr FaviconDatabase00](self.impl), cast[ptr gio.AsyncResult00](resu.impl), addr gerror)
-  if gerror != nil:
-    let msg = $gerror.message
-    g_error_free(gerror[])
-    raise newException(GException, msg)
-  fnew(result, gBoxedFreeCairoSurface)
-  result.impl = impl0
-
-proc webkit_favicon_database_get_favicon_uri(self: ptr FaviconDatabase00;
-    pageUri: cstring): cstring {.
-    importc, libprag.}
-
-proc getFaviconUri*(self: FaviconDatabase; pageUri: cstring): string =
-  let resul0 = webkit_favicon_database_get_favicon_uri(cast[ptr FaviconDatabase00](self.impl), pageUri)
-  result = $resul0
-  cogfree(resul0)
-
-proc webkit_web_context_get_favicon_database(self: ptr WebContext00): ptr FaviconDatabase00 {.
-    importc, libprag.}
-
-proc getFaviconDatabase*(self: WebContext): FaviconDatabase =
-  let gobj = webkit_web_context_get_favicon_database(cast[ptr WebContext00](self.impl))
-  let qdata = g_object_get_qdata(gobj, Quark)
-  if qdata != nil:
-    result = cast[type(result)](qdata)
-    assert(result.impl == gobj)
-  else:
-    fnew(result, webkit2.finalizeGObject)
-    result.impl = gobj
-    GC_ref(result)
-    discard g_object_ref_sink(result.impl)
-    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
-    g_object_unref(result.impl)
-    assert(g_object_get_qdata(result.impl, Quark) == nil)
-    g_object_set_qdata(result.impl, Quark, addr(result[]))
-
-proc faviconDatabase*(self: WebContext): FaviconDatabase =
-  let gobj = webkit_web_context_get_favicon_database(cast[ptr WebContext00](self.impl))
-  let qdata = g_object_get_qdata(gobj, Quark)
-  if qdata != nil:
-    result = cast[type(result)](qdata)
-    assert(result.impl == gobj)
-  else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -4608,7 +3771,7 @@ proc getGeolocationManager*(self: WebContext): GeolocationManager =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -4624,7 +3787,7 @@ proc geolocationManager*(self: WebContext): GeolocationManager =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -4762,165 +3925,6 @@ proc updatePosition*(self: GeolocationManager;
   webkit_geolocation_manager_update_position(cast[ptr GeolocationManager00](self.impl), cast[ptr GeolocationPosition00](position.impl))
 
 type
-  Plugin* = ref object of gobject.Object
-  Plugin00* = object of gobject.Object00
-
-proc webkit_plugin_get_type*(): GType {.importc, libprag.}
-
-when defined(gcDestructors):
-  proc `=destroy`*(self: var typeof(Plugin()[])) =
-    when defined(gintroDebug):
-      echo "destroy ", $typeof(self), ' ', cast[int](unsafeaddr self)
-    g_object_set_qdata(self.impl, Quark, nil)
-    if not self.ignoreFinalizer and self.impl != nil:
-      g_object_remove_toggle_ref(self.impl, toggleNotify, addr(self))
-      self.impl = nil
-
-proc webkit_plugin_get_description(self: ptr Plugin00): cstring {.
-    importc, libprag.}
-
-proc getDescription*(self: Plugin): string =
-  let resul0 = webkit_plugin_get_description(cast[ptr Plugin00](self.impl))
-  if resul0.isNil:
-    return
-  result = $resul0
-
-proc description*(self: Plugin): string =
-  let resul0 = webkit_plugin_get_description(cast[ptr Plugin00](self.impl))
-  if resul0.isNil:
-    return
-  result = $resul0
-
-proc webkit_plugin_get_name(self: ptr Plugin00): cstring {.
-    importc, libprag.}
-
-proc getName*(self: Plugin): string =
-  let resul0 = webkit_plugin_get_name(cast[ptr Plugin00](self.impl))
-  if resul0.isNil:
-    return
-  result = $resul0
-
-proc name*(self: Plugin): string =
-  let resul0 = webkit_plugin_get_name(cast[ptr Plugin00](self.impl))
-  if resul0.isNil:
-    return
-  result = $resul0
-
-proc webkit_plugin_get_path(self: ptr Plugin00): cstring {.
-    importc, libprag.}
-
-proc getPath*(self: Plugin): string =
-  let resul0 = webkit_plugin_get_path(cast[ptr Plugin00](self.impl))
-  if resul0.isNil:
-    return
-  result = $resul0
-
-proc path*(self: Plugin): string =
-  let resul0 = webkit_plugin_get_path(cast[ptr Plugin00](self.impl))
-  if resul0.isNil:
-    return
-  result = $resul0
-
-proc webkit_web_context_get_plugins_finish(self: ptr WebContext00; resu: ptr gio.AsyncResult00;
-    error: ptr ptr glib.Error = nil): ptr glib.List {.
-    importc, libprag.}
-
-proc getPluginsFinish*(self: WebContext; resu: gio.AsyncResult): seq[Plugin] =
-  var gerror: ptr glib.Error
-  let resul0 = webkit_web_context_get_plugins_finish(cast[ptr WebContext00](self.impl), cast[ptr gio.AsyncResult00](resu.impl), addr gerror)
-  if gerror != nil:
-    let msg = $gerror.message
-    g_error_free(gerror[])
-    raise newException(GException, msg)
-  result = glistObjects2seq(Plugin, resul0, true)
-  g_list_free(resul0)
-
-type
-  MimeInfo00* {.pure.} = object
-  MimeInfo* = ref object
-    impl*: ptr MimeInfo00
-    ignoreFinalizer*: bool
-
-proc webkit_mime_info_get_type*(): GType {.importc, libprag.}
-
-proc gBoxedFreeWebKitMimeInfo*(self: MimeInfo) =
-  if not self.ignoreFinalizer:
-    boxedFree(webkit_mime_info_get_type(), cast[ptr MimeInfo00](self.impl))
-
-when defined(gcDestructors):
-  proc `=destroy`*(self: var typeof(MimeInfo()[])) =
-    when defined(gintroDebug):
-      echo "destroy ", $typeof(self), ' ', cast[int](unsafeaddr self)
-    if not self.ignoreFinalizer and self.impl != nil:
-      boxedFree(webkit_mime_info_get_type(), cast[ptr MimeInfo00](self.impl))
-      self.impl = nil
-
-proc newWithFinalizer*(x: var MimeInfo) =
-  when defined(gcDestructors):
-    new(x)
-  else:
-    new(x, gBoxedFreeWebKitMimeInfo)
-
-proc webkit_mime_info_unref(self: ptr MimeInfo00) {.
-    importc, libprag.}
-
-proc unref*(self: MimeInfo) =
-  webkit_mime_info_unref(cast[ptr MimeInfo00](self.impl))
-
-proc finalizerunref*(self: MimeInfo) =
-  if not self.ignoreFinalizer:
-    webkit_mime_info_unref(cast[ptr MimeInfo00](self.impl))
-
-proc webkit_mime_info_get_extensions(self: ptr MimeInfo00): ptr cstring {.
-    importc, libprag.}
-
-proc getExtensions*(self: MimeInfo): seq[string] =
-  cstringArrayToSeq(webkit_mime_info_get_extensions(cast[ptr MimeInfo00](self.impl)))
-
-proc extensions*(self: MimeInfo): seq[string] =
-  cstringArrayToSeq(webkit_mime_info_get_extensions(cast[ptr MimeInfo00](self.impl)))
-
-proc webkit_mime_info_get_mime_type(self: ptr MimeInfo00): cstring {.
-    importc, libprag.}
-
-proc getMimeType*(self: MimeInfo): string =
-  result = $webkit_mime_info_get_mime_type(cast[ptr MimeInfo00](self.impl))
-
-proc mimeType*(self: MimeInfo): string =
-  result = $webkit_mime_info_get_mime_type(cast[ptr MimeInfo00](self.impl))
-
-proc webkit_mime_info_ref(self: ptr MimeInfo00): ptr MimeInfo00 {.
-    importc, libprag.}
-
-proc `ref`*(self: MimeInfo): MimeInfo =
-  fnew(result, gBoxedFreeWebKitMimeInfo)
-  result.impl = webkit_mime_info_ref(cast[ptr MimeInfo00](self.impl))
-
-proc webkit_mime_info_get_description(self: ptr MimeInfo00): cstring {.
-    importc, libprag.}
-
-proc getDescription*(self: MimeInfo): string =
-  let resul0 = webkit_mime_info_get_description(cast[ptr MimeInfo00](self.impl))
-  if resul0.isNil:
-    return
-  result = $resul0
-
-proc description*(self: MimeInfo): string =
-  let resul0 = webkit_mime_info_get_description(cast[ptr MimeInfo00](self.impl))
-  if resul0.isNil:
-    return
-  result = $resul0
-
-proc webkit_plugin_get_mime_info_list(self: ptr Plugin00): ptr glib.List {.
-    importc, libprag.}
-
-proc getMimeInfoList*(self: Plugin): seq[MimeInfo] =
-  discard
-
-proc mimeInfoList*(self: Plugin): seq[MimeInfo] =
-  discard
-
-type
   SecurityManager* = ref object of gobject.Object
   SecurityManager00* = object of gobject.Object00
 
@@ -5040,7 +4044,7 @@ proc getSecurityManager*(self: WebContext): SecurityManager =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -5056,7 +4060,7 @@ proc securityManager*(self: WebContext): SecurityManager =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -5088,140 +4092,6 @@ proc setCacheModel*(self: WebContext; cacheModel: CacheModel) =
 
 proc `cacheModel=`*(self: WebContext; cacheModel: CacheModel) =
   webkit_web_context_set_cache_model(cast[ptr WebContext00](self.impl), cacheModel)
-
-type
-  NetworkProxyMode* {.size: sizeof(cint), pure.} = enum
-    default = 0
-    noProxy = 1
-    custom = 2
-
-type
-  NetworkProxySettings00* {.pure.} = object
-  NetworkProxySettings* = ref object
-    impl*: ptr NetworkProxySettings00
-    ignoreFinalizer*: bool
-
-proc webkit_network_proxy_settings_get_type*(): GType {.importc, libprag.}
-
-proc gBoxedFreeWebKitNetworkProxySettings*(self: NetworkProxySettings) =
-  if not self.ignoreFinalizer:
-    boxedFree(webkit_network_proxy_settings_get_type(), cast[ptr NetworkProxySettings00](self.impl))
-
-when defined(gcDestructors):
-  proc `=destroy`*(self: var typeof(NetworkProxySettings()[])) =
-    when defined(gintroDebug):
-      echo "destroy ", $typeof(self), ' ', cast[int](unsafeaddr self)
-    if not self.ignoreFinalizer and self.impl != nil:
-      boxedFree(webkit_network_proxy_settings_get_type(), cast[ptr NetworkProxySettings00](self.impl))
-      self.impl = nil
-
-proc newWithFinalizer*(x: var NetworkProxySettings) =
-  when defined(gcDestructors):
-    new(x)
-  else:
-    new(x, gBoxedFreeWebKitNetworkProxySettings)
-
-proc webkit_network_proxy_settings_free(self: ptr NetworkProxySettings00) {.
-    importc, libprag.}
-
-proc free*(self: NetworkProxySettings) =
-  webkit_network_proxy_settings_free(cast[ptr NetworkProxySettings00](self.impl))
-
-proc finalizerfree*(self: NetworkProxySettings) =
-  if not self.ignoreFinalizer:
-    webkit_network_proxy_settings_free(cast[ptr NetworkProxySettings00](self.impl))
-
-proc webkit_network_proxy_settings_add_proxy_for_scheme(self: ptr NetworkProxySettings00;
-    scheme: cstring; proxyUri: cstring) {.
-    importc, libprag.}
-
-proc addProxyForScheme*(self: NetworkProxySettings;
-    scheme: cstring; proxyUri: cstring) =
-  webkit_network_proxy_settings_add_proxy_for_scheme(cast[ptr NetworkProxySettings00](self.impl), scheme, proxyUri)
-
-proc webkit_network_proxy_settings_copy(self: ptr NetworkProxySettings00): ptr NetworkProxySettings00 {.
-    importc, libprag.}
-
-proc copy*(self: NetworkProxySettings): NetworkProxySettings =
-  fnew(result, gBoxedFreeWebKitNetworkProxySettings)
-  result.impl = webkit_network_proxy_settings_copy(cast[ptr NetworkProxySettings00](self.impl))
-
-proc webkit_network_proxy_settings_new(defaultProxyUri: cstring; ignoreHosts: ptr cstring): ptr NetworkProxySettings00 {.
-    importc, libprag.}
-
-proc newNetworkProxySettings*(defaultProxyUri: cstring = nil; ignoreHosts: varargs[string, `$`]): NetworkProxySettings =
-  var fs469n23x: array[256, pointer]
-  var fs469n23: cstringArray = cast[cstringArray](addr fs469n23x)
-  fnew(result, gBoxedFreeWebKitNetworkProxySettings)
-  result.impl = webkit_network_proxy_settings_new(defaultProxyUri, seq2CstringArray(ignoreHosts, fs469n23))
-
-proc newNetworkProxySettings*(tdesc: typedesc; defaultProxyUri: cstring = nil; ignoreHosts: varargs[string, `$`]): tdesc =
-  var fs469n23x: array[256, pointer]
-  var fs469n23: cstringArray = cast[cstringArray](addr fs469n23x)
-  assert(result is NetworkProxySettings)
-  fnew(result, gBoxedFreeWebKitNetworkProxySettings)
-  result.impl = webkit_network_proxy_settings_new(defaultProxyUri, seq2CstringArray(ignoreHosts, fs469n23))
-
-proc initNetworkProxySettings*[T](result: var T; defaultProxyUri: cstring = nil; ignoreHosts: varargs[string, `$`]) {.deprecated.} =
-  var fs469n23x: array[256, pointer]
-  var fs469n23: cstringArray = cast[cstringArray](addr fs469n23x)
-  assert(result is NetworkProxySettings)
-  fnew(result, gBoxedFreeWebKitNetworkProxySettings)
-  result.impl = webkit_network_proxy_settings_new(defaultProxyUri, seq2CstringArray(ignoreHosts, fs469n23))
-
-proc webkit_web_context_set_network_proxy_settings(self: ptr WebContext00;
-    proxyMode: NetworkProxyMode; proxySettings: ptr NetworkProxySettings00) {.
-    importc, libprag.}
-
-proc setNetworkProxySettings*(self: WebContext; proxyMode: NetworkProxyMode;
-    proxySettings: NetworkProxySettings = nil) =
-  webkit_web_context_set_network_proxy_settings(cast[ptr WebContext00](self.impl), proxyMode, if proxySettings.isNil: nil else: cast[ptr NetworkProxySettings00](proxySettings.impl))
-
-type
-  ProcessModel* {.size: sizeof(cint), pure.} = enum
-    sharedSecondaryProcess = 0
-    multipleSecondaryProcesses = 1
-
-proc webkit_web_context_get_process_model(self: ptr WebContext00): ProcessModel {.
-    importc, libprag.}
-
-proc getProcessModel*(self: WebContext): ProcessModel =
-  webkit_web_context_get_process_model(cast[ptr WebContext00](self.impl))
-
-proc processModel*(self: WebContext): ProcessModel =
-  webkit_web_context_get_process_model(cast[ptr WebContext00](self.impl))
-
-proc webkit_web_context_set_process_model(self: ptr WebContext00; processModel: ProcessModel) {.
-    importc, libprag.}
-
-proc setProcessModel*(self: WebContext; processModel: ProcessModel) =
-  webkit_web_context_set_process_model(cast[ptr WebContext00](self.impl), processModel)
-
-proc `processModel=`*(self: WebContext; processModel: ProcessModel) =
-  webkit_web_context_set_process_model(cast[ptr WebContext00](self.impl), processModel)
-
-type
-  TLSErrorsPolicy* {.size: sizeof(cint), pure.} = enum
-    ignore = 0
-    fail = 1
-
-proc webkit_web_context_get_tls_errors_policy(self: ptr WebContext00): TLSErrorsPolicy {.
-    importc, libprag.}
-
-proc getTlsErrorsPolicy*(self: WebContext): TLSErrorsPolicy =
-  webkit_web_context_get_tls_errors_policy(cast[ptr WebContext00](self.impl))
-
-proc tlsErrorsPolicy*(self: WebContext): TLSErrorsPolicy =
-  webkit_web_context_get_tls_errors_policy(cast[ptr WebContext00](self.impl))
-
-proc webkit_web_context_set_tls_errors_policy(self: ptr WebContext00; policy: TLSErrorsPolicy) {.
-    importc, libprag.}
-
-proc setTlsErrorsPolicy*(self: WebContext; policy: TLSErrorsPolicy) =
-  webkit_web_context_set_tls_errors_policy(cast[ptr WebContext00](self.impl), policy)
-
-proc `tlsErrorsPolicy=`*(self: WebContext; policy: TLSErrorsPolicy) =
-  webkit_web_context_set_tls_errors_policy(cast[ptr WebContext00](self.impl), policy)
 
 type
   EditorState* = ref object of gobject.Object
@@ -5290,7 +4160,7 @@ proc getEditorState*(self: WebView): EditorState =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -5306,7 +4176,7 @@ proc editorState*(self: WebView): EditorState =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -5384,7 +4254,7 @@ proc getWebView*(self: FindController): WebView =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -5400,7 +4270,7 @@ proc webView*(self: FindController): WebView =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -5445,7 +4315,7 @@ proc getFindController*(self: WebView): FindController =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -5461,7 +4331,7 @@ proc findController*(self: WebView): FindController =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -5555,7 +4425,7 @@ proc getWebView*(self: WebInspector): WebViewBase =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -5571,7 +4441,7 @@ proc webView*(self: WebInspector): WebViewBase =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -5602,7 +4472,7 @@ proc getInspector*(self: WebView): WebInspector =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -5618,7 +4488,7 @@ proc inspector*(self: WebView): WebInspector =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -5628,49 +4498,13 @@ proc inspector*(self: WebView): WebInspector =
     g_object_set_qdata(result.impl, Quark, addr(result[]))
 
 type
-  SnapshotRegion* {.size: sizeof(cint), pure.} = enum
-    visible = 0
-    fullDocument = 1
+  NetworkSession* = ref object of gobject.Object
+  NetworkSession00* = object of gobject.Object00
 
-type
-  SnapshotOptions* {.size: sizeof(cint), pure.} = enum
-    none = 0
-    includeSelectionHighlighting = 1
-    transparentBackground = 2
-
-proc webkit_web_view_get_snapshot(self: ptr WebView00; region: SnapshotRegion;
-    options: SnapshotOptions; cancellable: ptr gio.Cancellable00; callback: AsyncReadyCallback;
-    userData: pointer) {.
-    importc, libprag.}
-
-proc getSnapshot*(self: WebView; region: SnapshotRegion;
-    options: SnapshotOptions; cancellable: gio.Cancellable = nil; callback: AsyncReadyCallback;
-    userData: pointer) =
-  webkit_web_view_get_snapshot(cast[ptr WebView00](self.impl), region, options, if cancellable.isNil: nil else: cast[ptr gio.Cancellable00](cancellable.impl), callback, userData)
-
-type
-  WebExtensionMode* {.size: sizeof(cint), pure.} = enum
-    none = 0
-    manifestv2 = 1
-    manifestv3 = 2
-
-proc webkit_web_view_get_web_extension_mode(self: ptr WebView00): WebExtensionMode {.
-    importc, libprag.}
-
-proc getWebExtensionMode*(self: WebView): WebExtensionMode =
-  webkit_web_view_get_web_extension_mode(cast[ptr WebView00](self.impl))
-
-proc webExtensionMode*(self: WebView): WebExtensionMode =
-  webkit_web_view_get_web_extension_mode(cast[ptr WebView00](self.impl))
-
-type
-  WebsiteDataManager* = ref object of gobject.Object
-  WebsiteDataManager00* = object of gobject.Object00
-
-proc webkit_website_data_manager_get_type*(): GType {.importc, libprag.}
+proc webkit_network_session_get_type*(): GType {.importc, libprag.}
 
 when defined(gcDestructors):
-  proc `=destroy`*(self: var typeof(WebsiteDataManager()[])) =
+  proc `=destroy`*(self: var typeof(NetworkSession()[])) =
     when defined(gintroDebug):
       echo "destroy ", $typeof(self), ' ', cast[int](unsafeaddr self)
     g_object_set_qdata(self.impl, Quark, nil)
@@ -5678,17 +4512,20 @@ when defined(gcDestructors):
       g_object_remove_toggle_ref(self.impl, toggleNotify, addr(self))
       self.impl = nil
 
-proc webkit_website_data_manager_new_ephemeral(): ptr WebsiteDataManager00 {.
+proc scDownloadStarted*(self: NetworkSession;  p: proc (self: ptr NetworkSession00; download: ptr Download00; xdata: pointer) {.cdecl.}, xdata: pointer, cf: gobject.ConnectFlags): culong =
+  g_signal_connect_data(self.impl, "download-started", cast[GCallback](p), xdata, nil, cf)
+
+proc webkit_network_session_new(dataDirectory: cstring; cacheDirectory: cstring): ptr NetworkSession00 {.
     importc, libprag.}
 
-proc newWebsiteDataManagerEphemeral*(): WebsiteDataManager =
-  let gobj = webkit_website_data_manager_new_ephemeral()
+proc newNetworkSession*(dataDirectory: cstring = nil; cacheDirectory: cstring = nil): NetworkSession =
+  let gobj = webkit_network_session_new(dataDirectory, cacheDirectory)
   let qdata = g_object_get_qdata(gobj, Quark)
   if qdata != nil:
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -5698,15 +4535,15 @@ proc newWebsiteDataManagerEphemeral*(): WebsiteDataManager =
     assert(g_object_get_qdata(result.impl, Quark) == nil)
     g_object_set_qdata(result.impl, Quark, addr(result[]))
 
-proc newWebsiteDataManagerEphemeral*(tdesc: typedesc): tdesc =
-  assert(result is WebsiteDataManager)
-  let gobj = webkit_website_data_manager_new_ephemeral()
+proc newNetworkSession*(tdesc: typedesc; dataDirectory: cstring = nil; cacheDirectory: cstring = nil): tdesc =
+  assert(result is NetworkSession)
+  let gobj = webkit_network_session_new(dataDirectory, cacheDirectory)
   let qdata = g_object_get_qdata(gobj, Quark)
   if qdata != nil:
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -5716,15 +4553,15 @@ proc newWebsiteDataManagerEphemeral*(tdesc: typedesc): tdesc =
     assert(g_object_get_qdata(result.impl, Quark) == nil)
     g_object_set_qdata(result.impl, Quark, addr(result[]))
 
-proc initWebsiteDataManagerEphemeral*[T](result: var T) {.deprecated.} =
-  assert(result is WebsiteDataManager)
-  let gobj = webkit_website_data_manager_new_ephemeral()
+proc initNetworkSession*[T](result: var T; dataDirectory: cstring = nil; cacheDirectory: cstring = nil) {.deprecated.} =
+  assert(result is NetworkSession)
+  let gobj = webkit_network_session_new(dataDirectory, cacheDirectory)
   let qdata = g_object_get_qdata(gobj, Quark)
   if qdata != nil:
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -5734,60 +4571,73 @@ proc initWebsiteDataManagerEphemeral*[T](result: var T) {.deprecated.} =
     assert(g_object_get_qdata(result.impl, Quark) == nil)
     g_object_set_qdata(result.impl, Quark, addr(result[]))
 
-proc webkit_website_data_manager_clear_finish(self: ptr WebsiteDataManager00;
-    resu: ptr gio.AsyncResult00; error: ptr ptr glib.Error = nil): gboolean {.
+proc webkit_network_session_new_ephemeral(): ptr NetworkSession00 {.
     importc, libprag.}
 
-proc clearFinish*(self: WebsiteDataManager; resu: gio.AsyncResult): bool =
-  var gerror: ptr glib.Error
-  let resul0 = webkit_website_data_manager_clear_finish(cast[ptr WebsiteDataManager00](self.impl), cast[ptr gio.AsyncResult00](resu.impl), addr gerror)
-  if gerror != nil:
-    let msg = $gerror.message
-    g_error_free(gerror[])
-    raise newException(GException, msg)
-  result = toBool(resul0)
-
-proc webkit_website_data_manager_get_base_cache_directory(self: ptr WebsiteDataManager00): cstring {.
-    importc, libprag.}
-
-proc getBaseCacheDirectory*(self: WebsiteDataManager): string =
-  let resul0 = webkit_website_data_manager_get_base_cache_directory(cast[ptr WebsiteDataManager00](self.impl))
-  if resul0.isNil:
-    return
-  result = $resul0
-
-proc baseCacheDirectory*(self: WebsiteDataManager): string =
-  let resul0 = webkit_website_data_manager_get_base_cache_directory(cast[ptr WebsiteDataManager00](self.impl))
-  if resul0.isNil:
-    return
-  result = $resul0
-
-proc webkit_website_data_manager_get_base_data_directory(self: ptr WebsiteDataManager00): cstring {.
-    importc, libprag.}
-
-proc getBaseDataDirectory*(self: WebsiteDataManager): string =
-  let resul0 = webkit_website_data_manager_get_base_data_directory(cast[ptr WebsiteDataManager00](self.impl))
-  if resul0.isNil:
-    return
-  result = $resul0
-
-proc baseDataDirectory*(self: WebsiteDataManager): string =
-  let resul0 = webkit_website_data_manager_get_base_data_directory(cast[ptr WebsiteDataManager00](self.impl))
-  if resul0.isNil:
-    return
-  result = $resul0
-
-proc webkit_website_data_manager_get_cookie_manager(self: ptr WebsiteDataManager00): ptr CookieManager00 {.
-    importc, libprag.}
-
-proc getCookieManager*(self: WebsiteDataManager): CookieManager =
-  let gobj = webkit_website_data_manager_get_cookie_manager(cast[ptr WebsiteDataManager00](self.impl))
+proc newNetworkSessionEphemeral*(): NetworkSession =
+  let gobj = webkit_network_session_new_ephemeral()
   let qdata = g_object_get_qdata(gobj, Quark)
   if qdata != nil:
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    if g_object_is_floating(result.impl).int != 0:
+      discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+proc newNetworkSessionEphemeral*(tdesc: typedesc): tdesc =
+  assert(result is NetworkSession)
+  let gobj = webkit_network_session_new_ephemeral()
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, webkit6.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    if g_object_is_floating(result.impl).int != 0:
+      discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+proc initNetworkSessionEphemeral*[T](result: var T) {.deprecated.} =
+  assert(result is NetworkSession)
+  let gobj = webkit_network_session_new_ephemeral()
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, webkit6.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    if g_object_is_floating(result.impl).int != 0:
+      discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+proc webkit_network_session_get_default(): ptr NetworkSession00 {.
+    importc, libprag.}
+
+proc getDefaultNetworkSession*(): NetworkSession =
+  let gobj = webkit_network_session_get_default()
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -5796,267 +4646,104 @@ proc getCookieManager*(self: WebsiteDataManager): CookieManager =
     assert(g_object_get_qdata(result.impl, Quark) == nil)
     g_object_set_qdata(result.impl, Quark, addr(result[]))
 
-proc cookieManager*(self: WebsiteDataManager): CookieManager =
-  let gobj = webkit_website_data_manager_get_cookie_manager(cast[ptr WebsiteDataManager00](self.impl))
+proc webkit_network_session_allow_tls_certificate_for_host(self: ptr NetworkSession00;
+    certificate: ptr gio.TlsCertificate00; host: cstring) {.
+    importc, libprag.}
+
+proc allowTlsCertificateForHost*(self: NetworkSession;
+    certificate: gio.TlsCertificate; host: cstring) =
+  webkit_network_session_allow_tls_certificate_for_host(cast[ptr NetworkSession00](self.impl), cast[ptr gio.TlsCertificate00](certificate.impl), host)
+
+proc webkit_network_session_download_uri(self: ptr NetworkSession00; uri: cstring): ptr Download00 {.
+    importc, libprag.}
+
+proc downloadUri*(self: NetworkSession; uri: cstring): Download =
+  let gobj = webkit_network_session_download_uri(cast[ptr NetworkSession00](self.impl), uri)
   let qdata = g_object_get_qdata(gobj, Quark)
   if qdata != nil:
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
-    discard g_object_ref_sink(result.impl)
+    if g_object_is_floating(result.impl).int != 0:
+      discard g_object_ref_sink(result.impl)
     g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
     g_object_unref(result.impl)
     assert(g_object_get_qdata(result.impl, Quark) == nil)
     g_object_set_qdata(result.impl, Quark, addr(result[]))
 
-proc webkit_website_data_manager_get_disk_cache_directory(self: ptr WebsiteDataManager00): cstring {.
+proc webkit_network_session_get_itp_enabled(self: ptr NetworkSession00): gboolean {.
     importc, libprag.}
 
-proc getDiskCacheDirectory*(self: WebsiteDataManager): string =
-  let resul0 = webkit_website_data_manager_get_disk_cache_directory(cast[ptr WebsiteDataManager00](self.impl))
-  if resul0.isNil:
-    return
-  result = $resul0
+proc getItpEnabled*(self: NetworkSession): bool =
+  toBool(webkit_network_session_get_itp_enabled(cast[ptr NetworkSession00](self.impl)))
 
-proc diskCacheDirectory*(self: WebsiteDataManager): string =
-  let resul0 = webkit_website_data_manager_get_disk_cache_directory(cast[ptr WebsiteDataManager00](self.impl))
-  if resul0.isNil:
-    return
-  result = $resul0
+proc itpEnabled*(self: NetworkSession): bool =
+  toBool(webkit_network_session_get_itp_enabled(cast[ptr NetworkSession00](self.impl)))
 
-proc webkit_website_data_manager_get_dom_cache_directory(self: ptr WebsiteDataManager00): cstring {.
+proc webkit_network_session_get_itp_summary(self: ptr NetworkSession00; cancellable: ptr gio.Cancellable00;
+    callback: AsyncReadyCallback; userData: pointer) {.
     importc, libprag.}
 
-proc getDomCacheDirectory*(self: WebsiteDataManager): string =
-  let resul0 = webkit_website_data_manager_get_dom_cache_directory(cast[ptr WebsiteDataManager00](self.impl))
-  if resul0.isNil:
-    return
-  result = $resul0
+proc getItpSummary*(self: NetworkSession; cancellable: gio.Cancellable = nil;
+    callback: AsyncReadyCallback; userData: pointer) =
+  webkit_network_session_get_itp_summary(cast[ptr NetworkSession00](self.impl), if cancellable.isNil: nil else: cast[ptr gio.Cancellable00](cancellable.impl), callback, userData)
 
-proc domCacheDirectory*(self: WebsiteDataManager): string =
-  let resul0 = webkit_website_data_manager_get_dom_cache_directory(cast[ptr WebsiteDataManager00](self.impl))
-  if resul0.isNil:
-    return
-  result = $resul0
-
-proc webkit_website_data_manager_get_hsts_cache_directory(self: ptr WebsiteDataManager00): cstring {.
+proc webkit_network_session_get_persistent_credential_storage_enabled(self: ptr NetworkSession00): gboolean {.
     importc, libprag.}
 
-proc getHstsCacheDirectory*(self: WebsiteDataManager): string =
-  let resul0 = webkit_website_data_manager_get_hsts_cache_directory(cast[ptr WebsiteDataManager00](self.impl))
-  if resul0.isNil:
-    return
-  result = $resul0
+proc getPersistentCredentialStorageEnabled*(self: NetworkSession): bool =
+  toBool(webkit_network_session_get_persistent_credential_storage_enabled(cast[ptr NetworkSession00](self.impl)))
 
-proc hstsCacheDirectory*(self: WebsiteDataManager): string =
-  let resul0 = webkit_website_data_manager_get_hsts_cache_directory(cast[ptr WebsiteDataManager00](self.impl))
-  if resul0.isNil:
-    return
-  result = $resul0
+proc persistentCredentialStorageEnabled*(self: NetworkSession): bool =
+  toBool(webkit_network_session_get_persistent_credential_storage_enabled(cast[ptr NetworkSession00](self.impl)))
 
-proc webkit_website_data_manager_get_indexeddb_directory(self: ptr WebsiteDataManager00): cstring {.
+proc webkit_network_session_is_ephemeral(self: ptr NetworkSession00): gboolean {.
     importc, libprag.}
 
-proc getIndexeddbDirectory*(self: WebsiteDataManager): string =
-  let resul0 = webkit_website_data_manager_get_indexeddb_directory(cast[ptr WebsiteDataManager00](self.impl))
-  if resul0.isNil:
-    return
-  result = $resul0
+proc isEphemeral*(self: NetworkSession): bool =
+  toBool(webkit_network_session_is_ephemeral(cast[ptr NetworkSession00](self.impl)))
 
-proc indexeddbDirectory*(self: WebsiteDataManager): string =
-  let resul0 = webkit_website_data_manager_get_indexeddb_directory(cast[ptr WebsiteDataManager00](self.impl))
-  if resul0.isNil:
-    return
-  result = $resul0
-
-proc webkit_website_data_manager_get_itp_directory(self: ptr WebsiteDataManager00): cstring {.
+proc webkit_network_session_prefetch_dns(self: ptr NetworkSession00; hostname: cstring) {.
     importc, libprag.}
 
-proc getItpDirectory*(self: WebsiteDataManager): string =
-  let resul0 = webkit_website_data_manager_get_itp_directory(cast[ptr WebsiteDataManager00](self.impl))
-  if resul0.isNil:
-    return
-  result = $resul0
+proc prefetchDns*(self: NetworkSession; hostname: cstring) =
+  webkit_network_session_prefetch_dns(cast[ptr NetworkSession00](self.impl), hostname)
 
-proc itpDirectory*(self: WebsiteDataManager): string =
-  let resul0 = webkit_website_data_manager_get_itp_directory(cast[ptr WebsiteDataManager00](self.impl))
-  if resul0.isNil:
-    return
-  result = $resul0
-
-proc webkit_website_data_manager_get_itp_enabled(self: ptr WebsiteDataManager00): gboolean {.
+proc webkit_network_session_set_itp_enabled(self: ptr NetworkSession00; enabled: gboolean) {.
     importc, libprag.}
 
-proc getItpEnabled*(self: WebsiteDataManager): bool =
-  toBool(webkit_website_data_manager_get_itp_enabled(cast[ptr WebsiteDataManager00](self.impl)))
+proc setItpEnabled*(self: NetworkSession; enabled: bool = true) =
+  webkit_network_session_set_itp_enabled(cast[ptr NetworkSession00](self.impl), gboolean(enabled))
 
-proc itpEnabled*(self: WebsiteDataManager): bool =
-  toBool(webkit_website_data_manager_get_itp_enabled(cast[ptr WebsiteDataManager00](self.impl)))
+proc `itpEnabled=`*(self: NetworkSession; enabled: bool) =
+  webkit_network_session_set_itp_enabled(cast[ptr NetworkSession00](self.impl), gboolean(enabled))
 
-proc webkit_website_data_manager_get_itp_summary(self: ptr WebsiteDataManager00;
-    cancellable: ptr gio.Cancellable00; callback: AsyncReadyCallback; userData: pointer) {.
-    importc, libprag.}
-
-proc getItpSummary*(self: WebsiteDataManager;
-    cancellable: gio.Cancellable = nil; callback: AsyncReadyCallback; userData: pointer) =
-  webkit_website_data_manager_get_itp_summary(cast[ptr WebsiteDataManager00](self.impl), if cancellable.isNil: nil else: cast[ptr gio.Cancellable00](cancellable.impl), callback, userData)
-
-proc webkit_website_data_manager_get_local_storage_directory(self: ptr WebsiteDataManager00): cstring {.
-    importc, libprag.}
-
-proc getLocalStorageDirectory*(self: WebsiteDataManager): string =
-  let resul0 = webkit_website_data_manager_get_local_storage_directory(cast[ptr WebsiteDataManager00](self.impl))
-  if resul0.isNil:
-    return
-  result = $resul0
-
-proc localStorageDirectory*(self: WebsiteDataManager): string =
-  let resul0 = webkit_website_data_manager_get_local_storage_directory(cast[ptr WebsiteDataManager00](self.impl))
-  if resul0.isNil:
-    return
-  result = $resul0
-
-proc webkit_website_data_manager_get_offline_application_cache_directory(self: ptr WebsiteDataManager00): cstring {.
-    importc, libprag.}
-
-proc getOfflineApplicationCacheDirectory*(self: WebsiteDataManager): string =
-  let resul0 = webkit_website_data_manager_get_offline_application_cache_directory(cast[ptr WebsiteDataManager00](self.impl))
-  if resul0.isNil:
-    return
-  result = $resul0
-
-proc offlineApplicationCacheDirectory*(self: WebsiteDataManager): string =
-  let resul0 = webkit_website_data_manager_get_offline_application_cache_directory(cast[ptr WebsiteDataManager00](self.impl))
-  if resul0.isNil:
-    return
-  result = $resul0
-
-proc webkit_website_data_manager_get_persistent_credential_storage_enabled(self: ptr WebsiteDataManager00): gboolean {.
-    importc, libprag.}
-
-proc getPersistentCredentialStorageEnabled*(self: WebsiteDataManager): bool =
-  toBool(webkit_website_data_manager_get_persistent_credential_storage_enabled(cast[ptr WebsiteDataManager00](self.impl)))
-
-proc persistentCredentialStorageEnabled*(self: WebsiteDataManager): bool =
-  toBool(webkit_website_data_manager_get_persistent_credential_storage_enabled(cast[ptr WebsiteDataManager00](self.impl)))
-
-proc webkit_website_data_manager_get_service_worker_registrations_directory(self: ptr WebsiteDataManager00): cstring {.
-    importc, libprag.}
-
-proc getServiceWorkerRegistrationsDirectory*(self: WebsiteDataManager): string =
-  let resul0 = webkit_website_data_manager_get_service_worker_registrations_directory(cast[ptr WebsiteDataManager00](self.impl))
-  if resul0.isNil:
-    return
-  result = $resul0
-
-proc serviceWorkerRegistrationsDirectory*(self: WebsiteDataManager): string =
-  let resul0 = webkit_website_data_manager_get_service_worker_registrations_directory(cast[ptr WebsiteDataManager00](self.impl))
-  if resul0.isNil:
-    return
-  result = $resul0
-
-proc webkit_website_data_manager_get_tls_errors_policy(self: ptr WebsiteDataManager00): TLSErrorsPolicy {.
-    importc, libprag.}
-
-proc getTlsErrorsPolicy*(self: WebsiteDataManager): TLSErrorsPolicy =
-  webkit_website_data_manager_get_tls_errors_policy(cast[ptr WebsiteDataManager00](self.impl))
-
-proc tlsErrorsPolicy*(self: WebsiteDataManager): TLSErrorsPolicy =
-  webkit_website_data_manager_get_tls_errors_policy(cast[ptr WebsiteDataManager00](self.impl))
-
-proc webkit_website_data_manager_get_websql_directory(self: ptr WebsiteDataManager00): cstring {.
-    importc, libprag.}
-
-proc getWebsqlDirectory*(self: WebsiteDataManager): string =
-  let resul0 = webkit_website_data_manager_get_websql_directory(cast[ptr WebsiteDataManager00](self.impl))
-  if resul0.isNil:
-    return
-  result = $resul0
-
-proc websqlDirectory*(self: WebsiteDataManager): string =
-  let resul0 = webkit_website_data_manager_get_websql_directory(cast[ptr WebsiteDataManager00](self.impl))
-  if resul0.isNil:
-    return
-  result = $resul0
-
-proc webkit_website_data_manager_is_ephemeral(self: ptr WebsiteDataManager00): gboolean {.
-    importc, libprag.}
-
-proc isEphemeral*(self: WebsiteDataManager): bool =
-  toBool(webkit_website_data_manager_is_ephemeral(cast[ptr WebsiteDataManager00](self.impl)))
-
-proc webkit_website_data_manager_remove_finish(self: ptr WebsiteDataManager00;
-    resu: ptr gio.AsyncResult00; error: ptr ptr glib.Error = nil): gboolean {.
-    importc, libprag.}
-
-proc removeFinish*(self: WebsiteDataManager;
-    resu: gio.AsyncResult): bool =
-  var gerror: ptr glib.Error
-  let resul0 = webkit_website_data_manager_remove_finish(cast[ptr WebsiteDataManager00](self.impl), cast[ptr gio.AsyncResult00](resu.impl), addr gerror)
-  if gerror != nil:
-    let msg = $gerror.message
-    g_error_free(gerror[])
-    raise newException(GException, msg)
-  result = toBool(resul0)
-
-proc webkit_website_data_manager_set_itp_enabled(self: ptr WebsiteDataManager00;
+proc webkit_network_session_set_persistent_credential_storage_enabled(self: ptr NetworkSession00;
     enabled: gboolean) {.
     importc, libprag.}
 
-proc setItpEnabled*(self: WebsiteDataManager;
+proc setPersistentCredentialStorageEnabled*(self: NetworkSession;
     enabled: bool = true) =
-  webkit_website_data_manager_set_itp_enabled(cast[ptr WebsiteDataManager00](self.impl), gboolean(enabled))
+  webkit_network_session_set_persistent_credential_storage_enabled(cast[ptr NetworkSession00](self.impl), gboolean(enabled))
 
-proc `itpEnabled=`*(self: WebsiteDataManager;
+proc `persistentCredentialStorageEnabled=`*(self: NetworkSession;
     enabled: bool) =
-  webkit_website_data_manager_set_itp_enabled(cast[ptr WebsiteDataManager00](self.impl), gboolean(enabled))
+  webkit_network_session_set_persistent_credential_storage_enabled(cast[ptr NetworkSession00](self.impl), gboolean(enabled))
 
-proc webkit_website_data_manager_set_network_proxy_settings(self: ptr WebsiteDataManager00;
-    proxyMode: NetworkProxyMode; proxySettings: ptr NetworkProxySettings00) {.
+proc webkit_web_view_get_network_session(self: ptr WebView00): ptr NetworkSession00 {.
     importc, libprag.}
 
-proc setNetworkProxySettings*(self: WebsiteDataManager;
-    proxyMode: NetworkProxyMode; proxySettings: NetworkProxySettings = nil) =
-  webkit_website_data_manager_set_network_proxy_settings(cast[ptr WebsiteDataManager00](self.impl), proxyMode, if proxySettings.isNil: nil else: cast[ptr NetworkProxySettings00](proxySettings.impl))
-
-proc webkit_website_data_manager_set_persistent_credential_storage_enabled(self: ptr WebsiteDataManager00;
-    enabled: gboolean) {.
-    importc, libprag.}
-
-proc setPersistentCredentialStorageEnabled*(self: WebsiteDataManager;
-    enabled: bool = true) =
-  webkit_website_data_manager_set_persistent_credential_storage_enabled(cast[ptr WebsiteDataManager00](self.impl), gboolean(enabled))
-
-proc `persistentCredentialStorageEnabled=`*(self: WebsiteDataManager;
-    enabled: bool) =
-  webkit_website_data_manager_set_persistent_credential_storage_enabled(cast[ptr WebsiteDataManager00](self.impl), gboolean(enabled))
-
-proc webkit_website_data_manager_set_tls_errors_policy(self: ptr WebsiteDataManager00;
-    policy: TLSErrorsPolicy) {.
-    importc, libprag.}
-
-proc setTlsErrorsPolicy*(self: WebsiteDataManager;
-    policy: TLSErrorsPolicy) =
-  webkit_website_data_manager_set_tls_errors_policy(cast[ptr WebsiteDataManager00](self.impl), policy)
-
-proc `tlsErrorsPolicy=`*(self: WebsiteDataManager;
-    policy: TLSErrorsPolicy) =
-  webkit_website_data_manager_set_tls_errors_policy(cast[ptr WebsiteDataManager00](self.impl), policy)
-
-proc webkit_web_view_get_website_data_manager(self: ptr WebView00): ptr WebsiteDataManager00 {.
-    importc, libprag.}
-
-proc getWebsiteDataManager*(self: WebView): WebsiteDataManager =
-  let gobj = webkit_web_view_get_website_data_manager(cast[ptr WebView00](self.impl))
+proc getNetworkSession*(self: WebView): NetworkSession =
+  let gobj = webkit_web_view_get_network_session(cast[ptr WebView00](self.impl))
   let qdata = g_object_get_qdata(gobj, Quark)
   if qdata != nil:
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -6065,14 +4752,14 @@ proc getWebsiteDataManager*(self: WebView): WebsiteDataManager =
     assert(g_object_get_qdata(result.impl, Quark) == nil)
     g_object_set_qdata(result.impl, Quark, addr(result[]))
 
-proc websiteDataManager*(self: WebView): WebsiteDataManager =
-  let gobj = webkit_web_view_get_website_data_manager(cast[ptr WebView00](self.impl))
+proc networkSession*(self: WebView): NetworkSession =
+  let gobj = webkit_web_view_get_network_session(cast[ptr WebView00](self.impl))
   let qdata = g_object_get_qdata(gobj, Quark)
   if qdata != nil:
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -6081,73 +4768,19 @@ proc websiteDataManager*(self: WebView): WebsiteDataManager =
     assert(g_object_get_qdata(result.impl, Quark) == nil)
     g_object_set_qdata(result.impl, Quark, addr(result[]))
 
-proc webkit_web_context_new_with_website_data_manager(manager: ptr WebsiteDataManager00): ptr WebContext00 {.
+proc webkit_web_context_get_network_session_for_automation(self: ptr WebContext00): ptr NetworkSession00 {.
     importc, libprag.}
 
-proc newWebContextWithWebsiteDataManager*(manager: WebsiteDataManager): WebContext =
-  let gobj = webkit_web_context_new_with_website_data_manager(cast[ptr WebsiteDataManager00](manager.impl))
+proc getNetworkSessionForAutomation*(self: WebContext): NetworkSession =
+  let gobj = webkit_web_context_get_network_session_for_automation(cast[ptr WebContext00](self.impl))
+  if gobj.isNil:
+    return nil
   let qdata = g_object_get_qdata(gobj, Quark)
   if qdata != nil:
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
-    result.impl = gobj
-    GC_ref(result)
-    if g_object_is_floating(result.impl).int != 0:
-      discard g_object_ref_sink(result.impl)
-    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
-    g_object_unref(result.impl)
-    assert(g_object_get_qdata(result.impl, Quark) == nil)
-    g_object_set_qdata(result.impl, Quark, addr(result[]))
-
-proc newWebContextWithWebsiteDataManager*(tdesc: typedesc; manager: WebsiteDataManager): tdesc =
-  assert(result is WebContext)
-  let gobj = webkit_web_context_new_with_website_data_manager(cast[ptr WebsiteDataManager00](manager.impl))
-  let qdata = g_object_get_qdata(gobj, Quark)
-  if qdata != nil:
-    result = cast[type(result)](qdata)
-    assert(result.impl == gobj)
-  else:
-    fnew(result, webkit2.finalizeGObject)
-    result.impl = gobj
-    GC_ref(result)
-    if g_object_is_floating(result.impl).int != 0:
-      discard g_object_ref_sink(result.impl)
-    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
-    g_object_unref(result.impl)
-    assert(g_object_get_qdata(result.impl, Quark) == nil)
-    g_object_set_qdata(result.impl, Quark, addr(result[]))
-
-proc initWebContextWithWebsiteDataManager*[T](result: var T; manager: WebsiteDataManager) {.deprecated.} =
-  assert(result is WebContext)
-  let gobj = webkit_web_context_new_with_website_data_manager(cast[ptr WebsiteDataManager00](manager.impl))
-  let qdata = g_object_get_qdata(gobj, Quark)
-  if qdata != nil:
-    result = cast[type(result)](qdata)
-    assert(result.impl == gobj)
-  else:
-    fnew(result, webkit2.finalizeGObject)
-    result.impl = gobj
-    GC_ref(result)
-    if g_object_is_floating(result.impl).int != 0:
-      discard g_object_ref_sink(result.impl)
-    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
-    g_object_unref(result.impl)
-    assert(g_object_get_qdata(result.impl, Quark) == nil)
-    g_object_set_qdata(result.impl, Quark, addr(result[]))
-
-proc webkit_web_context_get_website_data_manager(self: ptr WebContext00): ptr WebsiteDataManager00 {.
-    importc, libprag.}
-
-proc getWebsiteDataManager*(self: WebContext): WebsiteDataManager =
-  let gobj = webkit_web_context_get_website_data_manager(cast[ptr WebContext00](self.impl))
-  let qdata = g_object_get_qdata(gobj, Quark)
-  if qdata != nil:
-    result = cast[type(result)](qdata)
-    assert(result.impl == gobj)
-  else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -6156,14 +4789,16 @@ proc getWebsiteDataManager*(self: WebContext): WebsiteDataManager =
     assert(g_object_get_qdata(result.impl, Quark) == nil)
     g_object_set_qdata(result.impl, Quark, addr(result[]))
 
-proc websiteDataManager*(self: WebContext): WebsiteDataManager =
-  let gobj = webkit_web_context_get_website_data_manager(cast[ptr WebContext00](self.impl))
+proc networkSessionForAutomation*(self: WebContext): NetworkSession =
+  let gobj = webkit_web_context_get_network_session_for_automation(cast[ptr WebContext00](self.impl))
+  if gobj.isNil:
+    return nil
   let qdata = g_object_get_qdata(gobj, Quark)
   if qdata != nil:
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -6337,77 +4972,223 @@ proc `strictThreshold=`*(self: MemoryPressureSettings;
     value: cdouble) =
   webkit_memory_pressure_settings_set_strict_threshold(cast[ptr MemoryPressureSettings00](self.impl), value)
 
-proc webkit_website_data_manager_set_memory_pressure_settings(settings: ptr MemoryPressureSettings00) {.
+proc webkit_network_session_set_memory_pressure_settings(settings: ptr MemoryPressureSettings00) {.
     importc, libprag.}
 
 proc setMemoryPressureSettings*(settings: MemoryPressureSettings) =
-  webkit_website_data_manager_set_memory_pressure_settings(cast[ptr MemoryPressureSettings00](settings.impl))
+  webkit_network_session_set_memory_pressure_settings(cast[ptr MemoryPressureSettings00](settings.impl))
 
 type
-  WebsiteData00* {.pure.} = object
-  WebsiteData* = ref object
-    impl*: ptr WebsiteData00
-    ignoreFinalizer*: bool
+  CookieManager* = ref object of gobject.Object
+  CookieManager00* = object of gobject.Object00
 
-proc webkit_website_data_get_type*(): GType {.importc, libprag.}
-
-proc gBoxedFreeWebKitWebsiteData*(self: WebsiteData) =
-  if not self.ignoreFinalizer:
-    boxedFree(webkit_website_data_get_type(), cast[ptr WebsiteData00](self.impl))
+proc webkit_cookie_manager_get_type*(): GType {.importc, libprag.}
 
 when defined(gcDestructors):
-  proc `=destroy`*(self: var typeof(WebsiteData()[])) =
+  proc `=destroy`*(self: var typeof(CookieManager()[])) =
     when defined(gintroDebug):
       echo "destroy ", $typeof(self), ' ', cast[int](unsafeaddr self)
+    g_object_set_qdata(self.impl, Quark, nil)
     if not self.ignoreFinalizer and self.impl != nil:
-      boxedFree(webkit_website_data_get_type(), cast[ptr WebsiteData00](self.impl))
+      g_object_remove_toggle_ref(self.impl, toggleNotify, addr(self))
       self.impl = nil
 
-proc newWithFinalizer*(x: var WebsiteData) =
-  when defined(gcDestructors):
-    new(x)
-  else:
-    new(x, gBoxedFreeWebKitWebsiteData)
+proc scChanged*(self: CookieManager;  p: proc (self: ptr gobject.Object00; xdata: pointer) {.cdecl.}, xdata: pointer, cf: gobject.ConnectFlags): culong =
+  g_signal_connect_data(self.impl, "changed", cast[GCallback](p), xdata, nil, cf)
 
-proc webkit_website_data_unref(self: ptr WebsiteData00) {.
+proc webkit_cookie_manager_add_cookie(self: ptr CookieManager00; cookie: ptr soup3.Cookie00;
+    cancellable: ptr gio.Cancellable00; callback: AsyncReadyCallback; userData: pointer) {.
     importc, libprag.}
 
-proc unref*(self: WebsiteData) =
-  webkit_website_data_unref(cast[ptr WebsiteData00](self.impl))
+proc addCookie*(self: CookieManager; cookie: soup3.Cookie;
+    cancellable: gio.Cancellable = nil; callback: AsyncReadyCallback; userData: pointer) =
+  webkit_cookie_manager_add_cookie(cast[ptr CookieManager00](self.impl), cast[ptr soup3.Cookie00](cookie.impl), if cancellable.isNil: nil else: cast[ptr gio.Cancellable00](cancellable.impl), callback, userData)
 
-proc finalizerunref*(self: WebsiteData) =
-  if not self.ignoreFinalizer:
-    webkit_website_data_unref(cast[ptr WebsiteData00](self.impl))
-
-proc webkit_website_data_ref(self: ptr WebsiteData00): ptr WebsiteData00 {.
+proc webkit_cookie_manager_add_cookie_finish(self: ptr CookieManager00; resu: ptr gio.AsyncResult00;
+    error: ptr ptr glib.Error = nil): gboolean {.
     importc, libprag.}
 
-proc `ref`*(self: WebsiteData): WebsiteData =
-  fnew(result, gBoxedFreeWebKitWebsiteData)
-  result.impl = webkit_website_data_ref(cast[ptr WebsiteData00](self.impl))
-
-proc webkit_website_data_get_name(self: ptr WebsiteData00): cstring {.
-    importc, libprag.}
-
-proc getName*(self: WebsiteData): string =
-  result = $webkit_website_data_get_name(cast[ptr WebsiteData00](self.impl))
-
-proc name*(self: WebsiteData): string =
-  result = $webkit_website_data_get_name(cast[ptr WebsiteData00](self.impl))
-
-proc webkit_website_data_manager_fetch_finish(self: ptr WebsiteDataManager00;
-    resu: ptr gio.AsyncResult00; error: ptr ptr glib.Error = nil): ptr glib.List {.
-    importc, libprag.}
-
-proc fetchFinish*(self: WebsiteDataManager; resu: gio.AsyncResult): seq[WebsiteData] =
+proc addCookieFinish*(self: CookieManager; resu: gio.AsyncResult): bool =
   var gerror: ptr glib.Error
-  let resul0 = webkit_website_data_manager_fetch_finish(cast[ptr WebsiteDataManager00](self.impl), cast[ptr gio.AsyncResult00](resu.impl), addr gerror)
+  let resul0 = webkit_cookie_manager_add_cookie_finish(cast[ptr CookieManager00](self.impl), cast[ptr gio.AsyncResult00](resu.impl), addr gerror)
   if gerror != nil:
     let msg = $gerror.message
     g_error_free(gerror[])
     raise newException(GException, msg)
-  result = glistStructs2seq[WebsiteData](resul0, false)
+  result = toBool(resul0)
+
+proc webkit_cookie_manager_delete_cookie(self: ptr CookieManager00; cookie: ptr soup3.Cookie00;
+    cancellable: ptr gio.Cancellable00; callback: AsyncReadyCallback; userData: pointer) {.
+    importc, libprag.}
+
+proc deleteCookie*(self: CookieManager; cookie: soup3.Cookie;
+    cancellable: gio.Cancellable = nil; callback: AsyncReadyCallback; userData: pointer) =
+  webkit_cookie_manager_delete_cookie(cast[ptr CookieManager00](self.impl), cast[ptr soup3.Cookie00](cookie.impl), if cancellable.isNil: nil else: cast[ptr gio.Cancellable00](cancellable.impl), callback, userData)
+
+proc webkit_cookie_manager_delete_cookie_finish(self: ptr CookieManager00;
+    resu: ptr gio.AsyncResult00; error: ptr ptr glib.Error = nil): gboolean {.
+    importc, libprag.}
+
+proc deleteCookieFinish*(self: CookieManager; resu: gio.AsyncResult): bool =
+  var gerror: ptr glib.Error
+  let resul0 = webkit_cookie_manager_delete_cookie_finish(cast[ptr CookieManager00](self.impl), cast[ptr gio.AsyncResult00](resu.impl), addr gerror)
+  if gerror != nil:
+    let msg = $gerror.message
+    g_error_free(gerror[])
+    raise newException(GException, msg)
+  result = toBool(resul0)
+
+proc webkit_cookie_manager_get_accept_policy(self: ptr CookieManager00; cancellable: ptr gio.Cancellable00;
+    callback: AsyncReadyCallback; userData: pointer) {.
+    importc, libprag.}
+
+proc getAcceptPolicy*(self: CookieManager; cancellable: gio.Cancellable = nil;
+    callback: AsyncReadyCallback; userData: pointer) =
+  webkit_cookie_manager_get_accept_policy(cast[ptr CookieManager00](self.impl), if cancellable.isNil: nil else: cast[ptr gio.Cancellable00](cancellable.impl), callback, userData)
+
+proc webkit_cookie_manager_get_all_cookies(self: ptr CookieManager00; cancellable: ptr gio.Cancellable00;
+    callback: AsyncReadyCallback; userData: pointer) {.
+    importc, libprag.}
+
+proc getAllCookies*(self: CookieManager; cancellable: gio.Cancellable = nil;
+    callback: AsyncReadyCallback; userData: pointer) =
+  webkit_cookie_manager_get_all_cookies(cast[ptr CookieManager00](self.impl), if cancellable.isNil: nil else: cast[ptr gio.Cancellable00](cancellable.impl), callback, userData)
+
+proc webkit_cookie_manager_get_all_cookies_finish(self: ptr CookieManager00;
+    resu: ptr gio.AsyncResult00; error: ptr ptr glib.Error = nil): ptr glib.List {.
+    importc, libprag.}
+
+proc getAllCookiesFinish*(self: CookieManager; resu: gio.AsyncResult): seq[soup3.Cookie] =
+  var gerror: ptr glib.Error
+  let resul0 = webkit_cookie_manager_get_all_cookies_finish(cast[ptr CookieManager00](self.impl), cast[ptr gio.AsyncResult00](resu.impl), addr gerror)
+  if gerror != nil:
+    let msg = $gerror.message
+    g_error_free(gerror[])
+    raise newException(GException, msg)
+  result = glistStructs2seq[soup3.Cookie](resul0, false)
   g_list_free(resul0)
+
+proc webkit_cookie_manager_get_cookies(self: ptr CookieManager00; uri: cstring;
+    cancellable: ptr gio.Cancellable00; callback: AsyncReadyCallback; userData: pointer) {.
+    importc, libprag.}
+
+proc getCookies*(self: CookieManager; uri: cstring;
+    cancellable: gio.Cancellable = nil; callback: AsyncReadyCallback; userData: pointer) =
+  webkit_cookie_manager_get_cookies(cast[ptr CookieManager00](self.impl), uri, if cancellable.isNil: nil else: cast[ptr gio.Cancellable00](cancellable.impl), callback, userData)
+
+proc webkit_cookie_manager_get_cookies_finish(self: ptr CookieManager00;
+    resu: ptr gio.AsyncResult00; error: ptr ptr glib.Error = nil): ptr glib.List {.
+    importc, libprag.}
+
+proc getCookiesFinish*(self: CookieManager; resu: gio.AsyncResult): seq[soup3.Cookie] =
+  var gerror: ptr glib.Error
+  let resul0 = webkit_cookie_manager_get_cookies_finish(cast[ptr CookieManager00](self.impl), cast[ptr gio.AsyncResult00](resu.impl), addr gerror)
+  if gerror != nil:
+    let msg = $gerror.message
+    g_error_free(gerror[])
+    raise newException(GException, msg)
+  result = glistStructs2seq[soup3.Cookie](resul0, false)
+  g_list_free(resul0)
+
+proc webkit_cookie_manager_replace_cookies(self: ptr CookieManager00; cookies: ptr glib.List;
+    cancellable: ptr gio.Cancellable00; callback: AsyncReadyCallback; userData: pointer) {.
+    importc, libprag.}
+
+proc replaceCookies*(self: CookieManager; cookies: seq[soup3.Cookie];
+    cancellable: gio.Cancellable = nil; callback: AsyncReadyCallback; userData: pointer) =
+  var tempResGL = seq2GList(cookies)
+  webkit_cookie_manager_replace_cookies(cast[ptr CookieManager00](self.impl), tempResGL, if cancellable.isNil: nil else: cast[ptr gio.Cancellable00](cancellable.impl), callback, userData)
+  g_list_free(tempResGL)
+
+proc webkit_cookie_manager_replace_cookies_finish(self: ptr CookieManager00;
+    resu: ptr gio.AsyncResult00; error: ptr ptr glib.Error = nil): gboolean {.
+    importc, libprag.}
+
+proc replaceCookiesFinish*(self: CookieManager; resu: gio.AsyncResult): bool =
+  var gerror: ptr glib.Error
+  let resul0 = webkit_cookie_manager_replace_cookies_finish(cast[ptr CookieManager00](self.impl), cast[ptr gio.AsyncResult00](resu.impl), addr gerror)
+  if gerror != nil:
+    let msg = $gerror.message
+    g_error_free(gerror[])
+    raise newException(GException, msg)
+  result = toBool(resul0)
+
+proc webkit_network_session_get_cookie_manager(self: ptr NetworkSession00): ptr CookieManager00 {.
+    importc, libprag.}
+
+proc getCookieManager*(self: NetworkSession): CookieManager =
+  let gobj = webkit_network_session_get_cookie_manager(cast[ptr NetworkSession00](self.impl))
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, webkit6.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+proc cookieManager*(self: NetworkSession): CookieManager =
+  let gobj = webkit_network_session_get_cookie_manager(cast[ptr NetworkSession00](self.impl))
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, webkit6.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+type
+  CookieAcceptPolicy* {.size: sizeof(cint), pure.} = enum
+    always = 0
+    never = 1
+    noThirdParty = 2
+
+proc webkit_cookie_manager_get_accept_policy_finish(self: ptr CookieManager00;
+    resu: ptr gio.AsyncResult00; error: ptr ptr glib.Error = nil): CookieAcceptPolicy {.
+    importc, libprag.}
+
+proc getAcceptPolicyFinish*(self: CookieManager;
+    resu: gio.AsyncResult): CookieAcceptPolicy =
+  var gerror: ptr glib.Error
+  let resul0 = webkit_cookie_manager_get_accept_policy_finish(cast[ptr CookieManager00](self.impl), cast[ptr gio.AsyncResult00](resu.impl), addr gerror)
+  if gerror != nil:
+    let msg = $gerror.message
+    g_error_free(gerror[])
+    raise newException(GException, msg)
+  result = resul0
+
+proc webkit_cookie_manager_set_accept_policy(self: ptr CookieManager00; policy: CookieAcceptPolicy) {.
+    importc, libprag.}
+
+proc setAcceptPolicy*(self: CookieManager; policy: CookieAcceptPolicy) =
+  webkit_cookie_manager_set_accept_policy(cast[ptr CookieManager00](self.impl), policy)
+
+proc `acceptPolicy=`*(self: CookieManager; policy: CookieAcceptPolicy) =
+  webkit_cookie_manager_set_accept_policy(cast[ptr CookieManager00](self.impl), policy)
+
+type
+  CookiePersistentStorage* {.size: sizeof(cint), pure.} = enum
+    text = 0
+    sqlite = 1
+
+proc webkit_cookie_manager_set_persistent_storage(self: ptr CookieManager00;
+    filename: cstring; storage: CookiePersistentStorage) {.
+    importc, libprag.}
+
+proc setPersistentStorage*(self: CookieManager; filename: cstring;
+    storage: CookiePersistentStorage) =
+  webkit_cookie_manager_set_persistent_storage(cast[ptr CookieManager00](self.impl), filename, storage)
 
 type
   ITPThirdParty00* {.pure.} = object
@@ -6461,14 +5242,14 @@ proc getDomain*(self: ITPThirdParty): string =
 proc domain*(self: ITPThirdParty): string =
   result = $webkit_itp_third_party_get_domain(cast[ptr ITPThirdParty00](self.impl))
 
-proc webkit_website_data_manager_get_itp_summary_finish(self: ptr WebsiteDataManager00;
+proc webkit_network_session_get_itp_summary_finish(self: ptr NetworkSession00;
     resu: ptr gio.AsyncResult00; error: ptr ptr glib.Error = nil): ptr glib.List {.
     importc, libprag.}
 
-proc getItpSummaryFinish*(self: WebsiteDataManager;
+proc getItpSummaryFinish*(self: NetworkSession;
     resu: gio.AsyncResult): seq[ITPThirdParty] =
   var gerror: ptr glib.Error
-  let resul0 = webkit_website_data_manager_get_itp_summary_finish(cast[ptr WebsiteDataManager00](self.impl), cast[ptr gio.AsyncResult00](resu.impl), addr gerror)
+  let resul0 = webkit_network_session_get_itp_summary_finish(cast[ptr NetworkSession00](self.impl), cast[ptr gio.AsyncResult00](resu.impl), addr gerror)
   if gerror != nil:
     let msg = $gerror.message
     g_error_free(gerror[])
@@ -6560,22 +5341,349 @@ proc firstParties*(self: ITPThirdParty): seq[ITPFirstParty] =
   discard
 
 type
+  WebsiteDataManager* = ref object of gobject.Object
+  WebsiteDataManager00* = object of gobject.Object00
+
+proc webkit_website_data_manager_get_type*(): GType {.importc, libprag.}
+
+when defined(gcDestructors):
+  proc `=destroy`*(self: var typeof(WebsiteDataManager()[])) =
+    when defined(gintroDebug):
+      echo "destroy ", $typeof(self), ' ', cast[int](unsafeaddr self)
+    g_object_set_qdata(self.impl, Quark, nil)
+    if not self.ignoreFinalizer and self.impl != nil:
+      g_object_remove_toggle_ref(self.impl, toggleNotify, addr(self))
+      self.impl = nil
+
+proc webkit_website_data_manager_clear_finish(self: ptr WebsiteDataManager00;
+    resu: ptr gio.AsyncResult00; error: ptr ptr glib.Error = nil): gboolean {.
+    importc, libprag.}
+
+proc clearFinish*(self: WebsiteDataManager; resu: gio.AsyncResult): bool =
+  var gerror: ptr glib.Error
+  let resul0 = webkit_website_data_manager_clear_finish(cast[ptr WebsiteDataManager00](self.impl), cast[ptr gio.AsyncResult00](resu.impl), addr gerror)
+  if gerror != nil:
+    let msg = $gerror.message
+    g_error_free(gerror[])
+    raise newException(GException, msg)
+  result = toBool(resul0)
+
+proc webkit_website_data_manager_get_base_cache_directory(self: ptr WebsiteDataManager00): cstring {.
+    importc, libprag.}
+
+proc getBaseCacheDirectory*(self: WebsiteDataManager): string =
+  let resul0 = webkit_website_data_manager_get_base_cache_directory(cast[ptr WebsiteDataManager00](self.impl))
+  if resul0.isNil:
+    return
+  result = $resul0
+
+proc baseCacheDirectory*(self: WebsiteDataManager): string =
+  let resul0 = webkit_website_data_manager_get_base_cache_directory(cast[ptr WebsiteDataManager00](self.impl))
+  if resul0.isNil:
+    return
+  result = $resul0
+
+proc webkit_website_data_manager_get_base_data_directory(self: ptr WebsiteDataManager00): cstring {.
+    importc, libprag.}
+
+proc getBaseDataDirectory*(self: WebsiteDataManager): string =
+  let resul0 = webkit_website_data_manager_get_base_data_directory(cast[ptr WebsiteDataManager00](self.impl))
+  if resul0.isNil:
+    return
+  result = $resul0
+
+proc baseDataDirectory*(self: WebsiteDataManager): string =
+  let resul0 = webkit_website_data_manager_get_base_data_directory(cast[ptr WebsiteDataManager00](self.impl))
+  if resul0.isNil:
+    return
+  result = $resul0
+
+proc webkit_website_data_manager_get_favicons_enabled(self: ptr WebsiteDataManager00): gboolean {.
+    importc, libprag.}
+
+proc getFaviconsEnabled*(self: WebsiteDataManager): bool =
+  toBool(webkit_website_data_manager_get_favicons_enabled(cast[ptr WebsiteDataManager00](self.impl)))
+
+proc faviconsEnabled*(self: WebsiteDataManager): bool =
+  toBool(webkit_website_data_manager_get_favicons_enabled(cast[ptr WebsiteDataManager00](self.impl)))
+
+proc webkit_website_data_manager_get_itp_summary(self: ptr WebsiteDataManager00;
+    cancellable: ptr gio.Cancellable00; callback: AsyncReadyCallback; userData: pointer) {.
+    importc, libprag.}
+
+proc getItpSummary*(self: WebsiteDataManager;
+    cancellable: gio.Cancellable = nil; callback: AsyncReadyCallback; userData: pointer) =
+  webkit_website_data_manager_get_itp_summary(cast[ptr WebsiteDataManager00](self.impl), if cancellable.isNil: nil else: cast[ptr gio.Cancellable00](cancellable.impl), callback, userData)
+
+proc webkit_website_data_manager_get_itp_summary_finish(self: ptr WebsiteDataManager00;
+    resu: ptr gio.AsyncResult00; error: ptr ptr glib.Error = nil): ptr glib.List {.
+    importc, libprag.}
+
+proc getItpSummaryFinish*(self: WebsiteDataManager;
+    resu: gio.AsyncResult): seq[ITPThirdParty] =
+  var gerror: ptr glib.Error
+  let resul0 = webkit_website_data_manager_get_itp_summary_finish(cast[ptr WebsiteDataManager00](self.impl), cast[ptr gio.AsyncResult00](resu.impl), addr gerror)
+  if gerror != nil:
+    let msg = $gerror.message
+    g_error_free(gerror[])
+    raise newException(GException, msg)
+  result = glistStructs2seq[ITPThirdParty](resul0, false)
+  g_list_free(resul0)
+
+proc webkit_website_data_manager_is_ephemeral(self: ptr WebsiteDataManager00): gboolean {.
+    importc, libprag.}
+
+proc isEphemeral*(self: WebsiteDataManager): bool =
+  toBool(webkit_website_data_manager_is_ephemeral(cast[ptr WebsiteDataManager00](self.impl)))
+
+proc webkit_website_data_manager_remove_finish(self: ptr WebsiteDataManager00;
+    resu: ptr gio.AsyncResult00; error: ptr ptr glib.Error = nil): gboolean {.
+    importc, libprag.}
+
+proc removeFinish*(self: WebsiteDataManager;
+    resu: gio.AsyncResult): bool =
+  var gerror: ptr glib.Error
+  let resul0 = webkit_website_data_manager_remove_finish(cast[ptr WebsiteDataManager00](self.impl), cast[ptr gio.AsyncResult00](resu.impl), addr gerror)
+  if gerror != nil:
+    let msg = $gerror.message
+    g_error_free(gerror[])
+    raise newException(GException, msg)
+  result = toBool(resul0)
+
+proc webkit_website_data_manager_set_favicons_enabled(self: ptr WebsiteDataManager00;
+    enabled: gboolean) {.
+    importc, libprag.}
+
+proc setFaviconsEnabled*(self: WebsiteDataManager;
+    enabled: bool = true) =
+  webkit_website_data_manager_set_favicons_enabled(cast[ptr WebsiteDataManager00](self.impl), gboolean(enabled))
+
+proc `faviconsEnabled=`*(self: WebsiteDataManager;
+    enabled: bool) =
+  webkit_website_data_manager_set_favicons_enabled(cast[ptr WebsiteDataManager00](self.impl), gboolean(enabled))
+
+proc webkit_network_session_get_website_data_manager(self: ptr NetworkSession00): ptr WebsiteDataManager00 {.
+    importc, libprag.}
+
+proc getWebsiteDataManager*(self: NetworkSession): WebsiteDataManager =
+  let gobj = webkit_network_session_get_website_data_manager(cast[ptr NetworkSession00](self.impl))
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, webkit6.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+proc websiteDataManager*(self: NetworkSession): WebsiteDataManager =
+  let gobj = webkit_network_session_get_website_data_manager(cast[ptr NetworkSession00](self.impl))
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, webkit6.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+type
+  WebsiteData00* {.pure.} = object
+  WebsiteData* = ref object
+    impl*: ptr WebsiteData00
+    ignoreFinalizer*: bool
+
+proc webkit_website_data_get_type*(): GType {.importc, libprag.}
+
+proc gBoxedFreeWebKitWebsiteData*(self: WebsiteData) =
+  if not self.ignoreFinalizer:
+    boxedFree(webkit_website_data_get_type(), cast[ptr WebsiteData00](self.impl))
+
+when defined(gcDestructors):
+  proc `=destroy`*(self: var typeof(WebsiteData()[])) =
+    when defined(gintroDebug):
+      echo "destroy ", $typeof(self), ' ', cast[int](unsafeaddr self)
+    if not self.ignoreFinalizer and self.impl != nil:
+      boxedFree(webkit_website_data_get_type(), cast[ptr WebsiteData00](self.impl))
+      self.impl = nil
+
+proc newWithFinalizer*(x: var WebsiteData) =
+  when defined(gcDestructors):
+    new(x)
+  else:
+    new(x, gBoxedFreeWebKitWebsiteData)
+
+proc webkit_website_data_unref(self: ptr WebsiteData00) {.
+    importc, libprag.}
+
+proc unref*(self: WebsiteData) =
+  webkit_website_data_unref(cast[ptr WebsiteData00](self.impl))
+
+proc finalizerunref*(self: WebsiteData) =
+  if not self.ignoreFinalizer:
+    webkit_website_data_unref(cast[ptr WebsiteData00](self.impl))
+
+proc webkit_website_data_ref(self: ptr WebsiteData00): ptr WebsiteData00 {.
+    importc, libprag.}
+
+proc `ref`*(self: WebsiteData): WebsiteData =
+  fnew(result, gBoxedFreeWebKitWebsiteData)
+  result.impl = webkit_website_data_ref(cast[ptr WebsiteData00](self.impl))
+
+proc webkit_website_data_get_name(self: ptr WebsiteData00): cstring {.
+    importc, libprag.}
+
+proc getName*(self: WebsiteData): string =
+  result = $webkit_website_data_get_name(cast[ptr WebsiteData00](self.impl))
+
+proc name*(self: WebsiteData): string =
+  result = $webkit_website_data_get_name(cast[ptr WebsiteData00](self.impl))
+
+proc webkit_website_data_manager_fetch_finish(self: ptr WebsiteDataManager00;
+    resu: ptr gio.AsyncResult00; error: ptr ptr glib.Error = nil): ptr glib.List {.
+    importc, libprag.}
+
+proc fetchFinish*(self: WebsiteDataManager; resu: gio.AsyncResult): seq[WebsiteData] =
+  var gerror: ptr glib.Error
+  let resul0 = webkit_website_data_manager_fetch_finish(cast[ptr WebsiteDataManager00](self.impl), cast[ptr gio.AsyncResult00](resu.impl), addr gerror)
+  if gerror != nil:
+    let msg = $gerror.message
+    g_error_free(gerror[])
+    raise newException(GException, msg)
+  result = glistStructs2seq[WebsiteData](resul0, false)
+  g_list_free(resul0)
+
+type
+  FaviconDatabase* = ref object of gobject.Object
+  FaviconDatabase00* = object of gobject.Object00
+
+proc webkit_favicon_database_get_type*(): GType {.importc, libprag.}
+
+when defined(gcDestructors):
+  proc `=destroy`*(self: var typeof(FaviconDatabase()[])) =
+    when defined(gintroDebug):
+      echo "destroy ", $typeof(self), ' ', cast[int](unsafeaddr self)
+    g_object_set_qdata(self.impl, Quark, nil)
+    if not self.ignoreFinalizer and self.impl != nil:
+      g_object_remove_toggle_ref(self.impl, toggleNotify, addr(self))
+      self.impl = nil
+
+proc scFaviconChanged*(self: FaviconDatabase;  p: proc (self: ptr FaviconDatabase00; pageUri: cstring; faviconUri: cstring; xdata: pointer) {.cdecl.}, xdata: pointer, cf: gobject.ConnectFlags): culong =
+  g_signal_connect_data(self.impl, "favicon-changed", cast[GCallback](p), xdata, nil, cf)
+
+proc webkit_favicon_database_clear(self: ptr FaviconDatabase00) {.
+    importc, libprag.}
+
+proc clear*(self: FaviconDatabase) =
+  webkit_favicon_database_clear(cast[ptr FaviconDatabase00](self.impl))
+
+proc webkit_favicon_database_get_favicon(self: ptr FaviconDatabase00; pageUri: cstring;
+    cancellable: ptr gio.Cancellable00; callback: AsyncReadyCallback; userData: pointer) {.
+    importc, libprag.}
+
+proc getFavicon*(self: FaviconDatabase; pageUri: cstring;
+    cancellable: gio.Cancellable = nil; callback: AsyncReadyCallback; userData: pointer) =
+  webkit_favicon_database_get_favicon(cast[ptr FaviconDatabase00](self.impl), pageUri, if cancellable.isNil: nil else: cast[ptr gio.Cancellable00](cancellable.impl), callback, userData)
+
+proc webkit_favicon_database_get_favicon_finish(self: ptr FaviconDatabase00;
+    resu: ptr gio.AsyncResult00; error: ptr ptr glib.Error = nil): ptr gdk4.Texture00 {.
+    importc, libprag.}
+
+proc getFaviconFinish*(self: FaviconDatabase; resu: gio.AsyncResult): gdk4.Texture =
+  var gerror: ptr glib.Error
+  let gobj = webkit_favicon_database_get_favicon_finish(cast[ptr FaviconDatabase00](self.impl), cast[ptr gio.AsyncResult00](resu.impl), addr gerror)
+  if gerror != nil:
+    let msg = $gerror.message
+    g_error_free(gerror[])
+    raise newException(GException, msg)
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, gdk4.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    if g_object_is_floating(result.impl).int != 0:
+      discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+proc webkit_favicon_database_get_favicon_uri(self: ptr FaviconDatabase00;
+    pageUri: cstring): cstring {.
+    importc, libprag.}
+
+proc getFaviconUri*(self: FaviconDatabase; pageUri: cstring): string =
+  let resul0 = webkit_favicon_database_get_favicon_uri(cast[ptr FaviconDatabase00](self.impl), pageUri)
+  result = $resul0
+  cogfree(resul0)
+
+proc webkit_website_data_manager_get_favicon_database(self: ptr WebsiteDataManager00): ptr FaviconDatabase00 {.
+    importc, libprag.}
+
+proc getFaviconDatabase*(self: WebsiteDataManager): FaviconDatabase =
+  let gobj = webkit_website_data_manager_get_favicon_database(cast[ptr WebsiteDataManager00](self.impl))
+  if gobj.isNil:
+    return nil
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, webkit6.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+proc faviconDatabase*(self: WebsiteDataManager): FaviconDatabase =
+  let gobj = webkit_website_data_manager_get_favicon_database(cast[ptr WebsiteDataManager00](self.impl))
+  if gobj.isNil:
+    return nil
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, webkit6.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+type
   WebsiteDataTypes* {.size: sizeof(cint), pure.} = enum
     memoryCache = 1
     diskCache = 2
     offlineApplicationCache = 4
     sessionStorage = 8
     localStorage = 16
-    websqlDatabases = 32
-    indexeddbDatabases = 64
-    pluginData = 128
-    cookies = 256
-    deviceIdHashSalt = 512
-    hstsCache = 1024
-    itp = 2048
-    serviceWorkerRegistrations = 4096
-    domCache = 8192
-    all = 16383
+    indexeddbDatabases = 32
+    cookies = 64
+    deviceIdHashSalt = 128
+    hstsCache = 256
+    itp = 512
+    serviceWorkerRegistrations = 1024
+    domCache = 2048
+    all = 4095
 
 proc webkit_website_data_manager_clear(self: ptr WebsiteDataManager00; types: WebsiteDataTypes;
     timespan: int64; cancellable: ptr gio.Cancellable00; callback: AsyncReadyCallback;
@@ -6623,626 +5731,137 @@ proc types*(self: WebsiteData): WebsiteDataTypes =
   webkit_website_data_get_types(cast[ptr WebsiteData00](self.impl))
 
 type
-  WindowProperties* = ref object of gobject.Object
-  WindowProperties00* = object of gobject.Object00
-
-proc webkit_window_properties_get_type*(): GType {.importc, libprag.}
-
-when defined(gcDestructors):
-  proc `=destroy`*(self: var typeof(WindowProperties()[])) =
-    when defined(gintroDebug):
-      echo "destroy ", $typeof(self), ' ', cast[int](unsafeaddr self)
-    g_object_set_qdata(self.impl, Quark, nil)
-    if not self.ignoreFinalizer and self.impl != nil:
-      g_object_remove_toggle_ref(self.impl, toggleNotify, addr(self))
-      self.impl = nil
-
-proc webkit_window_properties_get_fullscreen(self: ptr WindowProperties00): gboolean {.
-    importc, libprag.}
-
-proc getFullscreen*(self: WindowProperties): bool =
-  toBool(webkit_window_properties_get_fullscreen(cast[ptr WindowProperties00](self.impl)))
-
-proc fullscreen*(self: WindowProperties): bool =
-  toBool(webkit_window_properties_get_fullscreen(cast[ptr WindowProperties00](self.impl)))
-
-proc webkit_window_properties_get_geometry(self: ptr WindowProperties00;
-    geometry: var gdk.Rectangle) {.
-    importc, libprag.}
-
-proc getGeometry*(self: WindowProperties; geometry: var gdk.Rectangle) =
-  webkit_window_properties_get_geometry(cast[ptr WindowProperties00](self.impl), geometry)
-
-proc getGeometry*(self: WindowProperties): gdk.Rectangle =
-  webkit_window_properties_get_geometry(cast[ptr WindowProperties00](self.impl), result)
-
-proc webkit_window_properties_get_locationbar_visible(self: ptr WindowProperties00): gboolean {.
-    importc, libprag.}
-
-proc getLocationbarVisible*(self: WindowProperties): bool =
-  toBool(webkit_window_properties_get_locationbar_visible(cast[ptr WindowProperties00](self.impl)))
-
-proc locationbarVisible*(self: WindowProperties): bool =
-  toBool(webkit_window_properties_get_locationbar_visible(cast[ptr WindowProperties00](self.impl)))
-
-proc webkit_window_properties_get_menubar_visible(self: ptr WindowProperties00): gboolean {.
-    importc, libprag.}
-
-proc getMenubarVisible*(self: WindowProperties): bool =
-  toBool(webkit_window_properties_get_menubar_visible(cast[ptr WindowProperties00](self.impl)))
-
-proc menubarVisible*(self: WindowProperties): bool =
-  toBool(webkit_window_properties_get_menubar_visible(cast[ptr WindowProperties00](self.impl)))
-
-proc webkit_window_properties_get_resizable(self: ptr WindowProperties00): gboolean {.
-    importc, libprag.}
-
-proc getResizable*(self: WindowProperties): bool =
-  toBool(webkit_window_properties_get_resizable(cast[ptr WindowProperties00](self.impl)))
-
-proc resizable*(self: WindowProperties): bool =
-  toBool(webkit_window_properties_get_resizable(cast[ptr WindowProperties00](self.impl)))
-
-proc webkit_window_properties_get_scrollbars_visible(self: ptr WindowProperties00): gboolean {.
-    importc, libprag.}
-
-proc getScrollbarsVisible*(self: WindowProperties): bool =
-  toBool(webkit_window_properties_get_scrollbars_visible(cast[ptr WindowProperties00](self.impl)))
-
-proc scrollbarsVisible*(self: WindowProperties): bool =
-  toBool(webkit_window_properties_get_scrollbars_visible(cast[ptr WindowProperties00](self.impl)))
-
-proc webkit_window_properties_get_statusbar_visible(self: ptr WindowProperties00): gboolean {.
-    importc, libprag.}
-
-proc getStatusbarVisible*(self: WindowProperties): bool =
-  toBool(webkit_window_properties_get_statusbar_visible(cast[ptr WindowProperties00](self.impl)))
-
-proc statusbarVisible*(self: WindowProperties): bool =
-  toBool(webkit_window_properties_get_statusbar_visible(cast[ptr WindowProperties00](self.impl)))
-
-proc webkit_window_properties_get_toolbar_visible(self: ptr WindowProperties00): gboolean {.
-    importc, libprag.}
-
-proc getToolbarVisible*(self: WindowProperties): bool =
-  toBool(webkit_window_properties_get_toolbar_visible(cast[ptr WindowProperties00](self.impl)))
-
-proc toolbarVisible*(self: WindowProperties): bool =
-  toBool(webkit_window_properties_get_toolbar_visible(cast[ptr WindowProperties00](self.impl)))
-
-proc webkit_web_view_get_window_properties(self: ptr WebView00): ptr WindowProperties00 {.
-    importc, libprag.}
-
-proc getWindowProperties*(self: WebView): WindowProperties =
-  let gobj = webkit_web_view_get_window_properties(cast[ptr WebView00](self.impl))
-  let qdata = g_object_get_qdata(gobj, Quark)
-  if qdata != nil:
-    result = cast[type(result)](qdata)
-    assert(result.impl == gobj)
-  else:
-    fnew(result, webkit2.finalizeGObject)
-    result.impl = gobj
-    GC_ref(result)
-    discard g_object_ref_sink(result.impl)
-    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
-    g_object_unref(result.impl)
-    assert(g_object_get_qdata(result.impl, Quark) == nil)
-    g_object_set_qdata(result.impl, Quark, addr(result[]))
-
-proc windowProperties*(self: WebView): WindowProperties =
-  let gobj = webkit_web_view_get_window_properties(cast[ptr WebView00](self.impl))
-  let qdata = g_object_get_qdata(gobj, Quark)
-  if qdata != nil:
-    result = cast[type(result)](qdata)
-    assert(result.impl == gobj)
-  else:
-    fnew(result, webkit2.finalizeGObject)
-    result.impl = gobj
-    GC_ref(result)
-    discard g_object_ref_sink(result.impl)
-    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
-    g_object_unref(result.impl)
-    assert(g_object_get_qdata(result.impl, Quark) == nil)
-    g_object_set_qdata(result.impl, Quark, addr(result[]))
+  NetworkProxyMode* {.size: sizeof(cint), pure.} = enum
+    default = 0
+    noProxy = 1
+    custom = 2
 
 type
-  BackForwardListItem* = ref object of gobject.InitiallyUnowned
-  BackForwardListItem00* = object of gobject.InitiallyUnowned00
-
-proc webkit_back_forward_list_item_get_type*(): GType {.importc, libprag.}
-
-when defined(gcDestructors):
-  proc `=destroy`*(self: var typeof(BackForwardListItem()[])) =
-    when defined(gintroDebug):
-      echo "destroy ", $typeof(self), ' ', cast[int](unsafeaddr self)
-    g_object_set_qdata(self.impl, Quark, nil)
-    if not self.ignoreFinalizer and self.impl != nil:
-      g_object_remove_toggle_ref(self.impl, toggleNotify, addr(self))
-      self.impl = nil
-
-proc webkit_back_forward_list_item_get_original_uri(self: ptr BackForwardListItem00): cstring {.
-    importc, libprag.}
-
-proc getOriginalUri*(self: BackForwardListItem): string =
-  result = $webkit_back_forward_list_item_get_original_uri(cast[ptr BackForwardListItem00](self.impl))
-
-proc originalUri*(self: BackForwardListItem): string =
-  result = $webkit_back_forward_list_item_get_original_uri(cast[ptr BackForwardListItem00](self.impl))
-
-proc webkit_back_forward_list_item_get_title(self: ptr BackForwardListItem00): cstring {.
-    importc, libprag.}
-
-proc getTitle*(self: BackForwardListItem): string =
-  result = $webkit_back_forward_list_item_get_title(cast[ptr BackForwardListItem00](self.impl))
-
-proc title*(self: BackForwardListItem): string =
-  result = $webkit_back_forward_list_item_get_title(cast[ptr BackForwardListItem00](self.impl))
-
-proc webkit_back_forward_list_item_get_uri(self: ptr BackForwardListItem00): cstring {.
-    importc, libprag.}
-
-proc getUri*(self: BackForwardListItem): string =
-  result = $webkit_back_forward_list_item_get_uri(cast[ptr BackForwardListItem00](self.impl))
-
-proc uri*(self: BackForwardListItem): string =
-  result = $webkit_back_forward_list_item_get_uri(cast[ptr BackForwardListItem00](self.impl))
-
-type
-  BackForwardList* = ref object of gobject.Object
-  BackForwardList00* = object of gobject.Object00
-
-proc webkit_back_forward_list_get_type*(): GType {.importc, libprag.}
-
-when defined(gcDestructors):
-  proc `=destroy`*(self: var typeof(BackForwardList()[])) =
-    when defined(gintroDebug):
-      echo "destroy ", $typeof(self), ' ', cast[int](unsafeaddr self)
-    g_object_set_qdata(self.impl, Quark, nil)
-    if not self.ignoreFinalizer and self.impl != nil:
-      g_object_remove_toggle_ref(self.impl, toggleNotify, addr(self))
-      self.impl = nil
-
-proc scChanged*(self: BackForwardList;  p: proc (self: ptr BackForwardList00; itemAdded: ptr BackForwardListItem00; itemsRemoved: pointer; xdata: pointer) {.cdecl.}, xdata: pointer, cf: gobject.ConnectFlags): culong =
-  g_signal_connect_data(self.impl, "changed", cast[GCallback](p), xdata, nil, cf)
-
-proc webkit_back_forward_list_get_back_item(self: ptr BackForwardList00): ptr BackForwardListItem00 {.
-    importc, libprag.}
-
-proc getBackItem*(self: BackForwardList): BackForwardListItem =
-  let gobj = webkit_back_forward_list_get_back_item(cast[ptr BackForwardList00](self.impl))
-  if gobj.isNil:
-    return nil
-  let qdata = g_object_get_qdata(gobj, Quark)
-  if qdata != nil:
-    result = cast[type(result)](qdata)
-    assert(result.impl == gobj)
-  else:
-    fnew(result, webkit2.finalizeGObject)
-    result.impl = gobj
-    GC_ref(result)
-    discard g_object_ref_sink(result.impl)
-    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
-    g_object_unref(result.impl)
-    assert(g_object_get_qdata(result.impl, Quark) == nil)
-    g_object_set_qdata(result.impl, Quark, addr(result[]))
-
-proc backItem*(self: BackForwardList): BackForwardListItem =
-  let gobj = webkit_back_forward_list_get_back_item(cast[ptr BackForwardList00](self.impl))
-  if gobj.isNil:
-    return nil
-  let qdata = g_object_get_qdata(gobj, Quark)
-  if qdata != nil:
-    result = cast[type(result)](qdata)
-    assert(result.impl == gobj)
-  else:
-    fnew(result, webkit2.finalizeGObject)
-    result.impl = gobj
-    GC_ref(result)
-    discard g_object_ref_sink(result.impl)
-    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
-    g_object_unref(result.impl)
-    assert(g_object_get_qdata(result.impl, Quark) == nil)
-    g_object_set_qdata(result.impl, Quark, addr(result[]))
-
-proc webkit_back_forward_list_get_back_list(self: ptr BackForwardList00): ptr glib.List {.
-    importc, libprag.}
-
-proc getBackList*(self: BackForwardList): seq[BackForwardListItem] =
-  let resul0 = webkit_back_forward_list_get_back_list(cast[ptr BackForwardList00](self.impl))
-  result = glistObjects2seq(BackForwardListItem, resul0, false)
-  g_list_free(resul0)
-
-proc backList*(self: BackForwardList): seq[BackForwardListItem] =
-  let resul0 = webkit_back_forward_list_get_back_list(cast[ptr BackForwardList00](self.impl))
-  result = glistObjects2seq(BackForwardListItem, resul0, false)
-  g_list_free(resul0)
-
-proc webkit_back_forward_list_get_back_list_with_limit(self: ptr BackForwardList00;
-    limit: uint32): ptr glib.List {.
-    importc, libprag.}
-
-proc getBackListWithLimit*(self: BackForwardList;
-    limit: int): seq[BackForwardListItem] =
-  let resul0 = webkit_back_forward_list_get_back_list_with_limit(cast[ptr BackForwardList00](self.impl), uint32(limit))
-  result = glistObjects2seq(BackForwardListItem, resul0, false)
-  g_list_free(resul0)
-
-proc webkit_back_forward_list_get_current_item(self: ptr BackForwardList00): ptr BackForwardListItem00 {.
-    importc, libprag.}
-
-proc getCurrentItem*(self: BackForwardList): BackForwardListItem =
-  let gobj = webkit_back_forward_list_get_current_item(cast[ptr BackForwardList00](self.impl))
-  if gobj.isNil:
-    return nil
-  let qdata = g_object_get_qdata(gobj, Quark)
-  if qdata != nil:
-    result = cast[type(result)](qdata)
-    assert(result.impl == gobj)
-  else:
-    fnew(result, webkit2.finalizeGObject)
-    result.impl = gobj
-    GC_ref(result)
-    discard g_object_ref_sink(result.impl)
-    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
-    g_object_unref(result.impl)
-    assert(g_object_get_qdata(result.impl, Quark) == nil)
-    g_object_set_qdata(result.impl, Quark, addr(result[]))
-
-proc currentItem*(self: BackForwardList): BackForwardListItem =
-  let gobj = webkit_back_forward_list_get_current_item(cast[ptr BackForwardList00](self.impl))
-  if gobj.isNil:
-    return nil
-  let qdata = g_object_get_qdata(gobj, Quark)
-  if qdata != nil:
-    result = cast[type(result)](qdata)
-    assert(result.impl == gobj)
-  else:
-    fnew(result, webkit2.finalizeGObject)
-    result.impl = gobj
-    GC_ref(result)
-    discard g_object_ref_sink(result.impl)
-    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
-    g_object_unref(result.impl)
-    assert(g_object_get_qdata(result.impl, Quark) == nil)
-    g_object_set_qdata(result.impl, Quark, addr(result[]))
-
-proc webkit_back_forward_list_get_forward_item(self: ptr BackForwardList00): ptr BackForwardListItem00 {.
-    importc, libprag.}
-
-proc getForwardItem*(self: BackForwardList): BackForwardListItem =
-  let gobj = webkit_back_forward_list_get_forward_item(cast[ptr BackForwardList00](self.impl))
-  if gobj.isNil:
-    return nil
-  let qdata = g_object_get_qdata(gobj, Quark)
-  if qdata != nil:
-    result = cast[type(result)](qdata)
-    assert(result.impl == gobj)
-  else:
-    fnew(result, webkit2.finalizeGObject)
-    result.impl = gobj
-    GC_ref(result)
-    discard g_object_ref_sink(result.impl)
-    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
-    g_object_unref(result.impl)
-    assert(g_object_get_qdata(result.impl, Quark) == nil)
-    g_object_set_qdata(result.impl, Quark, addr(result[]))
-
-proc forwardItem*(self: BackForwardList): BackForwardListItem =
-  let gobj = webkit_back_forward_list_get_forward_item(cast[ptr BackForwardList00](self.impl))
-  if gobj.isNil:
-    return nil
-  let qdata = g_object_get_qdata(gobj, Quark)
-  if qdata != nil:
-    result = cast[type(result)](qdata)
-    assert(result.impl == gobj)
-  else:
-    fnew(result, webkit2.finalizeGObject)
-    result.impl = gobj
-    GC_ref(result)
-    discard g_object_ref_sink(result.impl)
-    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
-    g_object_unref(result.impl)
-    assert(g_object_get_qdata(result.impl, Quark) == nil)
-    g_object_set_qdata(result.impl, Quark, addr(result[]))
-
-proc webkit_back_forward_list_get_forward_list(self: ptr BackForwardList00): ptr glib.List {.
-    importc, libprag.}
-
-proc getForwardList*(self: BackForwardList): seq[BackForwardListItem] =
-  let resul0 = webkit_back_forward_list_get_forward_list(cast[ptr BackForwardList00](self.impl))
-  result = glistObjects2seq(BackForwardListItem, resul0, false)
-  g_list_free(resul0)
-
-proc forwardList*(self: BackForwardList): seq[BackForwardListItem] =
-  let resul0 = webkit_back_forward_list_get_forward_list(cast[ptr BackForwardList00](self.impl))
-  result = glistObjects2seq(BackForwardListItem, resul0, false)
-  g_list_free(resul0)
-
-proc webkit_back_forward_list_get_forward_list_with_limit(self: ptr BackForwardList00;
-    limit: uint32): ptr glib.List {.
-    importc, libprag.}
-
-proc getForwardListWithLimit*(self: BackForwardList;
-    limit: int): seq[BackForwardListItem] =
-  let resul0 = webkit_back_forward_list_get_forward_list_with_limit(cast[ptr BackForwardList00](self.impl), uint32(limit))
-  result = glistObjects2seq(BackForwardListItem, resul0, false)
-  g_list_free(resul0)
-
-proc webkit_back_forward_list_get_length(self: ptr BackForwardList00): uint32 {.
-    importc, libprag.}
-
-proc getLength*(self: BackForwardList): int =
-  int(webkit_back_forward_list_get_length(cast[ptr BackForwardList00](self.impl)))
-
-proc length*(self: BackForwardList): int =
-  int(webkit_back_forward_list_get_length(cast[ptr BackForwardList00](self.impl)))
-
-proc webkit_back_forward_list_get_nth_item(self: ptr BackForwardList00; index: int32): ptr BackForwardListItem00 {.
-    importc, libprag.}
-
-proc getNthItem*(self: BackForwardList; index: int): BackForwardListItem =
-  let gobj = webkit_back_forward_list_get_nth_item(cast[ptr BackForwardList00](self.impl), int32(index))
-  if gobj.isNil:
-    return nil
-  let qdata = g_object_get_qdata(gobj, Quark)
-  if qdata != nil:
-    result = cast[type(result)](qdata)
-    assert(result.impl == gobj)
-  else:
-    fnew(result, webkit2.finalizeGObject)
-    result.impl = gobj
-    GC_ref(result)
-    discard g_object_ref_sink(result.impl)
-    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
-    g_object_unref(result.impl)
-    assert(g_object_get_qdata(result.impl, Quark) == nil)
-    g_object_set_qdata(result.impl, Quark, addr(result[]))
-
-proc webkit_web_view_get_back_forward_list(self: ptr WebView00): ptr BackForwardList00 {.
-    importc, libprag.}
-
-proc getBackForwardList*(self: WebView): BackForwardList =
-  let gobj = webkit_web_view_get_back_forward_list(cast[ptr WebView00](self.impl))
-  let qdata = g_object_get_qdata(gobj, Quark)
-  if qdata != nil:
-    result = cast[type(result)](qdata)
-    assert(result.impl == gobj)
-  else:
-    fnew(result, webkit2.finalizeGObject)
-    result.impl = gobj
-    GC_ref(result)
-    discard g_object_ref_sink(result.impl)
-    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
-    g_object_unref(result.impl)
-    assert(g_object_get_qdata(result.impl, Quark) == nil)
-    g_object_set_qdata(result.impl, Quark, addr(result[]))
-
-proc backForwardList*(self: WebView): BackForwardList =
-  let gobj = webkit_web_view_get_back_forward_list(cast[ptr WebView00](self.impl))
-  let qdata = g_object_get_qdata(gobj, Quark)
-  if qdata != nil:
-    result = cast[type(result)](qdata)
-    assert(result.impl == gobj)
-  else:
-    fnew(result, webkit2.finalizeGObject)
-    result.impl = gobj
-    GC_ref(result)
-    discard g_object_ref_sink(result.impl)
-    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
-    g_object_unref(result.impl)
-    assert(g_object_get_qdata(result.impl, Quark) == nil)
-    g_object_set_qdata(result.impl, Quark, addr(result[]))
-
-proc webkit_web_view_go_to_back_forward_list_item(self: ptr WebView00; listItem: ptr BackForwardListItem00) {.
-    importc, libprag.}
-
-proc goToBackForwardListItem*(self: WebView; listItem: BackForwardListItem) =
-  webkit_web_view_go_to_back_forward_list_item(cast[ptr WebView00](self.impl), cast[ptr BackForwardListItem00](listItem.impl))
-
-type
-  WebViewSessionState00* {.pure.} = object
-  WebViewSessionState* = ref object
-    impl*: ptr WebViewSessionState00
+  NetworkProxySettings00* {.pure.} = object
+  NetworkProxySettings* = ref object
+    impl*: ptr NetworkProxySettings00
     ignoreFinalizer*: bool
 
-proc webkit_web_view_session_state_get_type*(): GType {.importc, libprag.}
+proc webkit_network_proxy_settings_get_type*(): GType {.importc, libprag.}
 
-proc gBoxedFreeWebKitWebViewSessionState*(self: WebViewSessionState) =
+proc gBoxedFreeWebKitNetworkProxySettings*(self: NetworkProxySettings) =
   if not self.ignoreFinalizer:
-    boxedFree(webkit_web_view_session_state_get_type(), cast[ptr WebViewSessionState00](self.impl))
+    boxedFree(webkit_network_proxy_settings_get_type(), cast[ptr NetworkProxySettings00](self.impl))
 
 when defined(gcDestructors):
-  proc `=destroy`*(self: var typeof(WebViewSessionState()[])) =
+  proc `=destroy`*(self: var typeof(NetworkProxySettings()[])) =
     when defined(gintroDebug):
       echo "destroy ", $typeof(self), ' ', cast[int](unsafeaddr self)
     if not self.ignoreFinalizer and self.impl != nil:
-      boxedFree(webkit_web_view_session_state_get_type(), cast[ptr WebViewSessionState00](self.impl))
+      boxedFree(webkit_network_proxy_settings_get_type(), cast[ptr NetworkProxySettings00](self.impl))
       self.impl = nil
 
-proc newWithFinalizer*(x: var WebViewSessionState) =
+proc newWithFinalizer*(x: var NetworkProxySettings) =
   when defined(gcDestructors):
     new(x)
   else:
-    new(x, gBoxedFreeWebKitWebViewSessionState)
+    new(x, gBoxedFreeWebKitNetworkProxySettings)
 
-proc webkit_web_view_session_state_unref(self: ptr WebViewSessionState00) {.
+proc webkit_network_proxy_settings_free(self: ptr NetworkProxySettings00) {.
     importc, libprag.}
 
-proc unref*(self: WebViewSessionState) =
-  webkit_web_view_session_state_unref(cast[ptr WebViewSessionState00](self.impl))
+proc free*(self: NetworkProxySettings) =
+  webkit_network_proxy_settings_free(cast[ptr NetworkProxySettings00](self.impl))
 
-proc finalizerunref*(self: WebViewSessionState) =
+proc finalizerfree*(self: NetworkProxySettings) =
   if not self.ignoreFinalizer:
-    webkit_web_view_session_state_unref(cast[ptr WebViewSessionState00](self.impl))
+    webkit_network_proxy_settings_free(cast[ptr NetworkProxySettings00](self.impl))
 
-proc webkit_web_view_session_state_ref(self: ptr WebViewSessionState00): ptr WebViewSessionState00 {.
+proc webkit_network_proxy_settings_add_proxy_for_scheme(self: ptr NetworkProxySettings00;
+    scheme: cstring; proxyUri: cstring) {.
     importc, libprag.}
 
-proc `ref`*(self: WebViewSessionState): WebViewSessionState =
-  fnew(result, gBoxedFreeWebKitWebViewSessionState)
-  result.impl = webkit_web_view_session_state_ref(cast[ptr WebViewSessionState00](self.impl))
+proc addProxyForScheme*(self: NetworkProxySettings;
+    scheme: cstring; proxyUri: cstring) =
+  webkit_network_proxy_settings_add_proxy_for_scheme(cast[ptr NetworkProxySettings00](self.impl), scheme, proxyUri)
 
-proc webkit_web_view_session_state_serialize(self: ptr WebViewSessionState00): ptr glib.Bytes00 {.
+proc webkit_network_proxy_settings_copy(self: ptr NetworkProxySettings00): ptr NetworkProxySettings00 {.
     importc, libprag.}
 
-proc serialize*(self: WebViewSessionState): glib.Bytes =
-  fnew(result, gBoxedFreeGBytes)
-  result.impl = webkit_web_view_session_state_serialize(cast[ptr WebViewSessionState00](self.impl))
+proc copy*(self: NetworkProxySettings): NetworkProxySettings =
+  fnew(result, gBoxedFreeWebKitNetworkProxySettings)
+  result.impl = webkit_network_proxy_settings_copy(cast[ptr NetworkProxySettings00](self.impl))
 
-proc webkit_web_view_session_state_new(data: ptr glib.Bytes00): ptr WebViewSessionState00 {.
+proc webkit_network_proxy_settings_new(defaultProxyUri: cstring; ignoreHosts: ptr cstring): ptr NetworkProxySettings00 {.
     importc, libprag.}
 
-proc newWebViewSessionState*(data: glib.Bytes): WebViewSessionState =
-  fnew(result, gBoxedFreeWebKitWebViewSessionState)
-  result.impl = webkit_web_view_session_state_new(cast[ptr glib.Bytes00](data.impl))
+proc newNetworkProxySettings*(defaultProxyUri: cstring = nil; ignoreHosts: varargs[string, `$`]): NetworkProxySettings =
+  var fs469n23x: array[256, pointer]
+  var fs469n23: cstringArray = cast[cstringArray](addr fs469n23x)
+  fnew(result, gBoxedFreeWebKitNetworkProxySettings)
+  result.impl = webkit_network_proxy_settings_new(defaultProxyUri, seq2CstringArray(ignoreHosts, fs469n23))
 
-proc newWebViewSessionState*(tdesc: typedesc; data: glib.Bytes): tdesc =
-  assert(result is WebViewSessionState)
-  fnew(result, gBoxedFreeWebKitWebViewSessionState)
-  result.impl = webkit_web_view_session_state_new(cast[ptr glib.Bytes00](data.impl))
+proc newNetworkProxySettings*(tdesc: typedesc; defaultProxyUri: cstring = nil; ignoreHosts: varargs[string, `$`]): tdesc =
+  var fs469n23x: array[256, pointer]
+  var fs469n23: cstringArray = cast[cstringArray](addr fs469n23x)
+  assert(result is NetworkProxySettings)
+  fnew(result, gBoxedFreeWebKitNetworkProxySettings)
+  result.impl = webkit_network_proxy_settings_new(defaultProxyUri, seq2CstringArray(ignoreHosts, fs469n23))
 
-proc initWebViewSessionState*[T](result: var T; data: glib.Bytes) {.deprecated.} =
-  assert(result is WebViewSessionState)
-  fnew(result, gBoxedFreeWebKitWebViewSessionState)
-  result.impl = webkit_web_view_session_state_new(cast[ptr glib.Bytes00](data.impl))
+proc initNetworkProxySettings*[T](result: var T; defaultProxyUri: cstring = nil; ignoreHosts: varargs[string, `$`]) {.deprecated.} =
+  var fs469n23x: array[256, pointer]
+  var fs469n23: cstringArray = cast[cstringArray](addr fs469n23x)
+  assert(result is NetworkProxySettings)
+  fnew(result, gBoxedFreeWebKitNetworkProxySettings)
+  result.impl = webkit_network_proxy_settings_new(defaultProxyUri, seq2CstringArray(ignoreHosts, fs469n23))
 
-proc webkit_web_view_get_session_state(self: ptr WebView00): ptr WebViewSessionState00 {.
+proc webkit_network_session_set_proxy_settings(self: ptr NetworkSession00;
+    proxyMode: NetworkProxyMode; proxySettings: ptr NetworkProxySettings00) {.
     importc, libprag.}
 
-proc getSessionState*(self: WebView): WebViewSessionState =
-  fnew(result, gBoxedFreeWebKitWebViewSessionState)
-  result.impl = webkit_web_view_get_session_state(cast[ptr WebView00](self.impl))
-
-proc sessionState*(self: WebView): WebViewSessionState =
-  fnew(result, gBoxedFreeWebKitWebViewSessionState)
-  result.impl = webkit_web_view_get_session_state(cast[ptr WebView00](self.impl))
-
-proc webkit_web_view_restore_session_state(self: ptr WebView00; state: ptr WebViewSessionState00) {.
-    importc, libprag.}
-
-proc restoreSessionState*(self: WebView; state: WebViewSessionState) =
-  webkit_web_view_restore_session_state(cast[ptr WebView00](self.impl), cast[ptr WebViewSessionState00](state.impl))
+proc setProxySettings*(self: NetworkSession; proxyMode: NetworkProxyMode;
+    proxySettings: NetworkProxySettings = nil) =
+  webkit_network_session_set_proxy_settings(cast[ptr NetworkSession00](self.impl), proxyMode, if proxySettings.isNil: nil else: cast[ptr NetworkProxySettings00](proxySettings.impl))
 
 type
-  JavascriptResult00* {.pure.} = object
-  JavascriptResult* = ref object
-    impl*: ptr JavascriptResult00
-    ignoreFinalizer*: bool
+  TLSErrorsPolicy* {.size: sizeof(cint), pure.} = enum
+    ignore = 0
+    fail = 1
 
-proc webkit_javascript_result_get_type*(): GType {.importc, libprag.}
-
-proc gBoxedFreeWebKitJavascriptResult*(self: JavascriptResult) =
-  if not self.ignoreFinalizer:
-    boxedFree(webkit_javascript_result_get_type(), cast[ptr JavascriptResult00](self.impl))
-
-when defined(gcDestructors):
-  proc `=destroy`*(self: var typeof(JavascriptResult()[])) =
-    when defined(gintroDebug):
-      echo "destroy ", $typeof(self), ' ', cast[int](unsafeaddr self)
-    if not self.ignoreFinalizer and self.impl != nil:
-      boxedFree(webkit_javascript_result_get_type(), cast[ptr JavascriptResult00](self.impl))
-      self.impl = nil
-
-proc newWithFinalizer*(x: var JavascriptResult) =
-  when defined(gcDestructors):
-    new(x)
-  else:
-    new(x, gBoxedFreeWebKitJavascriptResult)
-
-proc webkit_javascript_result_unref(self: ptr JavascriptResult00) {.
+proc webkit_network_session_get_tls_errors_policy(self: ptr NetworkSession00): TLSErrorsPolicy {.
     importc, libprag.}
 
-proc unref*(self: JavascriptResult) =
-  webkit_javascript_result_unref(cast[ptr JavascriptResult00](self.impl))
+proc getTlsErrorsPolicy*(self: NetworkSession): TLSErrorsPolicy =
+  webkit_network_session_get_tls_errors_policy(cast[ptr NetworkSession00](self.impl))
 
-proc finalizerunref*(self: JavascriptResult) =
-  if not self.ignoreFinalizer:
-    webkit_javascript_result_unref(cast[ptr JavascriptResult00](self.impl))
+proc tlsErrorsPolicy*(self: NetworkSession): TLSErrorsPolicy =
+  webkit_network_session_get_tls_errors_policy(cast[ptr NetworkSession00](self.impl))
 
-proc webkit_javascript_result_ref(self: ptr JavascriptResult00): ptr JavascriptResult00 {.
+proc webkit_network_session_set_tls_errors_policy(self: ptr NetworkSession00;
+    policy: TLSErrorsPolicy) {.
     importc, libprag.}
 
-proc `ref`*(self: JavascriptResult): JavascriptResult =
-  fnew(result, gBoxedFreeWebKitJavascriptResult)
-  result.impl = webkit_javascript_result_ref(cast[ptr JavascriptResult00](self.impl))
+proc setTlsErrorsPolicy*(self: NetworkSession; policy: TLSErrorsPolicy) =
+  webkit_network_session_set_tls_errors_policy(cast[ptr NetworkSession00](self.impl), policy)
 
-proc webkit_javascript_result_get_js_value(self: ptr JavascriptResult00): ptr javascriptcore.Value00 {.
+proc `tlsErrorsPolicy=`*(self: NetworkSession; policy: TLSErrorsPolicy) =
+  webkit_network_session_set_tls_errors_policy(cast[ptr NetworkSession00](self.impl), policy)
+
+type
+  SnapshotRegion* {.size: sizeof(cint), pure.} = enum
+    visible = 0
+    fullDocument = 1
+
+type
+  SnapshotOptions* {.size: sizeof(cint), pure.} = enum
+    none = 0
+    includeSelectionHighlighting = 1
+    transparentBackground = 2
+
+proc webkit_web_view_get_snapshot(self: ptr WebView00; region: SnapshotRegion;
+    options: SnapshotOptions; cancellable: ptr gio.Cancellable00; callback: AsyncReadyCallback;
+    userData: pointer) {.
     importc, libprag.}
 
-proc getJsValue*(self: JavascriptResult): javascriptcore.Value =
-  let gobj = webkit_javascript_result_get_js_value(cast[ptr JavascriptResult00](self.impl))
-  let qdata = g_object_get_qdata(gobj, Quark)
-  if qdata != nil:
-    result = cast[type(result)](qdata)
-    assert(result.impl == gobj)
-  else:
-    fnew(result, javascriptcore.finalizeGObject)
-    result.impl = gobj
-    GC_ref(result)
-    discard g_object_ref_sink(result.impl)
-    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
-    g_object_unref(result.impl)
-    assert(g_object_get_qdata(result.impl, Quark) == nil)
-    g_object_set_qdata(result.impl, Quark, addr(result[]))
-
-proc jsValue*(self: JavascriptResult): javascriptcore.Value =
-  let gobj = webkit_javascript_result_get_js_value(cast[ptr JavascriptResult00](self.impl))
-  let qdata = g_object_get_qdata(gobj, Quark)
-  if qdata != nil:
-    result = cast[type(result)](qdata)
-    assert(result.impl == gobj)
-  else:
-    fnew(result, javascriptcore.finalizeGObject)
-    result.impl = gobj
-    GC_ref(result)
-    discard g_object_ref_sink(result.impl)
-    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
-    g_object_unref(result.impl)
-    assert(g_object_get_qdata(result.impl, Quark) == nil)
-    g_object_set_qdata(result.impl, Quark, addr(result[]))
-
-proc webkit_web_view_run_javascript_finish(self: ptr WebView00; resu: ptr gio.AsyncResult00;
-    error: ptr ptr glib.Error = nil): ptr JavascriptResult00 {.
-    importc, libprag.}
-
-proc runJavascriptFinish*(self: WebView; resu: gio.AsyncResult): JavascriptResult =
-  var gerror: ptr glib.Error
-  let impl0 = webkit_web_view_run_javascript_finish(cast[ptr WebView00](self.impl), cast[ptr gio.AsyncResult00](resu.impl), addr gerror)
-  if gerror != nil:
-    let msg = $gerror.message
-    g_error_free(gerror[])
-    raise newException(GException, msg)
-  fnew(result, gBoxedFreeWebKitJavascriptResult)
-  result.impl = impl0
-
-proc webkit_web_view_run_javascript_from_gresource_finish(self: ptr WebView00;
-    resu: ptr gio.AsyncResult00; error: ptr ptr glib.Error = nil): ptr JavascriptResult00 {.
-    importc, libprag.}
-
-proc runJavascriptFromGresourceFinish*(self: WebView;
-    resu: gio.AsyncResult): JavascriptResult =
-  var gerror: ptr glib.Error
-  let impl0 = webkit_web_view_run_javascript_from_gresource_finish(cast[ptr WebView00](self.impl), cast[ptr gio.AsyncResult00](resu.impl), addr gerror)
-  if gerror != nil:
-    let msg = $gerror.message
-    g_error_free(gerror[])
-    raise newException(GException, msg)
-  fnew(result, gBoxedFreeWebKitJavascriptResult)
-  result.impl = impl0
-
-proc webkit_web_view_run_javascript_in_world_finish(self: ptr WebView00;
-    resu: ptr gio.AsyncResult00; error: ptr ptr glib.Error = nil): ptr JavascriptResult00 {.
-    importc, libprag.}
-
-proc runJavascriptInWorldFinish*(self: WebView; resu: gio.AsyncResult): JavascriptResult =
-  var gerror: ptr glib.Error
-  let impl0 = webkit_web_view_run_javascript_in_world_finish(cast[ptr WebView00](self.impl), cast[ptr gio.AsyncResult00](resu.impl), addr gerror)
-  if gerror != nil:
-    let msg = $gerror.message
-    g_error_free(gerror[])
-    raise newException(GException, msg)
-  fnew(result, gBoxedFreeWebKitJavascriptResult)
-  result.impl = impl0
+proc getSnapshot*(self: WebView; region: SnapshotRegion;
+    options: SnapshotOptions; cancellable: gio.Cancellable = nil; callback: AsyncReadyCallback;
+    userData: pointer) =
+  webkit_web_view_get_snapshot(cast[ptr WebView00](self.impl), region, options, if cancellable.isNil: nil else: cast[ptr gio.Cancellable00](cancellable.impl), callback, userData)
 
 type
   ScriptMessageReply00* {.pure.} = object
@@ -7289,11 +5908,11 @@ proc returnErrorMessage*(self: ScriptMessageReply;
   webkit_script_message_reply_return_error_message(cast[ptr ScriptMessageReply00](self.impl), errorMessage)
 
 proc webkit_script_message_reply_return_value(self: ptr ScriptMessageReply00;
-    replyValue: ptr javascriptcore.Value00) {.
+    replyValue: ptr javascriptcore6.Value00) {.
     importc, libprag.}
 
-proc returnValue*(self: ScriptMessageReply; replyValue: javascriptcore.Value) =
-  webkit_script_message_reply_return_value(cast[ptr ScriptMessageReply00](self.impl), cast[ptr javascriptcore.Value00](replyValue.impl))
+proc returnValue*(self: ScriptMessageReply; replyValue: javascriptcore6.Value) =
+  webkit_script_message_reply_return_value(cast[ptr ScriptMessageReply00](self.impl), cast[ptr javascriptcore6.Value00](replyValue.impl))
 
 proc webkit_script_message_reply_ref(self: ptr ScriptMessageReply00): ptr ScriptMessageReply00 {.
     importc, libprag.}
@@ -7317,10 +5936,10 @@ when defined(gcDestructors):
       g_object_remove_toggle_ref(self.impl, toggleNotify, addr(self))
       self.impl = nil
 
-proc scScriptMessageReceived*(self: UserContentManager;  p: proc (self: ptr UserContentManager00; value: ptr JavascriptResult00; xdata: pointer) {.cdecl.}, xdata: pointer, cf: gobject.ConnectFlags): culong =
+proc scScriptMessageReceived*(self: UserContentManager;  p: proc (self: ptr UserContentManager00; value: ptr javascriptcore6.Value00; xdata: pointer) {.cdecl.}, xdata: pointer, cf: gobject.ConnectFlags): culong =
   g_signal_connect_data(self.impl, "script-message-received", cast[GCallback](p), xdata, nil, cf)
 
-proc scScriptMessageWithReplyReceived*(self: UserContentManager;  p: proc (self: ptr UserContentManager00; value: ptr javascriptcore.Value00; reply: ptr ScriptMessageReply00; xdata: pointer): gboolean {.cdecl.}, xdata: pointer, cf: gobject.ConnectFlags): culong =
+proc scScriptMessageWithReplyReceived*(self: UserContentManager;  p: proc (self: ptr UserContentManager00; value: ptr javascriptcore6.Value00; reply: ptr ScriptMessageReply00; xdata: pointer): gboolean {.cdecl.}, xdata: pointer, cf: gobject.ConnectFlags): culong =
   g_signal_connect_data(self.impl, "script-message-with-reply-received", cast[GCallback](p), xdata, nil, cf)
 
 proc webkit_user_content_manager_new(): ptr UserContentManager00 {.
@@ -7333,7 +5952,7 @@ proc newUserContentManager*(): UserContentManager =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -7351,7 +5970,7 @@ proc newUserContentManager*(tdesc: typedesc): tdesc =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -7369,7 +5988,7 @@ proc initUserContentManager*[T](result: var T) {.deprecated.} =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -7380,20 +5999,12 @@ proc initUserContentManager*[T](result: var T) {.deprecated.} =
     g_object_set_qdata(result.impl, Quark, addr(result[]))
 
 proc webkit_user_content_manager_register_script_message_handler(self: ptr UserContentManager00;
-    name: cstring): gboolean {.
-    importc, libprag.}
-
-proc registerScriptMessageHandler*(self: UserContentManager;
-    name: cstring): bool =
-  toBool(webkit_user_content_manager_register_script_message_handler(cast[ptr UserContentManager00](self.impl), name))
-
-proc webkit_user_content_manager_register_script_message_handler_in_world(self: ptr UserContentManager00;
     name: cstring; worldName: cstring): gboolean {.
     importc, libprag.}
 
-proc registerScriptMessageHandlerInWorld*(self: UserContentManager;
-    name: cstring; worldName: cstring): bool =
-  toBool(webkit_user_content_manager_register_script_message_handler_in_world(cast[ptr UserContentManager00](self.impl), name, worldName))
+proc registerScriptMessageHandler*(self: UserContentManager;
+    name: cstring; worldName: cstring = nil): bool =
+  toBool(webkit_user_content_manager_register_script_message_handler(cast[ptr UserContentManager00](self.impl), name, worldName))
 
 proc webkit_user_content_manager_register_script_message_handler_with_reply(self: ptr UserContentManager00;
     name: cstring; worldName: cstring): gboolean {.
@@ -7430,73 +6041,12 @@ proc removeFilterById*(self: UserContentManager;
   webkit_user_content_manager_remove_filter_by_id(cast[ptr UserContentManager00](self.impl), filterId)
 
 proc webkit_user_content_manager_unregister_script_message_handler(self: ptr UserContentManager00;
-    name: cstring) {.
-    importc, libprag.}
-
-proc unregisterScriptMessageHandler*(self: UserContentManager;
-    name: cstring) =
-  webkit_user_content_manager_unregister_script_message_handler(cast[ptr UserContentManager00](self.impl), name)
-
-proc webkit_user_content_manager_unregister_script_message_handler_in_world(self: ptr UserContentManager00;
     name: cstring; worldName: cstring) {.
     importc, libprag.}
 
-proc unregisterScriptMessageHandlerInWorld*(self: UserContentManager;
-    name: cstring; worldName: cstring) =
-  webkit_user_content_manager_unregister_script_message_handler_in_world(cast[ptr UserContentManager00](self.impl), name, worldName)
-
-proc webkit_web_view_new_with_user_content_manager(userContentManager: ptr UserContentManager00): ptr WebView00 {.
-    importc, libprag.}
-
-proc newWebViewWithUserContentManager*(userContentManager: UserContentManager): WebView =
-  let gobj = webkit_web_view_new_with_user_content_manager(cast[ptr UserContentManager00](userContentManager.impl))
-  let qdata = g_object_get_qdata(gobj, Quark)
-  if qdata != nil:
-    result = cast[type(result)](qdata)
-    assert(result.impl == gobj)
-  else:
-    fnew(result, gtk.finalizeGObject)
-    result.impl = gobj
-    GC_ref(result)
-    discard g_object_ref_sink(result.impl)
-    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
-    g_object_unref(result.impl)
-    assert(g_object_get_qdata(result.impl, Quark) == nil)
-    g_object_set_qdata(result.impl, Quark, addr(result[]))
-
-proc newWebViewWithUserContentManager*(tdesc: typedesc; userContentManager: UserContentManager): tdesc =
-  assert(result is WebView)
-  let gobj = webkit_web_view_new_with_user_content_manager(cast[ptr UserContentManager00](userContentManager.impl))
-  let qdata = g_object_get_qdata(gobj, Quark)
-  if qdata != nil:
-    result = cast[type(result)](qdata)
-    assert(result.impl == gobj)
-  else:
-    fnew(result, gtk.finalizeGObject)
-    result.impl = gobj
-    GC_ref(result)
-    discard g_object_ref_sink(result.impl)
-    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
-    g_object_unref(result.impl)
-    assert(g_object_get_qdata(result.impl, Quark) == nil)
-    g_object_set_qdata(result.impl, Quark, addr(result[]))
-
-proc initWebViewWithUserContentManager*[T](result: var T; userContentManager: UserContentManager) {.deprecated.} =
-  assert(result is WebView)
-  let gobj = webkit_web_view_new_with_user_content_manager(cast[ptr UserContentManager00](userContentManager.impl))
-  let qdata = g_object_get_qdata(gobj, Quark)
-  if qdata != nil:
-    result = cast[type(result)](qdata)
-    assert(result.impl == gobj)
-  else:
-    fnew(result, gtk.finalizeGObject)
-    result.impl = gobj
-    GC_ref(result)
-    discard g_object_ref_sink(result.impl)
-    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
-    g_object_unref(result.impl)
-    assert(g_object_get_qdata(result.impl, Quark) == nil)
-    g_object_set_qdata(result.impl, Quark, addr(result[]))
+proc unregisterScriptMessageHandler*(self: UserContentManager;
+    name: cstring; worldName: cstring = nil) =
+  webkit_user_content_manager_unregister_script_message_handler(cast[ptr UserContentManager00](self.impl), name, worldName)
 
 proc webkit_web_view_get_user_content_manager(self: ptr WebView00): ptr UserContentManager00 {.
     importc, libprag.}
@@ -7508,7 +6058,7 @@ proc getUserContentManager*(self: WebView): UserContentManager =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -7524,7 +6074,7 @@ proc userContentManager*(self: WebView): UserContentManager =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -7872,6 +6422,522 @@ proc initUserStyleSheet*[T](result: var T; source: cstring; injectedFrames: User
   result.impl = webkit_user_style_sheet_new(source, injectedFrames, level, seq2CstringArray(allowList, fs469n23), seq2CstringArray(blockList, fs469n232))
 
 type
+  WebExtensionMode* {.size: sizeof(cint), pure.} = enum
+    none = 0
+    manifestv2 = 1
+    manifestv3 = 2
+
+proc webkit_web_view_get_web_extension_mode(self: ptr WebView00): WebExtensionMode {.
+    importc, libprag.}
+
+proc getWebExtensionMode*(self: WebView): WebExtensionMode =
+  webkit_web_view_get_web_extension_mode(cast[ptr WebView00](self.impl))
+
+proc webExtensionMode*(self: WebView): WebExtensionMode =
+  webkit_web_view_get_web_extension_mode(cast[ptr WebView00](self.impl))
+
+type
+  WindowProperties* = ref object of gobject.Object
+  WindowProperties00* = object of gobject.Object00
+
+proc webkit_window_properties_get_type*(): GType {.importc, libprag.}
+
+when defined(gcDestructors):
+  proc `=destroy`*(self: var typeof(WindowProperties()[])) =
+    when defined(gintroDebug):
+      echo "destroy ", $typeof(self), ' ', cast[int](unsafeaddr self)
+    g_object_set_qdata(self.impl, Quark, nil)
+    if not self.ignoreFinalizer and self.impl != nil:
+      g_object_remove_toggle_ref(self.impl, toggleNotify, addr(self))
+      self.impl = nil
+
+proc webkit_window_properties_get_fullscreen(self: ptr WindowProperties00): gboolean {.
+    importc, libprag.}
+
+proc getFullscreen*(self: WindowProperties): bool =
+  toBool(webkit_window_properties_get_fullscreen(cast[ptr WindowProperties00](self.impl)))
+
+proc fullscreen*(self: WindowProperties): bool =
+  toBool(webkit_window_properties_get_fullscreen(cast[ptr WindowProperties00](self.impl)))
+
+proc webkit_window_properties_get_geometry(self: ptr WindowProperties00;
+    geometry: var gdk4.Rectangle) {.
+    importc, libprag.}
+
+proc getGeometry*(self: WindowProperties; geometry: var gdk4.Rectangle) =
+  webkit_window_properties_get_geometry(cast[ptr WindowProperties00](self.impl), geometry)
+
+proc getGeometry*(self: WindowProperties): gdk4.Rectangle =
+  webkit_window_properties_get_geometry(cast[ptr WindowProperties00](self.impl), result)
+
+proc webkit_window_properties_get_locationbar_visible(self: ptr WindowProperties00): gboolean {.
+    importc, libprag.}
+
+proc getLocationbarVisible*(self: WindowProperties): bool =
+  toBool(webkit_window_properties_get_locationbar_visible(cast[ptr WindowProperties00](self.impl)))
+
+proc locationbarVisible*(self: WindowProperties): bool =
+  toBool(webkit_window_properties_get_locationbar_visible(cast[ptr WindowProperties00](self.impl)))
+
+proc webkit_window_properties_get_menubar_visible(self: ptr WindowProperties00): gboolean {.
+    importc, libprag.}
+
+proc getMenubarVisible*(self: WindowProperties): bool =
+  toBool(webkit_window_properties_get_menubar_visible(cast[ptr WindowProperties00](self.impl)))
+
+proc menubarVisible*(self: WindowProperties): bool =
+  toBool(webkit_window_properties_get_menubar_visible(cast[ptr WindowProperties00](self.impl)))
+
+proc webkit_window_properties_get_resizable(self: ptr WindowProperties00): gboolean {.
+    importc, libprag.}
+
+proc getResizable*(self: WindowProperties): bool =
+  toBool(webkit_window_properties_get_resizable(cast[ptr WindowProperties00](self.impl)))
+
+proc resizable*(self: WindowProperties): bool =
+  toBool(webkit_window_properties_get_resizable(cast[ptr WindowProperties00](self.impl)))
+
+proc webkit_window_properties_get_scrollbars_visible(self: ptr WindowProperties00): gboolean {.
+    importc, libprag.}
+
+proc getScrollbarsVisible*(self: WindowProperties): bool =
+  toBool(webkit_window_properties_get_scrollbars_visible(cast[ptr WindowProperties00](self.impl)))
+
+proc scrollbarsVisible*(self: WindowProperties): bool =
+  toBool(webkit_window_properties_get_scrollbars_visible(cast[ptr WindowProperties00](self.impl)))
+
+proc webkit_window_properties_get_statusbar_visible(self: ptr WindowProperties00): gboolean {.
+    importc, libprag.}
+
+proc getStatusbarVisible*(self: WindowProperties): bool =
+  toBool(webkit_window_properties_get_statusbar_visible(cast[ptr WindowProperties00](self.impl)))
+
+proc statusbarVisible*(self: WindowProperties): bool =
+  toBool(webkit_window_properties_get_statusbar_visible(cast[ptr WindowProperties00](self.impl)))
+
+proc webkit_window_properties_get_toolbar_visible(self: ptr WindowProperties00): gboolean {.
+    importc, libprag.}
+
+proc getToolbarVisible*(self: WindowProperties): bool =
+  toBool(webkit_window_properties_get_toolbar_visible(cast[ptr WindowProperties00](self.impl)))
+
+proc toolbarVisible*(self: WindowProperties): bool =
+  toBool(webkit_window_properties_get_toolbar_visible(cast[ptr WindowProperties00](self.impl)))
+
+proc webkit_web_view_get_window_properties(self: ptr WebView00): ptr WindowProperties00 {.
+    importc, libprag.}
+
+proc getWindowProperties*(self: WebView): WindowProperties =
+  let gobj = webkit_web_view_get_window_properties(cast[ptr WebView00](self.impl))
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, webkit6.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+proc windowProperties*(self: WebView): WindowProperties =
+  let gobj = webkit_web_view_get_window_properties(cast[ptr WebView00](self.impl))
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, webkit6.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+type
+  BackForwardListItem* = ref object of gobject.InitiallyUnowned
+  BackForwardListItem00* = object of gobject.InitiallyUnowned00
+
+proc webkit_back_forward_list_item_get_type*(): GType {.importc, libprag.}
+
+when defined(gcDestructors):
+  proc `=destroy`*(self: var typeof(BackForwardListItem()[])) =
+    when defined(gintroDebug):
+      echo "destroy ", $typeof(self), ' ', cast[int](unsafeaddr self)
+    g_object_set_qdata(self.impl, Quark, nil)
+    if not self.ignoreFinalizer and self.impl != nil:
+      g_object_remove_toggle_ref(self.impl, toggleNotify, addr(self))
+      self.impl = nil
+
+proc webkit_back_forward_list_item_get_original_uri(self: ptr BackForwardListItem00): cstring {.
+    importc, libprag.}
+
+proc getOriginalUri*(self: BackForwardListItem): string =
+  result = $webkit_back_forward_list_item_get_original_uri(cast[ptr BackForwardListItem00](self.impl))
+
+proc originalUri*(self: BackForwardListItem): string =
+  result = $webkit_back_forward_list_item_get_original_uri(cast[ptr BackForwardListItem00](self.impl))
+
+proc webkit_back_forward_list_item_get_title(self: ptr BackForwardListItem00): cstring {.
+    importc, libprag.}
+
+proc getTitle*(self: BackForwardListItem): string =
+  result = $webkit_back_forward_list_item_get_title(cast[ptr BackForwardListItem00](self.impl))
+
+proc title*(self: BackForwardListItem): string =
+  result = $webkit_back_forward_list_item_get_title(cast[ptr BackForwardListItem00](self.impl))
+
+proc webkit_back_forward_list_item_get_uri(self: ptr BackForwardListItem00): cstring {.
+    importc, libprag.}
+
+proc getUri*(self: BackForwardListItem): string =
+  result = $webkit_back_forward_list_item_get_uri(cast[ptr BackForwardListItem00](self.impl))
+
+proc uri*(self: BackForwardListItem): string =
+  result = $webkit_back_forward_list_item_get_uri(cast[ptr BackForwardListItem00](self.impl))
+
+type
+  BackForwardList* = ref object of gobject.Object
+  BackForwardList00* = object of gobject.Object00
+
+proc webkit_back_forward_list_get_type*(): GType {.importc, libprag.}
+
+when defined(gcDestructors):
+  proc `=destroy`*(self: var typeof(BackForwardList()[])) =
+    when defined(gintroDebug):
+      echo "destroy ", $typeof(self), ' ', cast[int](unsafeaddr self)
+    g_object_set_qdata(self.impl, Quark, nil)
+    if not self.ignoreFinalizer and self.impl != nil:
+      g_object_remove_toggle_ref(self.impl, toggleNotify, addr(self))
+      self.impl = nil
+
+proc scChanged*(self: BackForwardList;  p: proc (self: ptr BackForwardList00; itemAdded: ptr BackForwardListItem00; itemsRemoved: pointer; xdata: pointer) {.cdecl.}, xdata: pointer, cf: gobject.ConnectFlags): culong =
+  g_signal_connect_data(self.impl, "changed", cast[GCallback](p), xdata, nil, cf)
+
+proc webkit_back_forward_list_get_back_item(self: ptr BackForwardList00): ptr BackForwardListItem00 {.
+    importc, libprag.}
+
+proc getBackItem*(self: BackForwardList): BackForwardListItem =
+  let gobj = webkit_back_forward_list_get_back_item(cast[ptr BackForwardList00](self.impl))
+  if gobj.isNil:
+    return nil
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, webkit6.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+proc backItem*(self: BackForwardList): BackForwardListItem =
+  let gobj = webkit_back_forward_list_get_back_item(cast[ptr BackForwardList00](self.impl))
+  if gobj.isNil:
+    return nil
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, webkit6.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+proc webkit_back_forward_list_get_back_list(self: ptr BackForwardList00): ptr glib.List {.
+    importc, libprag.}
+
+proc getBackList*(self: BackForwardList): seq[BackForwardListItem] =
+  let resul0 = webkit_back_forward_list_get_back_list(cast[ptr BackForwardList00](self.impl))
+  result = glistObjects2seq(BackForwardListItem, resul0, false)
+  g_list_free(resul0)
+
+proc backList*(self: BackForwardList): seq[BackForwardListItem] =
+  let resul0 = webkit_back_forward_list_get_back_list(cast[ptr BackForwardList00](self.impl))
+  result = glistObjects2seq(BackForwardListItem, resul0, false)
+  g_list_free(resul0)
+
+proc webkit_back_forward_list_get_back_list_with_limit(self: ptr BackForwardList00;
+    limit: uint32): ptr glib.List {.
+    importc, libprag.}
+
+proc getBackListWithLimit*(self: BackForwardList;
+    limit: int): seq[BackForwardListItem] =
+  let resul0 = webkit_back_forward_list_get_back_list_with_limit(cast[ptr BackForwardList00](self.impl), uint32(limit))
+  result = glistObjects2seq(BackForwardListItem, resul0, false)
+  g_list_free(resul0)
+
+proc webkit_back_forward_list_get_current_item(self: ptr BackForwardList00): ptr BackForwardListItem00 {.
+    importc, libprag.}
+
+proc getCurrentItem*(self: BackForwardList): BackForwardListItem =
+  let gobj = webkit_back_forward_list_get_current_item(cast[ptr BackForwardList00](self.impl))
+  if gobj.isNil:
+    return nil
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, webkit6.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+proc currentItem*(self: BackForwardList): BackForwardListItem =
+  let gobj = webkit_back_forward_list_get_current_item(cast[ptr BackForwardList00](self.impl))
+  if gobj.isNil:
+    return nil
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, webkit6.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+proc webkit_back_forward_list_get_forward_item(self: ptr BackForwardList00): ptr BackForwardListItem00 {.
+    importc, libprag.}
+
+proc getForwardItem*(self: BackForwardList): BackForwardListItem =
+  let gobj = webkit_back_forward_list_get_forward_item(cast[ptr BackForwardList00](self.impl))
+  if gobj.isNil:
+    return nil
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, webkit6.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+proc forwardItem*(self: BackForwardList): BackForwardListItem =
+  let gobj = webkit_back_forward_list_get_forward_item(cast[ptr BackForwardList00](self.impl))
+  if gobj.isNil:
+    return nil
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, webkit6.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+proc webkit_back_forward_list_get_forward_list(self: ptr BackForwardList00): ptr glib.List {.
+    importc, libprag.}
+
+proc getForwardList*(self: BackForwardList): seq[BackForwardListItem] =
+  let resul0 = webkit_back_forward_list_get_forward_list(cast[ptr BackForwardList00](self.impl))
+  result = glistObjects2seq(BackForwardListItem, resul0, false)
+  g_list_free(resul0)
+
+proc forwardList*(self: BackForwardList): seq[BackForwardListItem] =
+  let resul0 = webkit_back_forward_list_get_forward_list(cast[ptr BackForwardList00](self.impl))
+  result = glistObjects2seq(BackForwardListItem, resul0, false)
+  g_list_free(resul0)
+
+proc webkit_back_forward_list_get_forward_list_with_limit(self: ptr BackForwardList00;
+    limit: uint32): ptr glib.List {.
+    importc, libprag.}
+
+proc getForwardListWithLimit*(self: BackForwardList;
+    limit: int): seq[BackForwardListItem] =
+  let resul0 = webkit_back_forward_list_get_forward_list_with_limit(cast[ptr BackForwardList00](self.impl), uint32(limit))
+  result = glistObjects2seq(BackForwardListItem, resul0, false)
+  g_list_free(resul0)
+
+proc webkit_back_forward_list_get_length(self: ptr BackForwardList00): uint32 {.
+    importc, libprag.}
+
+proc getLength*(self: BackForwardList): int =
+  int(webkit_back_forward_list_get_length(cast[ptr BackForwardList00](self.impl)))
+
+proc length*(self: BackForwardList): int =
+  int(webkit_back_forward_list_get_length(cast[ptr BackForwardList00](self.impl)))
+
+proc webkit_back_forward_list_get_nth_item(self: ptr BackForwardList00; index: int32): ptr BackForwardListItem00 {.
+    importc, libprag.}
+
+proc getNthItem*(self: BackForwardList; index: int): BackForwardListItem =
+  let gobj = webkit_back_forward_list_get_nth_item(cast[ptr BackForwardList00](self.impl), int32(index))
+  if gobj.isNil:
+    return nil
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, webkit6.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+proc webkit_web_view_get_back_forward_list(self: ptr WebView00): ptr BackForwardList00 {.
+    importc, libprag.}
+
+proc getBackForwardList*(self: WebView): BackForwardList =
+  let gobj = webkit_web_view_get_back_forward_list(cast[ptr WebView00](self.impl))
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, webkit6.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+proc backForwardList*(self: WebView): BackForwardList =
+  let gobj = webkit_web_view_get_back_forward_list(cast[ptr WebView00](self.impl))
+  let qdata = g_object_get_qdata(gobj, Quark)
+  if qdata != nil:
+    result = cast[type(result)](qdata)
+    assert(result.impl == gobj)
+  else:
+    fnew(result, webkit6.finalizeGObject)
+    result.impl = gobj
+    GC_ref(result)
+    discard g_object_ref_sink(result.impl)
+    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
+    g_object_unref(result.impl)
+    assert(g_object_get_qdata(result.impl, Quark) == nil)
+    g_object_set_qdata(result.impl, Quark, addr(result[]))
+
+proc webkit_web_view_go_to_back_forward_list_item(self: ptr WebView00; listItem: ptr BackForwardListItem00) {.
+    importc, libprag.}
+
+proc goToBackForwardListItem*(self: WebView; listItem: BackForwardListItem) =
+  webkit_web_view_go_to_back_forward_list_item(cast[ptr WebView00](self.impl), cast[ptr BackForwardListItem00](listItem.impl))
+
+type
+  WebViewSessionState00* {.pure.} = object
+  WebViewSessionState* = ref object
+    impl*: ptr WebViewSessionState00
+    ignoreFinalizer*: bool
+
+proc webkit_web_view_session_state_get_type*(): GType {.importc, libprag.}
+
+proc gBoxedFreeWebKitWebViewSessionState*(self: WebViewSessionState) =
+  if not self.ignoreFinalizer:
+    boxedFree(webkit_web_view_session_state_get_type(), cast[ptr WebViewSessionState00](self.impl))
+
+when defined(gcDestructors):
+  proc `=destroy`*(self: var typeof(WebViewSessionState()[])) =
+    when defined(gintroDebug):
+      echo "destroy ", $typeof(self), ' ', cast[int](unsafeaddr self)
+    if not self.ignoreFinalizer and self.impl != nil:
+      boxedFree(webkit_web_view_session_state_get_type(), cast[ptr WebViewSessionState00](self.impl))
+      self.impl = nil
+
+proc newWithFinalizer*(x: var WebViewSessionState) =
+  when defined(gcDestructors):
+    new(x)
+  else:
+    new(x, gBoxedFreeWebKitWebViewSessionState)
+
+proc webkit_web_view_session_state_unref(self: ptr WebViewSessionState00) {.
+    importc, libprag.}
+
+proc unref*(self: WebViewSessionState) =
+  webkit_web_view_session_state_unref(cast[ptr WebViewSessionState00](self.impl))
+
+proc finalizerunref*(self: WebViewSessionState) =
+  if not self.ignoreFinalizer:
+    webkit_web_view_session_state_unref(cast[ptr WebViewSessionState00](self.impl))
+
+proc webkit_web_view_session_state_ref(self: ptr WebViewSessionState00): ptr WebViewSessionState00 {.
+    importc, libprag.}
+
+proc `ref`*(self: WebViewSessionState): WebViewSessionState =
+  fnew(result, gBoxedFreeWebKitWebViewSessionState)
+  result.impl = webkit_web_view_session_state_ref(cast[ptr WebViewSessionState00](self.impl))
+
+proc webkit_web_view_session_state_serialize(self: ptr WebViewSessionState00): ptr glib.Bytes00 {.
+    importc, libprag.}
+
+proc serialize*(self: WebViewSessionState): glib.Bytes =
+  fnew(result, gBoxedFreeGBytes)
+  result.impl = webkit_web_view_session_state_serialize(cast[ptr WebViewSessionState00](self.impl))
+
+proc webkit_web_view_session_state_new(data: ptr glib.Bytes00): ptr WebViewSessionState00 {.
+    importc, libprag.}
+
+proc newWebViewSessionState*(data: glib.Bytes): WebViewSessionState =
+  fnew(result, gBoxedFreeWebKitWebViewSessionState)
+  result.impl = webkit_web_view_session_state_new(cast[ptr glib.Bytes00](data.impl))
+
+proc newWebViewSessionState*(tdesc: typedesc; data: glib.Bytes): tdesc =
+  assert(result is WebViewSessionState)
+  fnew(result, gBoxedFreeWebKitWebViewSessionState)
+  result.impl = webkit_web_view_session_state_new(cast[ptr glib.Bytes00](data.impl))
+
+proc initWebViewSessionState*[T](result: var T; data: glib.Bytes) {.deprecated.} =
+  assert(result is WebViewSessionState)
+  fnew(result, gBoxedFreeWebKitWebViewSessionState)
+  result.impl = webkit_web_view_session_state_new(cast[ptr glib.Bytes00](data.impl))
+
+proc webkit_web_view_get_session_state(self: ptr WebView00): ptr WebViewSessionState00 {.
+    importc, libprag.}
+
+proc getSessionState*(self: WebView): WebViewSessionState =
+  fnew(result, gBoxedFreeWebKitWebViewSessionState)
+  result.impl = webkit_web_view_get_session_state(cast[ptr WebView00](self.impl))
+
+proc sessionState*(self: WebView): WebViewSessionState =
+  fnew(result, gBoxedFreeWebKitWebViewSessionState)
+  result.impl = webkit_web_view_get_session_state(cast[ptr WebView00](self.impl))
+
+proc webkit_web_view_restore_session_state(self: ptr WebView00; state: ptr WebViewSessionState00) {.
+    importc, libprag.}
+
+proc restoreSessionState*(self: WebView; state: WebViewSessionState) =
+  webkit_web_view_restore_session_state(cast[ptr WebView00](self.impl), cast[ptr WebViewSessionState00](state.impl))
+
+type
   SaveMode* {.size: sizeof(cint), pure.} = enum
     mhtml = 0
 
@@ -7923,12 +6989,12 @@ proc scPreeditStarted*(self: InputMethodContext;  p: proc (self: ptr gobject.Obj
   g_signal_connect_data(self.impl, "preedit-started", cast[GCallback](p), xdata, nil, cf)
 
 proc webkit_input_method_context_filter_key_event(self: ptr InputMethodContext00;
-    keyEvent: ptr gdk.EventKey00): gboolean {.
+    keyEvent: ptr gdk4.Event00): gboolean {.
     importc, libprag.}
 
 proc filterKeyEvent*(self: InputMethodContext;
-    keyEvent: gdk.EventKey): bool =
-  toBool(webkit_input_method_context_filter_key_event(cast[ptr InputMethodContext00](self.impl), cast[ptr gdk.EventKey00](keyEvent.impl)))
+    keyEvent: gdk4.Event): bool =
+  toBool(webkit_input_method_context_filter_key_event(cast[ptr InputMethodContext00](self.impl), cast[ptr gdk4.Event00](keyEvent.impl)))
 
 proc webkit_input_method_context_notify_cursor_area(self: ptr InputMethodContext00;
     x: int32; y: int32; width: int32; height: int32) {.
@@ -7988,7 +7054,7 @@ proc getInputMethodContext*(self: WebView): InputMethodContext =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -8006,7 +7072,7 @@ proc inputMethodContext*(self: WebView): InputMethodContext =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -8085,15 +7151,15 @@ proc initInputMethodUnderline*[T](result: var T; startOffset: int; endOffset: in
   result.impl = webkit_input_method_underline_new(uint32(startOffset), uint32(endOffset))
 
 proc webkit_input_method_underline_set_color(self: ptr InputMethodUnderline00;
-    rgba: gdk.RGBA) {.
+    rgba: gdk4.RGBA) {.
     importc, libprag.}
 
 proc setColor*(self: InputMethodUnderline;
-    rgba: gdk.RGBA = cast[var gdk.RGBA](nil)) =
+    rgba: gdk4.RGBA = cast[var gdk4.RGBA](nil)) =
   webkit_input_method_underline_set_color(cast[ptr InputMethodUnderline00](self.impl), rgba)
 
 proc `color=`*(self: InputMethodUnderline;
-    rgba: gdk.RGBA = cast[var gdk.RGBA](nil)) =
+    rgba: gdk4.RGBA = cast[var gdk4.RGBA](nil)) =
   webkit_input_method_underline_set_color(cast[ptr InputMethodUnderline00](self.impl), rgba)
 
 proc webkit_input_method_context_get_preedit(self: ptr InputMethodContext00;
@@ -8263,7 +7329,7 @@ proc newSettings*(): Settings =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -8281,7 +7347,7 @@ proc newSettings*(tdesc: typedesc): tdesc =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -8299,7 +7365,7 @@ proc initSettings*[T](result: var T) {.deprecated.} =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -8452,15 +7518,6 @@ proc getEnable_2dCanvasAcceleration*(self: Settings): bool =
 proc enable_2dCanvasAcceleration*(self: Settings): bool =
   toBool(webkit_settings_get_enable_2d_canvas_acceleration(cast[ptr Settings00](self.impl)))
 
-proc webkit_settings_get_enable_accelerated_2d_canvas(self: ptr Settings00): gboolean {.
-    importc, libprag.}
-
-proc getEnableAccelerated_2dCanvas*(self: Settings): bool =
-  toBool(webkit_settings_get_enable_accelerated_2d_canvas(cast[ptr Settings00](self.impl)))
-
-proc enableAccelerated_2dCanvas*(self: Settings): bool =
-  toBool(webkit_settings_get_enable_accelerated_2d_canvas(cast[ptr Settings00](self.impl)))
-
 proc webkit_settings_get_enable_back_forward_navigation_gestures(self: ptr Settings00): gboolean {.
     importc, libprag.}
 
@@ -8506,15 +7563,6 @@ proc getEnableEncryptedMedia*(self: Settings): bool =
 proc enableEncryptedMedia*(self: Settings): bool =
   toBool(webkit_settings_get_enable_encrypted_media(cast[ptr Settings00](self.impl)))
 
-proc webkit_settings_get_enable_frame_flattening(self: ptr Settings00): gboolean {.
-    importc, libprag.}
-
-proc getEnableFrameFlattening*(self: Settings): bool =
-  toBool(webkit_settings_get_enable_frame_flattening(cast[ptr Settings00](self.impl)))
-
-proc enableFrameFlattening*(self: Settings): bool =
-  toBool(webkit_settings_get_enable_frame_flattening(cast[ptr Settings00](self.impl)))
-
 proc webkit_settings_get_enable_fullscreen(self: ptr Settings00): gboolean {.
     importc, libprag.}
 
@@ -8550,15 +7598,6 @@ proc getEnableHyperlinkAuditing*(self: Settings): bool =
 
 proc enableHyperlinkAuditing*(self: Settings): bool =
   toBool(webkit_settings_get_enable_hyperlink_auditing(cast[ptr Settings00](self.impl)))
-
-proc webkit_settings_get_enable_java(self: ptr Settings00): gboolean {.
-    importc, libprag.}
-
-proc getEnableJava*(self: Settings): bool =
-  toBool(webkit_settings_get_enable_java(cast[ptr Settings00](self.impl)))
-
-proc enableJava*(self: Settings): bool =
-  toBool(webkit_settings_get_enable_java(cast[ptr Settings00](self.impl)))
 
 proc webkit_settings_get_enable_javascript(self: ptr Settings00): gboolean {.
     importc, libprag.}
@@ -8641,24 +7680,6 @@ proc getEnablePageCache*(self: Settings): bool =
 proc enablePageCache*(self: Settings): bool =
   toBool(webkit_settings_get_enable_page_cache(cast[ptr Settings00](self.impl)))
 
-proc webkit_settings_get_enable_plugins(self: ptr Settings00): gboolean {.
-    importc, libprag.}
-
-proc getEnablePlugins*(self: Settings): bool =
-  toBool(webkit_settings_get_enable_plugins(cast[ptr Settings00](self.impl)))
-
-proc enablePlugins*(self: Settings): bool =
-  toBool(webkit_settings_get_enable_plugins(cast[ptr Settings00](self.impl)))
-
-proc webkit_settings_get_enable_private_browsing(self: ptr Settings00): gboolean {.
-    importc, libprag.}
-
-proc getEnablePrivateBrowsing*(self: Settings): bool =
-  toBool(webkit_settings_get_enable_private_browsing(cast[ptr Settings00](self.impl)))
-
-proc enablePrivateBrowsing*(self: Settings): bool =
-  toBool(webkit_settings_get_enable_private_browsing(cast[ptr Settings00](self.impl)))
-
 proc webkit_settings_get_enable_resizable_text_areas(self: ptr Settings00): gboolean {.
     importc, libprag.}
 
@@ -8739,15 +7760,6 @@ proc getEnableWriteConsoleMessagesToStdout*(self: Settings): bool =
 
 proc enableWriteConsoleMessagesToStdout*(self: Settings): bool =
   toBool(webkit_settings_get_enable_write_console_messages_to_stdout(cast[ptr Settings00](self.impl)))
-
-proc webkit_settings_get_enable_xss_auditor(self: ptr Settings00): gboolean {.
-    importc, libprag.}
-
-proc getEnableXssAuditor*(self: Settings): bool =
-  toBool(webkit_settings_get_enable_xss_auditor(cast[ptr Settings00](self.impl)))
-
-proc enableXssAuditor*(self: Settings): bool =
-  toBool(webkit_settings_get_enable_xss_auditor(cast[ptr Settings00](self.impl)))
 
 proc webkit_settings_get_fantasy_font_family(self: ptr Settings00): cstring {.
     importc, libprag.}
@@ -9022,16 +8034,6 @@ proc setEnable_2dCanvasAcceleration*(self: Settings; enabled: bool = true) =
 proc `enable_2dCanvasAcceleration=`*(self: Settings; enabled: bool) =
   webkit_settings_set_enable_2d_canvas_acceleration(cast[ptr Settings00](self.impl), gboolean(enabled))
 
-proc webkit_settings_set_enable_accelerated_2d_canvas(self: ptr Settings00;
-    enabled: gboolean) {.
-    importc, libprag.}
-
-proc setEnableAccelerated_2dCanvas*(self: Settings; enabled: bool = true) =
-  webkit_settings_set_enable_accelerated_2d_canvas(cast[ptr Settings00](self.impl), gboolean(enabled))
-
-proc `enableAccelerated_2dCanvas=`*(self: Settings; enabled: bool) =
-  webkit_settings_set_enable_accelerated_2d_canvas(cast[ptr Settings00](self.impl), gboolean(enabled))
-
 proc webkit_settings_set_enable_back_forward_navigation_gestures(self: ptr Settings00;
     enabled: gboolean) {.
     importc, libprag.}
@@ -9080,15 +8082,6 @@ proc setEnableEncryptedMedia*(self: Settings; enabled: bool = true) =
 proc `enableEncryptedMedia=`*(self: Settings; enabled: bool) =
   webkit_settings_set_enable_encrypted_media(cast[ptr Settings00](self.impl), gboolean(enabled))
 
-proc webkit_settings_set_enable_frame_flattening(self: ptr Settings00; enabled: gboolean) {.
-    importc, libprag.}
-
-proc setEnableFrameFlattening*(self: Settings; enabled: bool = true) =
-  webkit_settings_set_enable_frame_flattening(cast[ptr Settings00](self.impl), gboolean(enabled))
-
-proc `enableFrameFlattening=`*(self: Settings; enabled: bool) =
-  webkit_settings_set_enable_frame_flattening(cast[ptr Settings00](self.impl), gboolean(enabled))
-
 proc webkit_settings_set_enable_fullscreen(self: ptr Settings00; enabled: gboolean) {.
     importc, libprag.}
 
@@ -9126,15 +8119,6 @@ proc setEnableHyperlinkAuditing*(self: Settings; enabled: bool = true) =
 
 proc `enableHyperlinkAuditing=`*(self: Settings; enabled: bool) =
   webkit_settings_set_enable_hyperlink_auditing(cast[ptr Settings00](self.impl), gboolean(enabled))
-
-proc webkit_settings_set_enable_java(self: ptr Settings00; enabled: gboolean) {.
-    importc, libprag.}
-
-proc setEnableJava*(self: Settings; enabled: bool = true) =
-  webkit_settings_set_enable_java(cast[ptr Settings00](self.impl), gboolean(enabled))
-
-proc `enableJava=`*(self: Settings; enabled: bool) =
-  webkit_settings_set_enable_java(cast[ptr Settings00](self.impl), gboolean(enabled))
 
 proc webkit_settings_set_enable_javascript(self: ptr Settings00; enabled: gboolean) {.
     importc, libprag.}
@@ -9222,24 +8206,6 @@ proc setEnablePageCache*(self: Settings; enabled: bool = true) =
 proc `enablePageCache=`*(self: Settings; enabled: bool) =
   webkit_settings_set_enable_page_cache(cast[ptr Settings00](self.impl), gboolean(enabled))
 
-proc webkit_settings_set_enable_plugins(self: ptr Settings00; enabled: gboolean) {.
-    importc, libprag.}
-
-proc setEnablePlugins*(self: Settings; enabled: bool = true) =
-  webkit_settings_set_enable_plugins(cast[ptr Settings00](self.impl), gboolean(enabled))
-
-proc `enablePlugins=`*(self: Settings; enabled: bool) =
-  webkit_settings_set_enable_plugins(cast[ptr Settings00](self.impl), gboolean(enabled))
-
-proc webkit_settings_set_enable_private_browsing(self: ptr Settings00; enabled: gboolean) {.
-    importc, libprag.}
-
-proc setEnablePrivateBrowsing*(self: Settings; enabled: bool = true) =
-  webkit_settings_set_enable_private_browsing(cast[ptr Settings00](self.impl), gboolean(enabled))
-
-proc `enablePrivateBrowsing=`*(self: Settings; enabled: bool) =
-  webkit_settings_set_enable_private_browsing(cast[ptr Settings00](self.impl), gboolean(enabled))
-
 proc webkit_settings_set_enable_resizable_text_areas(self: ptr Settings00;
     enabled: gboolean) {.
     importc, libprag.}
@@ -9326,15 +8292,6 @@ proc setEnableWriteConsoleMessagesToStdout*(self: Settings;
 proc `enableWriteConsoleMessagesToStdout=`*(self: Settings;
     enabled: bool) =
   webkit_settings_set_enable_write_console_messages_to_stdout(cast[ptr Settings00](self.impl), gboolean(enabled))
-
-proc webkit_settings_set_enable_xss_auditor(self: ptr Settings00; enabled: gboolean) {.
-    importc, libprag.}
-
-proc setEnableXssAuditor*(self: Settings; enabled: bool = true) =
-  webkit_settings_set_enable_xss_auditor(cast[ptr Settings00](self.impl), gboolean(enabled))
-
-proc `enableXssAuditor=`*(self: Settings; enabled: bool) =
-  webkit_settings_set_enable_xss_auditor(cast[ptr Settings00](self.impl), gboolean(enabled))
 
 proc webkit_settings_set_fantasy_font_family(self: ptr Settings00; fantasyFontFamily: cstring) {.
     importc, libprag.}
@@ -9504,59 +8461,6 @@ proc setZoomTextOnly*(self: Settings; zoomTextOnly: bool = true) =
 proc `zoomTextOnly=`*(self: Settings; zoomTextOnly: bool) =
   webkit_settings_set_zoom_text_only(cast[ptr Settings00](self.impl), gboolean(zoomTextOnly))
 
-proc webkit_web_view_new_with_settings(settings: ptr Settings00): ptr WebView00 {.
-    importc, libprag.}
-
-proc newWebViewWithSettings*(settings: Settings): WebView =
-  let gobj = webkit_web_view_new_with_settings(cast[ptr Settings00](settings.impl))
-  let qdata = g_object_get_qdata(gobj, Quark)
-  if qdata != nil:
-    result = cast[type(result)](qdata)
-    assert(result.impl == gobj)
-  else:
-    fnew(result, gtk.finalizeGObject)
-    result.impl = gobj
-    GC_ref(result)
-    discard g_object_ref_sink(result.impl)
-    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
-    g_object_unref(result.impl)
-    assert(g_object_get_qdata(result.impl, Quark) == nil)
-    g_object_set_qdata(result.impl, Quark, addr(result[]))
-
-proc newWebViewWithSettings*(tdesc: typedesc; settings: Settings): tdesc =
-  assert(result is WebView)
-  let gobj = webkit_web_view_new_with_settings(cast[ptr Settings00](settings.impl))
-  let qdata = g_object_get_qdata(gobj, Quark)
-  if qdata != nil:
-    result = cast[type(result)](qdata)
-    assert(result.impl == gobj)
-  else:
-    fnew(result, gtk.finalizeGObject)
-    result.impl = gobj
-    GC_ref(result)
-    discard g_object_ref_sink(result.impl)
-    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
-    g_object_unref(result.impl)
-    assert(g_object_get_qdata(result.impl, Quark) == nil)
-    g_object_set_qdata(result.impl, Quark, addr(result[]))
-
-proc initWebViewWithSettings*[T](result: var T; settings: Settings) {.deprecated.} =
-  assert(result is WebView)
-  let gobj = webkit_web_view_new_with_settings(cast[ptr Settings00](settings.impl))
-  let qdata = g_object_get_qdata(gobj, Quark)
-  if qdata != nil:
-    result = cast[type(result)](qdata)
-    assert(result.impl == gobj)
-  else:
-    fnew(result, gtk.finalizeGObject)
-    result.impl = gobj
-    GC_ref(result)
-    discard g_object_ref_sink(result.impl)
-    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
-    g_object_unref(result.impl)
-    assert(g_object_get_qdata(result.impl, Quark) == nil)
-    g_object_set_qdata(result.impl, Quark, addr(result[]))
-
 proc webkit_web_view_get_settings(self: ptr WebView00): ptr Settings00 {.
     importc, libprag.}
 
@@ -9567,7 +8471,7 @@ proc getSettings*(self: WebView): Settings =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -9802,9 +8706,8 @@ proc status*(self: Feature): FeatureStatus =
 
 type
   HardwareAccelerationPolicy* {.size: sizeof(cint), pure.} = enum
-    onDemand = 0
-    always = 1
-    never = 2
+    always = 0
+    never = 1
 
 proc webkit_settings_get_hardware_acceleration_policy(self: ptr Settings00): HardwareAccelerationPolicy {.
     importc, libprag.}
@@ -9949,59 +8852,6 @@ when defined(gcDestructors):
       g_object_remove_toggle_ref(self.impl, toggleNotify, addr(self))
       self.impl = nil
 
-proc webkit_context_menu_item_new(action: ptr gtk.Action00): ptr ContextMenuItem00 {.
-    importc, libprag.}
-
-proc newContextMenuItem*(action: gtk.Action): ContextMenuItem {.deprecated.}  =
-  let gobj = webkit_context_menu_item_new(cast[ptr gtk.Action00](action.impl))
-  let qdata = g_object_get_qdata(gobj, Quark)
-  if qdata != nil:
-    result = cast[type(result)](qdata)
-    assert(result.impl == gobj)
-  else:
-    fnew(result, webkit2.finalizeGObject)
-    result.impl = gobj
-    GC_ref(result)
-    discard g_object_ref_sink(result.impl)
-    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
-    g_object_unref(result.impl)
-    assert(g_object_get_qdata(result.impl, Quark) == nil)
-    g_object_set_qdata(result.impl, Quark, addr(result[]))
-
-proc newContextMenuItem*(tdesc: typedesc; action: gtk.Action): tdesc {.deprecated.}  =
-  assert(result is ContextMenuItem)
-  let gobj = webkit_context_menu_item_new(cast[ptr gtk.Action00](action.impl))
-  let qdata = g_object_get_qdata(gobj, Quark)
-  if qdata != nil:
-    result = cast[type(result)](qdata)
-    assert(result.impl == gobj)
-  else:
-    fnew(result, webkit2.finalizeGObject)
-    result.impl = gobj
-    GC_ref(result)
-    discard g_object_ref_sink(result.impl)
-    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
-    g_object_unref(result.impl)
-    assert(g_object_get_qdata(result.impl, Quark) == nil)
-    g_object_set_qdata(result.impl, Quark, addr(result[]))
-
-proc initContextMenuItem*[T](result: var T; action: gtk.Action) {.deprecated.} =
-  assert(result is ContextMenuItem)
-  let gobj = webkit_context_menu_item_new(cast[ptr gtk.Action00](action.impl))
-  let qdata = g_object_get_qdata(gobj, Quark)
-  if qdata != nil:
-    result = cast[type(result)](qdata)
-    assert(result.impl == gobj)
-  else:
-    fnew(result, webkit2.finalizeGObject)
-    result.impl = gobj
-    GC_ref(result)
-    discard g_object_ref_sink(result.impl)
-    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
-    g_object_unref(result.impl)
-    assert(g_object_get_qdata(result.impl, Quark) == nil)
-    g_object_set_qdata(result.impl, Quark, addr(result[]))
-
 proc webkit_context_menu_item_new_from_gaction(action: ptr gio.Action00;
     label: cstring; target: ptr glib.Variant00): ptr ContextMenuItem00 {.
     importc, libprag.}
@@ -10014,7 +8864,7 @@ proc newContextMenuItemFromGaction*(action: gio.Action; label: cstring;
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -10032,7 +8882,7 @@ proc newContextMenuItemFromGaction*(tdesc: typedesc; action: gio.Action; label: 
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -10050,7 +8900,7 @@ proc initContextMenuItemFromGaction*[T](result: var T; action: gio.Action; label
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -10069,7 +8919,7 @@ proc newContextMenuItemSeparator*(): ContextMenuItem =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -10086,7 +8936,7 @@ proc newContextMenuItemSeparator*(tdesc: typedesc): tdesc =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -10103,7 +8953,7 @@ proc initContextMenuItemSeparator*[T](result: var T) {.deprecated.} =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -10122,7 +8972,7 @@ proc newContextMenuItemWithSubmenu*(label: cstring; submenu: ContextMenu): Conte
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -10139,7 +8989,7 @@ proc newContextMenuItemWithSubmenu*(tdesc: typedesc; label: cstring; submenu: Co
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -10156,42 +9006,7 @@ proc initContextMenuItemWithSubmenu*[T](result: var T; label: cstring; submenu: 
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
-    result.impl = gobj
-    GC_ref(result)
-    discard g_object_ref_sink(result.impl)
-    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
-    g_object_unref(result.impl)
-    assert(g_object_get_qdata(result.impl, Quark) == nil)
-    g_object_set_qdata(result.impl, Quark, addr(result[]))
-
-proc webkit_context_menu_item_get_action(self: ptr ContextMenuItem00): ptr gtk.Action00 {.
-    importc, libprag.}
-
-proc getAction*(self: ContextMenuItem): gtk.Action =
-  let gobj = webkit_context_menu_item_get_action(cast[ptr ContextMenuItem00](self.impl))
-  let qdata = g_object_get_qdata(gobj, Quark)
-  if qdata != nil:
-    result = cast[type(result)](qdata)
-    assert(result.impl == gobj)
-  else:
-    fnew(result, gtk.finalizeGObject)
-    result.impl = gobj
-    GC_ref(result)
-    discard g_object_ref_sink(result.impl)
-    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
-    g_object_unref(result.impl)
-    assert(g_object_get_qdata(result.impl, Quark) == nil)
-    g_object_set_qdata(result.impl, Quark, addr(result[]))
-
-proc action*(self: ContextMenuItem): gtk.Action =
-  let gobj = webkit_context_menu_item_get_action(cast[ptr ContextMenuItem00](self.impl))
-  let qdata = g_object_get_qdata(gobj, Quark)
-  if qdata != nil:
-    result = cast[type(result)](qdata)
-    assert(result.impl == gobj)
-  else:
-    fnew(result, gtk.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -10245,7 +9060,7 @@ proc getSubmenu*(self: ContextMenuItem): ContextMenu =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -10261,7 +9076,7 @@ proc submenu*(self: ContextMenuItem): ContextMenu =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -10297,7 +9112,7 @@ proc newContextMenuWithItems*(items: seq[ContextMenuItem]): ContextMenu =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -10317,7 +9132,7 @@ proc newContextMenuWithItems*(tdesc: typedesc; items: seq[ContextMenuItem]): tde
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -10337,7 +9152,7 @@ proc initContextMenuWithItems*[T](result: var T; items: seq[ContextMenuItem]) {.
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -10363,7 +9178,7 @@ proc first*(self: ContextMenu): ContextMenuItem =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -10382,7 +9197,7 @@ proc getItemAtPosition*(self: ContextMenu; position: int): ContextMenuItem =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -10418,7 +9233,7 @@ proc last*(self: ContextMenu): ContextMenuItem =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -10507,7 +9322,7 @@ proc newContextMenuItemFromStockAction*(action: ContextMenuAction): ContextMenuI
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -10524,7 +9339,7 @@ proc newContextMenuItemFromStockAction*(tdesc: typedesc; action: ContextMenuActi
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -10541,7 +9356,7 @@ proc initContextMenuItemFromStockAction*[T](result: var T; action: ContextMenuAc
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -10562,7 +9377,7 @@ proc newContextMenuItemFromStockActionWithLabel*(action: ContextMenuAction;
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -10580,7 +9395,7 @@ proc newContextMenuItemFromStockActionWithLabel*(tdesc: typedesc; action: Contex
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -10598,7 +9413,7 @@ proc initContextMenuItemFromStockActionWithLabel*[T](result: var T; action: Cont
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -10697,6 +9512,10 @@ const MICRO_VERSION* = 7'i32
 const MINOR_VERSION* = 48'i32
 
 type
+  MediaError* {.size: sizeof(cint), pure.} = enum
+    load = 204
+
+type
   NavigationPolicyDecision* = ref object of PolicyDecision
   NavigationPolicyDecision00* = object of PolicyDecision00
 
@@ -10711,33 +9530,6 @@ when defined(gcDestructors):
       g_object_remove_toggle_ref(self.impl, toggleNotify, addr(self))
       self.impl = nil
 
-proc webkit_navigation_policy_decision_get_frame_name(self: ptr NavigationPolicyDecision00): cstring {.
-    importc, libprag.}
-
-proc getFrameName*(self: NavigationPolicyDecision): string =
-  result = $webkit_navigation_policy_decision_get_frame_name(cast[ptr NavigationPolicyDecision00](self.impl))
-
-proc frameName*(self: NavigationPolicyDecision): string =
-  result = $webkit_navigation_policy_decision_get_frame_name(cast[ptr NavigationPolicyDecision00](self.impl))
-
-proc webkit_navigation_policy_decision_get_modifiers(self: ptr NavigationPolicyDecision00): uint32 {.
-    importc, libprag.}
-
-proc getModifiers*(self: NavigationPolicyDecision): int =
-  int(webkit_navigation_policy_decision_get_modifiers(cast[ptr NavigationPolicyDecision00](self.impl)))
-
-proc modifiers*(self: NavigationPolicyDecision): int =
-  int(webkit_navigation_policy_decision_get_modifiers(cast[ptr NavigationPolicyDecision00](self.impl)))
-
-proc webkit_navigation_policy_decision_get_mouse_button(self: ptr NavigationPolicyDecision00): uint32 {.
-    importc, libprag.}
-
-proc getMouseButton*(self: NavigationPolicyDecision): int =
-  int(webkit_navigation_policy_decision_get_mouse_button(cast[ptr NavigationPolicyDecision00](self.impl)))
-
-proc mouseButton*(self: NavigationPolicyDecision): int =
-  int(webkit_navigation_policy_decision_get_mouse_button(cast[ptr NavigationPolicyDecision00](self.impl)))
-
 proc webkit_navigation_policy_decision_get_navigation_action(self: ptr NavigationPolicyDecision00): ptr NavigationAction00 {.
     importc, libprag.}
 
@@ -10751,50 +9543,6 @@ proc navigationAction*(self: NavigationPolicyDecision): NavigationAction =
   result.impl = webkit_navigation_policy_decision_get_navigation_action(cast[ptr NavigationPolicyDecision00](self.impl))
   result.impl = cast[typeof(result.impl)](g_boxed_copy(webkit_navigation_action_get_type(), result.impl))
 
-proc webkit_navigation_policy_decision_get_navigation_type(self: ptr NavigationPolicyDecision00): NavigationType {.
-    importc, libprag.}
-
-proc getNavigationType*(self: NavigationPolicyDecision): NavigationType =
-  webkit_navigation_policy_decision_get_navigation_type(cast[ptr NavigationPolicyDecision00](self.impl))
-
-proc navigationType*(self: NavigationPolicyDecision): NavigationType =
-  webkit_navigation_policy_decision_get_navigation_type(cast[ptr NavigationPolicyDecision00](self.impl))
-
-proc webkit_navigation_policy_decision_get_request(self: ptr NavigationPolicyDecision00): ptr URIRequest00 {.
-    importc, libprag.}
-
-proc getRequest*(self: NavigationPolicyDecision): URIRequest =
-  let gobj = webkit_navigation_policy_decision_get_request(cast[ptr NavigationPolicyDecision00](self.impl))
-  let qdata = g_object_get_qdata(gobj, Quark)
-  if qdata != nil:
-    result = cast[type(result)](qdata)
-    assert(result.impl == gobj)
-  else:
-    fnew(result, webkit2.finalizeGObject)
-    result.impl = gobj
-    GC_ref(result)
-    discard g_object_ref_sink(result.impl)
-    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
-    g_object_unref(result.impl)
-    assert(g_object_get_qdata(result.impl, Quark) == nil)
-    g_object_set_qdata(result.impl, Quark, addr(result[]))
-
-proc request*(self: NavigationPolicyDecision): URIRequest =
-  let gobj = webkit_navigation_policy_decision_get_request(cast[ptr NavigationPolicyDecision00](self.impl))
-  let qdata = g_object_get_qdata(gobj, Quark)
-  if qdata != nil:
-    result = cast[type(result)](qdata)
-    assert(result.impl == gobj)
-  else:
-    fnew(result, webkit2.finalizeGObject)
-    result.impl = gobj
-    GC_ref(result)
-    discard g_object_ref_sink(result.impl)
-    g_object_add_toggle_ref(result.impl, toggleNotify, addr(result[]))
-    g_object_unref(result.impl)
-    assert(g_object_get_qdata(result.impl, Quark) == nil)
-    g_object_set_qdata(result.impl, Quark, addr(result[]))
-
 type
   NetworkError* {.size: sizeof(cint), pure.} = enum
     transport = 300
@@ -10802,15 +9550,6 @@ type
     cancelled = 302
     fileDoesNotExist = 303
     failed = 399
-
-type
-  PluginError* {.size: sizeof(cint), pure.} = enum
-    cannotFindPlugin = 200
-    cannotLoadPlugin = 201
-    javaUnavailable = 202
-    connectionCancelled = 203
-    willHandleLoad = 204
-    failed = 299
 
 type
   PolicyError* {.size: sizeof(cint), pure.} = enum
@@ -10851,7 +9590,7 @@ proc getRequest*(self: ResponsePolicyDecision): URIRequest =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -10867,7 +9606,7 @@ proc request*(self: ResponsePolicyDecision): URIRequest =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -10886,7 +9625,7 @@ proc getResponse*(self: ResponsePolicyDecision): URIResponse =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -10902,7 +9641,7 @@ proc response*(self: ResponsePolicyDecision): URIResponse =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -11053,7 +9792,7 @@ proc getWebView*(self: URISchemeRequest): WebView =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -11069,7 +9808,7 @@ proc webView*(self: URISchemeRequest): WebView =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -11103,7 +9842,7 @@ proc newURISchemeResponse*(inputStream: gio.InputStream; streamLength: int64): U
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -11121,7 +9860,7 @@ proc newURISchemeResponse*(tdesc: typedesc; inputStream: gio.InputStream; stream
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -11139,7 +9878,7 @@ proc initURISchemeResponse*[T](result: var T; inputStream: gio.InputStream; stre
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -11230,7 +9969,7 @@ proc newUserContentFilterStore*(storagePath: cstring): UserContentFilterStore =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -11248,7 +9987,7 @@ proc newUserContentFilterStore*(tdesc: typedesc; storagePath: cstring): tdesc =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -11266,7 +10005,7 @@ proc initUserContentFilterStore*[T](result: var T; storagePath: cstring) {.depre
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, webkit2.finalizeGObject)
+    fnew(result, webkit6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -11713,10 +10452,14 @@ proc userMediaPermissionIsForVideoDevice*(request: UserMediaPermissionRequest): 
 
 # Extern interfaces: (we don't use converters, but explicit procs for now.)
 
-proc implementorIface*(x: webkit2.WebView): atk.ImplementorIface = cast[atk.ImplementorIface](x)
+proc accessible*(x: webkit6.WebView): gtk4.Accessible = cast[gtk4.Accessible](x)
 
-proc buildable*(x: webkit2.WebView): gtk.Buildable = cast[gtk.Buildable](x)
+proc buildable*(x: webkit6.WebView): gtk4.Buildable = cast[gtk4.Buildable](x)
 
-proc implementorIface*(x: webkit2.WebViewBase): atk.ImplementorIface = cast[atk.ImplementorIface](x)
+proc constraintTarget*(x: webkit6.WebView): gtk4.ConstraintTarget = cast[gtk4.ConstraintTarget](x)
 
-proc buildable*(x: webkit2.WebViewBase): gtk.Buildable = cast[gtk.Buildable](x)
+proc accessible*(x: webkit6.WebViewBase): gtk4.Accessible = cast[gtk4.Accessible](x)
+
+proc buildable*(x: webkit6.WebViewBase): gtk4.Buildable = cast[gtk4.Buildable](x)
+
+proc constraintTarget*(x: webkit6.WebViewBase): gtk4.ConstraintTarget = cast[gtk4.ConstraintTarget](x)

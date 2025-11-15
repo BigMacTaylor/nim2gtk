@@ -390,7 +390,7 @@ type
     toggleNoView = 8
     lockedContents = 9
 
-  AnnotFlag* {.size: sizeof(cint).} = set[AnnotFlagFlag]
+  AnnotFlag* = set[AnnotFlagFlag]
 
 const
   AnnotFlagUnknown* = AnnotFlag({})
@@ -2079,7 +2079,7 @@ type
     ignoreDiacritics = 3
     multiline = 4
 
-  FindFlags* {.size: sizeof(cint).} = set[FindFlag]
+  FindFlags* = set[FindFlag]
 
 const
   FindFlagsDefault* = FindFlags({})
@@ -2560,7 +2560,7 @@ type
     all = 0
     stampAnnotsOnly = 1
 
-  PrintFlags* {.size: sizeof(cint).} = set[PrintFlag]
+  PrintFlags* = set[PrintFlag]
 
 const
   PrintMarkupAnnots* = PrintFlag.all
@@ -3564,7 +3564,7 @@ type
     withoutOcspRevocationCheck = 1
     useAiaCertificateFetch = 2
 
-  SignatureValidationFlags* {.size: sizeof(cint).} = set[SignatureValidationFlag]
+  SignatureValidationFlags* = set[SignatureValidationFlag]
 
 proc poppler_form_field_signature_validate_async(self: ptr FormField00; flags: SignatureValidationFlags;
     cancellable: ptr gio.Cancellable00; callback: AsyncReadyCallback; userData: pointer) {.
@@ -6487,7 +6487,7 @@ type
   StructureGetTextFlag* {.size: sizeof(cint), pure.} = enum
     recursive = 0
 
-  StructureGetTextFlags* {.size: sizeof(cint).} = set[StructureGetTextFlag]
+  StructureGetTextFlags* = set[StructureGetTextFlag]
 
 const
   StructureGetTextFlagsNone* = StructureGetTextFlags({})
@@ -6771,7 +6771,7 @@ type
     displayDocTitle = 5
     directionRtl = 6
 
-  ViewerPreferences* {.size: sizeof(cint).} = set[ViewerPreferencesFlag]
+  ViewerPreferences* = set[ViewerPreferencesFlag]
 
 const
   ViewerPreferencesUnset* = ViewerPreferences({})

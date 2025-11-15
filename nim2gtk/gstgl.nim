@@ -365,13 +365,13 @@ proc gst_gl_context_get_gl_version(self: ptr GLContext00; maj: var int32;
     importc, libprag.}
 
 proc getGlVersion*(self: GLContext; maj: var int; min: var int) =
-  var maj_00: int32
   var min_00: int32
+  var maj_00: int32
   gst_gl_context_get_gl_version(cast[ptr GLContext00](self.impl), maj_00, min_00)
-  if maj.addr != nil:
-    maj = int(maj_00)
   if min.addr != nil:
     min = int(min_00)
+  if maj.addr != nil:
+    maj = int(maj_00)
 
 proc gst_gl_context_get_proc_address(self: ptr GLContext00; name: cstring): pointer {.
     importc, libprag.}
@@ -1096,13 +1096,13 @@ proc gst_gl_window_get_surface_dimensions(self: ptr GLWindow00; width: var uint3
 
 proc getSurfaceDimensions*(self: GLWindow; width: var int;
     height: var int) =
-  var width_00: uint32
   var height_00: uint32
+  var width_00: uint32
   gst_gl_window_get_surface_dimensions(cast[ptr GLWindow00](self.impl), width_00, height_00)
-  if width.addr != nil:
-    width = int(width_00)
   if height.addr != nil:
     height = int(height_00)
+  if width.addr != nil:
+    width = int(width_00)
 
 proc gst_gl_window_get_window_handle(self: ptr GLWindow00): uint64 {.
     importc, libprag.}
@@ -3200,13 +3200,13 @@ proc gst_gl_framebuffer_get_effective_dimensions(self: ptr GLFramebuffer00;
 
 proc getEffectiveDimensions*(self: GLFramebuffer; width: var int = cast[var int](nil);
     height: var int = cast[var int](nil)) =
-  var width_00: uint32
   var height_00: uint32
+  var width_00: uint32
   gst_gl_framebuffer_get_effective_dimensions(cast[ptr GLFramebuffer00](self.impl), width_00, height_00)
-  if width.addr != nil:
-    width = int(width_00)
   if height.addr != nil:
     height = int(height_00)
+  if width.addr != nil:
+    width = int(width_00)
 
 proc gst_gl_framebuffer_get_id(self: ptr GLFramebuffer00): uint32 {.
     importc, libprag.}

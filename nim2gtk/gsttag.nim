@@ -530,15 +530,15 @@ proc gst_tag_parse_extended_comment(extComment: cstring; key: var cstring;
 proc tagParseExtendedComment*(extComment: cstring; key: var string;
     lang: var string; value: var string; failIfNoKey: bool): bool =
   var key_00: cstring
-  var lang_00: cstring
   var value_00: cstring
+  var lang_00: cstring
   result = toBool(gst_tag_parse_extended_comment(extComment, key_00, lang_00, value_00, gboolean(failIfNoKey)))
   if key.addr != nil:
     key = $(key_00)
-  if lang.addr != nil:
-    lang = $(lang_00)
   if value.addr != nil:
     value = $(value_00)
+  if lang.addr != nil:
+    lang = $(lang_00)
 
 proc tagRegisterMusicbrainzTags*() {.
     importc: "gst_tag_register_musicbrainz_tags", libprag.}

@@ -348,17 +348,17 @@ proc gst_audio_ring_buffer_prepare_read(self: ptr AudioRingBuffer00; segment: va
 
 proc prepareRead*(self: AudioRingBuffer; segment: var int;
     readptr: var (seq[uint8] | string); len: var int): bool =
+  var readptr_00: ptr uint8
   var segment_00: int32
   var len_00: int32
-  var readptr_00: ptr uint8
   result = toBool(gst_audio_ring_buffer_prepare_read(cast[ptr AudioRingBuffer00](self.impl), segment_00, readptr_00, len_00))
+  readptr.setLen(len)
+  copyMem(unsafeaddr readptr[0], readptr_00, len.int * sizeof(readptr[0]))
+  cogfree(readptr_00)
   if segment.addr != nil:
     segment = int(segment_00)
   if len.addr != nil:
     len = int(len_00)
-  readptr.setLen(len)
-  copyMem(unsafeaddr readptr[0], readptr_00, len.int * sizeof(readptr[0]))
-  cogfree(readptr_00)
 
 proc gst_audio_ring_buffer_read(self: ptr AudioRingBuffer00; sample: uint64;
     data: ptr uint8; len: uint32; timestamp: var uint64): uint32 {.
@@ -841,20 +841,20 @@ type
     f64be = 31
 
 const
-  AudioFormatS24_32le* = AudioFormat.s24_32
-  AudioFormatU16le* = AudioFormat.u16
-  AudioFormatU24_32le* = AudioFormat.u24_32
   AudioFormatS18le* = AudioFormat.s18
-  AudioFormatS24le* = AudioFormat.s24
   AudioFormatU24le* = AudioFormat.u24
-  AudioFormatU20le* = AudioFormat.u20
-  AudioFormatU32le* = AudioFormat.u32
-  AudioFormatU18le* = AudioFormat.u18
-  AudioFormatF32le* = AudioFormat.f32
-  AudioFormatF64le* = AudioFormat.f64
-  AudioFormatS32le* = AudioFormat.s32
-  AudioFormatS20le* = AudioFormat.s20
   AudioFormatS16le* = AudioFormat.s16
+  AudioFormatU18le* = AudioFormat.u18
+  AudioFormatS24le* = AudioFormat.s24
+  AudioFormatF64le* = AudioFormat.f64
+  AudioFormatU24_32le* = AudioFormat.u24_32
+  AudioFormatS24_32le* = AudioFormat.s24_32
+  AudioFormatU20le* = AudioFormat.u20
+  AudioFormatS32le* = AudioFormat.s32
+  AudioFormatF32le* = AudioFormat.f32
+  AudioFormatU16le* = AudioFormat.u16
+  AudioFormatS20le* = AudioFormat.s20
+  AudioFormatU32le* = AudioFormat.u32
 
 proc gst_audio_format_build_integer(sign: gboolean; endianness: int32; width: int32;
     depth: int32): AudioFormat {.
@@ -1174,15 +1174,15 @@ proc gst_audio_converter_get_config(self: ptr AudioConverter00; inRate: var int3
 
 proc getConfig*(self: AudioConverter; inRate: var int = cast[var int](nil);
     outRate: var int = cast[var int](nil)): gst.Structure =
-  var outRate_00: int32
   var inRate_00: int32
+  var outRate_00: int32
   fnew(result, gBoxedFreeGstStructure)
   result.impl = gst_audio_converter_get_config(cast[ptr AudioConverter00](self.impl), inRate_00, outRate_00)
   result.impl = cast[typeof(result.impl)](g_boxed_copy(gst_structure_get_type(), result.impl))
-  if outRate.addr != nil:
-    outRate = int(outRate_00)
   if inRate.addr != nil:
     inRate = int(inRate_00)
+  if outRate.addr != nil:
+    outRate = int(outRate_00)
 
 proc gst_audio_converter_get_in_frames(self: ptr AudioConverter00; outFrames: uint64): uint64 {.
     importc, libprag.}
@@ -1439,13 +1439,13 @@ proc gst_audio_decoder_get_parse_state(self: ptr AudioDecoder00; sync: var gbool
 
 proc getParseState*(self: AudioDecoder; sync: var bool = cast[var bool](nil);
     eos: var bool = cast[var bool](nil)) =
-  var eos_00: gboolean
   var sync_00: gboolean
+  var eos_00: gboolean
   gst_audio_decoder_get_parse_state(cast[ptr AudioDecoder00](self.impl), sync_00, eos_00)
-  if eos.addr != nil:
-    eos = toBool(eos_00)
   if sync.addr != nil:
     sync = toBool(sync_00)
+  if eos.addr != nil:
+    eos = toBool(eos_00)
 
 proc gst_audio_decoder_get_plc(self: ptr AudioDecoder00): gboolean {.
     importc, libprag.}
@@ -2459,8 +2459,8 @@ type
     numDsdFormats = 6
 
 const
-  DsdFormatDsdFormatU16le* = DsdFormat.dsdFormatU16
   DsdFormatDsdFormatU32le* = DsdFormat.dsdFormatU32
+  DsdFormatDsdFormatU16le* = DsdFormat.dsdFormatU16
 
 proc fromStringDsdFormat*(str: cstring): DsdFormat {.
     importc: "gst_dsd_format_from_string", libprag.}

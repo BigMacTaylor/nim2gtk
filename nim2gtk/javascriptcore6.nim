@@ -4,10 +4,10 @@
 # immediate dependencies:
 # GObject-2.0
 # libraries:
-# libjavascriptcoregtk-4.1.so.0
+# libjavascriptcoregtk-6.0.so.1
 {.warning[UnusedImport]: off.}
 import gobject, glib
-const Lib = "libjavascriptcoregtk-4.1.so.0"
+const Lib = "libjavascriptcoregtk-6.0.so.1"
 {.pragma: libprag, cdecl, dynlib: Lib.}
 
 proc finalizeGObject*[T](o: ref T) =
@@ -88,7 +88,7 @@ proc getParent*(self: Class): Class =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -104,7 +104,7 @@ proc parent*(self: Class): Class =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -151,7 +151,7 @@ proc constructorCall*(self: Value; nParameters: int; parameters: ptr Value00): V
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -171,7 +171,7 @@ proc functionCall*(self: Value; nParameters: int; parameters: ptr Value00): Valu
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -273,7 +273,7 @@ proc objectGetProperty*(self: Value; name: cstring): Value =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -293,7 +293,7 @@ proc objectGetPropertyAtIndex*(self: Value; index: int): Value =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -321,7 +321,7 @@ proc objectInvokeMethod*(self: Value; name: cstring; nParameters: int;
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -401,7 +401,7 @@ proc typedArrayGetBuffer*(self: Value): Value =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -447,7 +447,7 @@ proc addConstructorVariadic*(self: Class; name: cstring = nil;
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -471,7 +471,7 @@ proc addConstructor*(self: Class; name: cstring = nil; callback: Callback;
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -506,7 +506,7 @@ proc newContext*(): Context =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -524,7 +524,7 @@ proc newContext*(tdesc: typedesc): tdesc =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -542,7 +542,7 @@ proc initContext*[T](result: var T) {.deprecated.} =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -564,7 +564,7 @@ proc getCurrent*(): Context =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -589,7 +589,7 @@ proc evaluate*(self: Context; code: cstring; length: int64): Value =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -614,7 +614,7 @@ proc evaluateInObject*(self: Context; code: cstring; length: int64;
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -629,7 +629,7 @@ proc evaluateInObject*(self: Context; code: cstring; length: int64;
     obj = cast[type(obj)](argqdata)
     assert(obj.impl == tmpoutgobjectarg)
   else:
-    fnew(obj, javascriptcore.finalizeGObject)
+    fnew(obj, javascriptcore6.finalizeGObject)
     obj.impl = tmpoutgobjectarg
     GC_ref(obj)
     if g_object_is_floating(obj.impl).int != 0:
@@ -652,7 +652,7 @@ proc evaluateWithSourceUri*(self: Context; code: cstring; length: int64;
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -672,7 +672,7 @@ proc getGlobalObject*(self: Context): Value =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -689,7 +689,7 @@ proc globalObject*(self: Context): Value =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -709,7 +709,7 @@ proc getValue*(self: Context; name: cstring): Value =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -758,7 +758,7 @@ proc newValueArrayBuffer*(context: Context; data: pointer; size: uint64;
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -779,7 +779,7 @@ proc newValueArrayBuffer*(tdesc: typedesc; context: Context; data: pointer; size
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -800,7 +800,7 @@ proc initValueArrayBuffer*[T](result: var T; context: Context; data: pointer; si
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -820,7 +820,7 @@ proc newValueArrayFromGarray*(context: Context; array: ptr PtrArray00): Value =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -838,7 +838,7 @@ proc newValueArrayFromGarray*(tdesc: typedesc; context: Context; array: ptr PtrA
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -856,7 +856,7 @@ proc initValueArrayFromGarray*[T](result: var T; context: Context; array: ptr Pt
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -878,7 +878,7 @@ proc newValueArrayFromStrv*(context: Context; strv: varargs[string, `$`]): Value
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -898,7 +898,7 @@ proc newValueArrayFromStrv*(tdesc: typedesc; context: Context; strv: varargs[str
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -918,7 +918,7 @@ proc initValueArrayFromStrv*[T](result: var T; context: Context; strv: varargs[s
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -938,7 +938,7 @@ proc newValueBoolean*(context: Context; value: bool): Value =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -956,7 +956,7 @@ proc newValueBoolean*(tdesc: typedesc; context: Context; value: bool): tdesc =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -974,7 +974,7 @@ proc initValueBoolean*[T](result: var T; context: Context; value: bool) {.deprec
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -994,7 +994,7 @@ proc newValueFromJson*(context: Context; json: cstring): Value =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -1012,7 +1012,7 @@ proc newValueFromJson*(tdesc: typedesc; context: Context; json: cstring): tdesc 
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -1030,7 +1030,7 @@ proc initValueFromJson*[T](result: var T; context: Context; json: cstring) {.dep
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -1052,7 +1052,7 @@ proc newValueFunctionVariadic*(context: Context; name: cstring = nil;
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -1071,7 +1071,7 @@ proc newValueFunctionVariadic*(tdesc: typedesc; context: Context; name: cstring 
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -1090,7 +1090,7 @@ proc initValueFunctionVariadic*[T](result: var T; context: Context; name: cstrin
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -1114,7 +1114,7 @@ proc newValueFunction*(context: Context; name: cstring = nil; callback: Callback
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -1134,7 +1134,7 @@ proc newValueFunction*(tdesc: typedesc; context: Context; name: cstring = nil; c
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -1154,7 +1154,7 @@ proc initValueFunction*[T](result: var T; context: Context; name: cstring = nil;
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -1174,7 +1174,7 @@ proc newValueNull*(context: Context): Value =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -1192,7 +1192,7 @@ proc newValueNull*(tdesc: typedesc; context: Context): tdesc =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -1210,7 +1210,7 @@ proc initValueNull*[T](result: var T; context: Context) {.deprecated.} =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -1230,7 +1230,7 @@ proc newValueNumber*(context: Context; number: cdouble): Value =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -1248,7 +1248,7 @@ proc newValueNumber*(tdesc: typedesc; context: Context; number: cdouble): tdesc 
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -1266,7 +1266,7 @@ proc initValueNumber*[T](result: var T; context: Context; number: cdouble) {.dep
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -1286,7 +1286,7 @@ proc newValueObject*(context: Context; instance: pointer; jscClass: Class = nil)
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -1304,7 +1304,7 @@ proc newValueObject*(tdesc: typedesc; context: Context; instance: pointer; jscCl
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -1322,7 +1322,7 @@ proc initValueObject*[T](result: var T; context: Context; instance: pointer; jsc
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -1342,7 +1342,7 @@ proc newValueString*(context: Context; string: cstring = nil): Value =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -1360,7 +1360,7 @@ proc newValueString*(tdesc: typedesc; context: Context; string: cstring = nil): 
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -1378,7 +1378,7 @@ proc initValueString*[T](result: var T; context: Context; string: cstring = nil)
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -1398,7 +1398,7 @@ proc newValueStringFromBytes*(context: Context; bytes: glib.Bytes = nil): Value 
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -1416,7 +1416,7 @@ proc newValueStringFromBytes*(tdesc: typedesc; context: Context; bytes: glib.Byt
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -1434,7 +1434,7 @@ proc initValueStringFromBytes*[T](result: var T; context: Context; bytes: glib.B
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -1454,7 +1454,7 @@ proc newValueUndefined*(context: Context): Value =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -1472,7 +1472,7 @@ proc newValueUndefined*(tdesc: typedesc; context: Context): tdesc =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -1490,7 +1490,7 @@ proc initValueUndefined*[T](result: var T; context: Context) {.deprecated.} =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -1510,7 +1510,7 @@ proc getContext*(self: Value): Context =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -1526,7 +1526,7 @@ proc context*(self: Value): Context =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -1560,7 +1560,7 @@ proc newVirtualMachine*(): VirtualMachine =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -1578,7 +1578,7 @@ proc newVirtualMachine*(tdesc: typedesc): tdesc =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -1596,7 +1596,7 @@ proc initVirtualMachine*[T](result: var T) {.deprecated.} =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -1616,7 +1616,7 @@ proc newContextWithVirtualMachine*(vm: VirtualMachine): Context =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -1634,7 +1634,7 @@ proc newContextWithVirtualMachine*(tdesc: typedesc; vm: VirtualMachine): tdesc =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -1652,7 +1652,7 @@ proc initContextWithVirtualMachine*[T](result: var T; vm: VirtualMachine) {.depr
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -1672,7 +1672,7 @@ proc getVirtualMachine*(self: Context): VirtualMachine =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -1688,7 +1688,7 @@ proc virtualMachine*(self: Context): VirtualMachine =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -1715,7 +1715,7 @@ proc registerClass*(self: Context; name: cstring; parentClass: Class = nil;
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -1749,7 +1749,7 @@ proc newException*(context: Context; message: cstring): Exception =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -1767,7 +1767,7 @@ proc newException*(tdesc: typedesc; context: Context; message: cstring): tdesc =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -1785,7 +1785,7 @@ proc initException*[T](result: var T; context: Context; message: cstring) {.depr
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -1805,7 +1805,7 @@ proc newExceptionWithName*(context: Context; name: cstring; message: cstring): E
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -1823,7 +1823,7 @@ proc newExceptionWithName*(tdesc: typedesc; context: Context; name: cstring; mes
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -1841,7 +1841,7 @@ proc initExceptionWithName*[T](result: var T; context: Context; name: cstring; m
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -1951,7 +1951,7 @@ proc checkSyntax*(self: Context; code: cstring; length: int64;
       exception = cast[type(exception)](argqdata)
       assert(exception.impl == tmpoutgobjectarg)
     else:
-      fnew(exception, javascriptcore.finalizeGObject)
+      fnew(exception, javascriptcore6.finalizeGObject)
       exception.impl = tmpoutgobjectarg
       GC_ref(exception)
       if g_object_is_floating(exception.impl).int != 0:
@@ -1974,7 +1974,7 @@ proc getException*(self: Context): Exception =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -1992,7 +1992,7 @@ proc exception*(self: Context): Exception =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     discard g_object_ref_sink(result.impl)
@@ -2060,7 +2060,7 @@ proc newValueTypedArray*(context: Context; `type`: TypedArrayType;
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -2079,7 +2079,7 @@ proc newValueTypedArray*(tdesc: typedesc; context: Context; `type`: TypedArrayTy
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -2098,7 +2098,7 @@ proc initValueTypedArray*[T](result: var T; context: Context; `type`: TypedArray
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -2120,7 +2120,7 @@ proc newValueTypedArrayWithBuffer*(self: Value; `type`: TypedArrayType;
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -2176,7 +2176,7 @@ proc newValuePromise*(context: Context; executor: Executor; userData: pointer): 
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -2194,7 +2194,7 @@ proc newValuePromise*(tdesc: typedesc; context: Context; executor: Executor; use
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -2212,7 +2212,7 @@ proc initValuePromise*[T](result: var T; context: Context; executor: Executor; u
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -2277,7 +2277,7 @@ proc newWeakValue*(value: Value): WeakValue =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -2295,7 +2295,7 @@ proc newWeakValue*(tdesc: typedesc; value: Value): tdesc =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -2313,7 +2313,7 @@ proc initWeakValue*[T](result: var T; value: Value) {.deprecated.} =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -2333,7 +2333,7 @@ proc getValue*(self: WeakValue): Value =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:
@@ -2350,7 +2350,7 @@ proc value*(self: WeakValue): Value =
     result = cast[type(result)](qdata)
     assert(result.impl == gobj)
   else:
-    fnew(result, javascriptcore.finalizeGObject)
+    fnew(result, javascriptcore6.finalizeGObject)
     result.impl = gobj
     GC_ref(result)
     if g_object_is_floating(result.impl).int != 0:

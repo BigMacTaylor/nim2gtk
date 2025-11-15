@@ -1,10 +1,10 @@
 # Package
 
-version       = "0.1.0"
+version       = "0.1.1"
 author        = "Mac Taylor"
 description   = "GTK bindings for Nim 2.0"
 license       = "MIT"
-skipDirs      = @["examples", "tests"]
+skipDirs      = @["examples"]
 installDirs   = @["nim2gtk"]
 
 # Dependencies

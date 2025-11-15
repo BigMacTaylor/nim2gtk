@@ -351,25 +351,25 @@ proc gst_rtcp_packet_get_rb(self: RTCPPacket; nth: uint32; ssrc: var uint32;
 proc getRb*(self: RTCPPacket; nth: int; ssrc: var int; fractionlost: var uint8;
     packetslost: var int; exthighestseq: var int; jitter: var int; lsr: var int;
     dlsr: var int) =
-  var packetslost_00: int32
   var lsr_00: uint32
-  var jitter_00: uint32
-  var exthighestseq_00: uint32
   var ssrc_00: uint32
   var dlsr_00: uint32
+  var jitter_00: uint32
+  var exthighestseq_00: uint32
+  var packetslost_00: int32
   gst_rtcp_packet_get_rb(self, uint32(nth), ssrc_00, fractionlost, packetslost_00, exthighestseq_00, jitter_00, lsr_00, dlsr_00)
-  if packetslost.addr != nil:
-    packetslost = int(packetslost_00)
   if lsr.addr != nil:
     lsr = int(lsr_00)
-  if jitter.addr != nil:
-    jitter = int(jitter_00)
-  if exthighestseq.addr != nil:
-    exthighestseq = int(exthighestseq_00)
   if ssrc.addr != nil:
     ssrc = int(ssrc_00)
   if dlsr.addr != nil:
     dlsr = int(dlsr_00)
+  if jitter.addr != nil:
+    jitter = int(jitter_00)
+  if exthighestseq.addr != nil:
+    exthighestseq = int(exthighestseq_00)
+  if packetslost.addr != nil:
+    packetslost = int(packetslost_00)
 
 proc gst_rtcp_packet_get_rb_count(self: RTCPPacket): uint32 {.
     importc, libprag.}
@@ -467,19 +467,19 @@ proc gst_rtcp_packet_sr_get_sender_info(self: RTCPPacket; ssrc: var uint32;
 
 proc srGetSenderInfo*(self: RTCPPacket; ssrc: var int;
     ntptime: var uint64; rtptime: var int; packetCount: var int; octetCount: var int) =
-  var packetCount_00: uint32
-  var rtptime_00: uint32
-  var octetCount_00: uint32
   var ssrc_00: uint32
+  var octetCount_00: uint32
+  var rtptime_00: uint32
+  var packetCount_00: uint32
   gst_rtcp_packet_sr_get_sender_info(self, ssrc_00, ntptime, rtptime_00, packetCount_00, octetCount_00)
-  if packetCount.addr != nil:
-    packetCount = int(packetCount_00)
-  if rtptime.addr != nil:
-    rtptime = int(rtptime_00)
-  if octetCount.addr != nil:
-    octetCount = int(octetCount_00)
   if ssrc.addr != nil:
     ssrc = int(ssrc_00)
+  if octetCount.addr != nil:
+    octetCount = int(octetCount_00)
+  if rtptime.addr != nil:
+    rtptime = int(rtptime_00)
+  if packetCount.addr != nil:
+    packetCount = int(packetCount_00)
 
 proc gst_rtcp_packet_sr_set_sender_info(self: RTCPPacket; ssrc: uint32; ntptime: uint64;
     rtptime: uint32; packetCount: uint32; octetCount: uint32) {.
@@ -675,11 +675,11 @@ type
     psfbTypeAfb = 15
 
 const
-  RTCPFBTypeRtpfbTypeTwcc* = RTCPFBType.psfbTypeAfb
+  RTCPFBTypeRtpfbTypeRtcpSrReq* = RTCPFBType.psfbTypeTstr
+  RTCPFBTypeRtpfbTypeTmmbn* = RTCPFBType.psfbTypeFir
   RTCPFBTypeRtpfbTypeTmmbr* = RTCPFBType.psfbTypeRpsi
   RTCPFBTypeRtpfbTypeNack* = RTCPFBType.psfbTypePli
-  RTCPFBTypeRtpfbTypeTmmbn* = RTCPFBType.psfbTypeFir
-  RTCPFBTypeRtpfbTypeRtcpSrReq* = RTCPFBType.psfbTypeTstr
+  RTCPFBTypeRtpfbTypeTwcc* = RTCPFBType.psfbTypeAfb
 
 proc gst_rtcp_packet_fb_get_type(self: RTCPPacket): RTCPFBType {.
     importc, libprag.}

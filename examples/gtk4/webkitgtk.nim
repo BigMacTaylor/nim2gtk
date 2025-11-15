@@ -1,6 +1,6 @@
 # https://wiki.gnome.org/Projects/WebKitGtk/ProgrammingGuide/Tutorial
 # nim c --gc:arc webkitgtk.nim
-import nim2gtk/[gtk4, glib, gobject, gio, webkit2]
+import nim2gtk/[gtk4, glib, gobject, gio, webkit6]
 
 proc appActivate (app: Application) =
   let window = newApplicationWindow(app)

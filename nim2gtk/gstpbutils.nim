@@ -2501,19 +2501,19 @@ proc gst_plugins_base_version(major: var uint32; minor: var uint32; micro: var u
 
 proc pluginsBaseVersion*(major: var int; minor: var int; micro: var int;
     nano: var int) =
-  var nano_00: uint32
   var major_00: uint32
   var minor_00: uint32
   var micro_00: uint32
+  var nano_00: uint32
   gst_plugins_base_version(major_00, minor_00, micro_00, nano_00)
-  if nano.addr != nil:
-    nano = int(nano_00)
   if major.addr != nil:
     major = int(major_00)
   if minor.addr != nil:
     minor = int(minor_00)
   if micro.addr != nil:
     micro = int(micro_00)
+  if nano.addr != nil:
+    nano = int(nano_00)
 
 proc gst_plugins_base_version_string(): cstring {.
     importc, libprag.}

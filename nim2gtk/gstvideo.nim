@@ -246,13 +246,13 @@ proc gst_navigation_message_parse_angles_changed(message: ptr gst.Message00;
 
 proc messageParseAnglesChanged*(message: gst.Message; curAngle: var int = cast[var int](nil);
     nAngles: var int = cast[var int](nil)): bool =
-  var curAngle_00: uint32
   var nAngles_00: uint32
+  var curAngle_00: uint32
   result = toBool(gst_navigation_message_parse_angles_changed(cast[ptr gst.Message00](message.impl), curAngle_00, nAngles_00))
-  if curAngle.addr != nil:
-    curAngle = int(curAngle_00)
   if nAngles.addr != nil:
     nAngles = int(nAngles_00)
+  if curAngle.addr != nil:
+    curAngle = int(curAngle_00)
 
 proc gst_navigation_message_parse_event(message: ptr gst.Message00; event: var ptr gst.Event00): gboolean {.
     importc, libprag.}
@@ -292,13 +292,13 @@ proc gst_navigation_query_parse_angles(query: ptr gst.Query00; curAngle: var uin
 
 proc queryParseAngles*(query: gst.Query; curAngle: var int = cast[var int](nil);
     nAngles: var int = cast[var int](nil)): bool =
-  var curAngle_00: uint32
   var nAngles_00: uint32
+  var curAngle_00: uint32
   result = toBool(gst_navigation_query_parse_angles(cast[ptr gst.Query00](query.impl), curAngle_00, nAngles_00))
-  if curAngle.addr != nil:
-    curAngle = int(curAngle_00)
   if nAngles.addr != nil:
     nAngles = int(nAngles_00)
+  if curAngle.addr != nil:
+    curAngle = int(curAngle_00)
 
 proc gst_navigation_query_parse_commands_length(query: ptr gst.Query00; nCmds: var uint32): gboolean {.
     importc, libprag.}
@@ -1548,13 +1548,13 @@ proc gst_video_chroma_resample_get_info(self: ptr VideoChromaResample00;
 
 proc getInfoVideoChromaResample*(self: VideoChromaResample; nLines: var int = cast[var int](nil);
     offset: var int = cast[var int](nil)) =
-  var nLines_00: uint32
   var offset_00: int32
+  var nLines_00: uint32
   gst_video_chroma_resample_get_info(cast[ptr VideoChromaResample00](self.impl), nLines_00, offset_00)
-  if nLines.addr != nil:
-    nLines = int(nLines_00)
   if offset.addr != nil:
     offset = int(offset_00)
+  if nLines.addr != nil:
+    nLines = int(nLines_00)
 
 type
   VideoChromaSite* {.size: sizeof(cint), pure.} = enum
@@ -1567,8 +1567,8 @@ type
     dv = 14
 
 const
-  VideoChromaSiteNone* = VideoChromaSite.jpeg
   VideoChromaSiteMpeg2* = VideoChromaSite.hCosited
+  VideoChromaSiteNone* = VideoChromaSite.jpeg
 
 proc fromStringVideoChromaSite*(s: cstring): VideoChromaSite {.
     importc: "gst_video_chroma_site_from_string", libprag.}
@@ -3554,16 +3554,16 @@ proc getRenderRectangle*(self: VideoOverlayRectangle;
     renderX: var int = cast[var int](nil); renderY: var int = cast[var int](nil);
     renderWidth: var int = cast[var int](nil); renderHeight: var int = cast[var int](nil)): bool =
   var renderHeight_00: uint32
-  var renderY_00: int32
   var renderWidth_00: uint32
+  var renderY_00: int32
   var renderX_00: int32
   result = toBool(gst_video_overlay_rectangle_get_render_rectangle(cast[ptr VideoOverlayRectangle00](self.impl), renderX_00, renderY_00, renderWidth_00, renderHeight_00))
   if renderHeight.addr != nil:
     renderHeight = int(renderHeight_00)
-  if renderY.addr != nil:
-    renderY = int(renderY_00)
   if renderWidth.addr != nil:
     renderWidth = int(renderWidth_00)
+  if renderY.addr != nil:
+    renderY = int(renderY_00)
   if renderX.addr != nil:
     renderX = int(renderX_00)
 
@@ -4964,13 +4964,13 @@ proc gst_video_guess_framerate(duration: uint64; destN: var int32; destD: var in
 
 proc videoGuessFramerate*(duration: uint64; destN: var int = cast[var int](nil);
     destD: var int = cast[var int](nil)): bool =
-  var destD_00: int32
   var destN_00: int32
+  var destD_00: int32
   result = toBool(gst_video_guess_framerate(duration, destN_00, destD_00))
-  if destD.addr != nil:
-    destD = int(destD_00)
   if destN.addr != nil:
     destN = int(destN_00)
+  if destD.addr != nil:
+    destD = int(destD_00)
 
 proc gst_video_is_common_aspect_ratio(width: int32; height: int32; parN: int32;
     parD: int32): gboolean {.

@@ -214,18 +214,18 @@ proc vte_pty_get_size(self: ptr Pty00; rows: var int32; columns: var int32;
 
 proc getSize*(self: Pty; rows: var int = cast[var int](nil); columns: var int = cast[var int](nil)): bool =
   var gerror: ptr glib.Error
-  var rows_00: int32
   var columns_00: int32
+  var rows_00: int32
   let resul0 = vte_pty_get_size(cast[ptr Pty00](self.impl), rows_00, columns_00, addr gerror)
   if gerror != nil:
     let msg = $gerror.message
     g_error_free(gerror[])
     raise newException(GException, msg)
   result = toBool(resul0)
-  if rows.addr != nil:
-    rows = int(rows_00)
   if columns.addr != nil:
     columns = int(columns_00)
+  if rows.addr != nil:
+    rows = int(rows_00)
 
 proc vte_pty_set_size(self: ptr Pty00; rows: int32; columns: int32; error: ptr ptr glib.Error = nil): gboolean {.
     importc, libprag.}
