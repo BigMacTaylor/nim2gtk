@@ -3,7 +3,7 @@
 CAUTION These bindings are for personal use, and have not been tested thoroughly.
 Use at own risk!
 
-Built using https://github.com/StefanSalewski/gintro/[gintro] by Stefan Salewski.
+Built using [gintro](https://github.com/StefanSalewski/gintro/) by Stefan Salewski.
 On Ubuntu 24.04 with Nim 2.2.4
 
 
