@@ -1,33 +1,24 @@
-= High level GTK3/4 bindings for Nim 2.0
+# High level GTK3/4 bindings for Nim 2.0
 
-:experimental:
-:imagesdir: http://ssalewski.de/tmp
-//:source-highlighter: pygments
-//:pygments-style: monokai
-:source-highlighter: rouge
-:rouge-style: molokai
-:icons: font
-:toc: left
+CAUTION These bindings are for personal use, and have not been tested thoroughly.
+Use at own risk!
 
-CAUTION These bindings are for personal use only, and have not been tested thoroughly.
-Use at your own risk!
-
-Built from https://github.com/StefanSalewski/gintro/[gintro] by Stefan Salewski.
+Built using https://github.com/StefanSalewski/gintro/[gintro] by Stefan Salewski.
 On Ubuntu 24.04 with Nim 2.2.4
 
 
 
-== 1 Install
-----
+## 1 Install
+```bash
 nimble install https://github.com/BigMacTaylor/nim2gtk.git
-----
+```
 
 
-== 2 Import nim2gtk in the project
+## 2 Import nim2gtk in the project
 [[app0.nim]]
 [source,nim]
 .app0.nim
-----
+```nim
 # app0.nim -- minimal application style example
 # nim c app0.nim
 import nim2gtk/[gtk, gobject, gio]
@@ -44,21 +35,19 @@ proc main =
   discard run(app)
 
 main()
-----
+```
 
 
-== 3 Compile
-----
+## 3 Compile
+```bash
 nim c app0.nim
-----
+```
 
 Thats it!
 
 
-== Other Good GUI Libraries
+## Other Good GUI Libraries
 
 * https://github.com/simonkrauter/NiGui.git
 * https://github.com/neroist/uing.git
 * https://github.com/can-lehmann/owlkettle.git
-
-
