@@ -630,10 +630,11 @@ proc gst_rtsp_connection_accept(socket: ptr gio.Socket00; conn: var ptr RTSPConn
 proc accept*(socket: gio.Socket; conn: var RTSPConnection;
     cancellable: gio.Cancellable = nil): RTSPResult =
   fnew(conn, finalizerfree)
-  gst_rtsp_connection_accept(cast[ptr gio.Socket00](socket.impl), cast[var ptr RTSPConnection00](addr conn.impl), if cancellable.isNil: nil else: cast[ptr gio.Cancellable00](cancellable.impl))
+  #gst_rtsp_connection_accept(cast[ptr gio.Socket00](socket.impl), cast[var ptr RTSPConnection00](addr conn.impl), if cancellable.isNil: nil else: cast[ptr gio.Cancellable00](cancellable.impl))
   if conn != nil and conn.impl == nil:
     conn.ignoreFinalizer = true
     conn = nil
+  gst_rtsp_connection_accept(cast[ptr gio.Socket00](socket.impl), cast[var ptr RTSPConnection00](addr conn.impl), if cancellable.isNil: nil else: cast[ptr gio.Cancellable00](cancellable.impl))
 
 proc gst_rtsp_connection_create_from_socket(socket: ptr gio.Socket00; ip: cstring;
     port: uint16; initialBuffer: cstring; conn: var ptr RTSPConnection00): RTSPResult {.
@@ -642,10 +643,11 @@ proc gst_rtsp_connection_create_from_socket(socket: ptr gio.Socket00; ip: cstrin
 proc createFromSocket*(socket: gio.Socket; ip: cstring;
     port: uint16; initialBuffer: cstring; conn: var RTSPConnection): RTSPResult =
   fnew(conn, finalizerfree)
-  gst_rtsp_connection_create_from_socket(cast[ptr gio.Socket00](socket.impl), ip, port, initialBuffer, cast[var ptr RTSPConnection00](addr conn.impl))
+  #gst_rtsp_connection_create_from_socket(cast[ptr gio.Socket00](socket.impl), ip, port, initialBuffer, cast[var ptr RTSPConnection00](addr conn.impl))
   if conn != nil and conn.impl == nil:
     conn.ignoreFinalizer = true
     conn = nil
+  gst_rtsp_connection_create_from_socket(cast[ptr gio.Socket00](socket.impl), ip, port, initialBuffer, cast[var ptr RTSPConnection00](addr conn.impl))
 
 type
   RTSPEvent* {.size: sizeof(cint), pure.} = enum
@@ -723,10 +725,11 @@ proc gst_rtsp_message_copy(self: ptr RTSPMessage00; copy: var ptr RTSPMessage00)
 
 proc copy*(self: RTSPMessage; copy: var RTSPMessage): RTSPResult =
   fnew(copy, gBoxedFreeGstRTSPMessage)
-  gst_rtsp_message_copy(cast[ptr RTSPMessage00](self.impl), cast[var ptr RTSPMessage00](addr copy.impl))
+  #gst_rtsp_message_copy(cast[ptr RTSPMessage00](self.impl), cast[var ptr RTSPMessage00](addr copy.impl))
   if copy != nil and copy.impl == nil:
     copy.ignoreFinalizer = true
     copy = nil
+  gst_rtsp_message_copy(cast[ptr RTSPMessage00](self.impl), cast[var ptr RTSPMessage00](addr copy.impl))
 
 proc gst_rtsp_message_dump(self: ptr RTSPMessage00): RTSPResult {.
     importc, libprag.}
@@ -1301,10 +1304,11 @@ proc gst_rtsp_url_parse(urlstr: cstring; url: var ptr RTSPUrl00): RTSPResult {.
 
 proc parse*(urlstr: cstring; url: var RTSPUrl): RTSPResult =
   fnew(url, gBoxedFreeGstRTSPUrl)
-  gst_rtsp_url_parse(urlstr, cast[var ptr RTSPUrl00](addr url.impl))
+  #gst_rtsp_url_parse(urlstr, cast[var ptr RTSPUrl00](addr url.impl))
   if url != nil and url.impl == nil:
     url.ignoreFinalizer = true
     url = nil
+  gst_rtsp_url_parse(urlstr, cast[var ptr RTSPUrl00](addr url.impl))
 
 proc gst_rtsp_connection_get_url(self: ptr RTSPConnection00): ptr RTSPUrl00 {.
     importc, libprag.}

@@ -4501,7 +4501,9 @@ proc gst_gl_handle_set_context(element: ptr gst.Element00; context: ptr gst.Cont
 proc glHandleSetContext*(element: gst.Element; context: gst.Context;
     display: var GLDisplay; otherContext: var GLContext): bool =
   var tmpoutgobjectarg: ptr GLContext00
-  result = toBool(gst_gl_handle_set_context(cast[ptr gst.Element00](element.impl), cast[ptr gst.Context00](context.impl), tmpoutgobjectarg, tmpoutgobjectarg))
+  #result = toBool(gst_gl_handle_set_context(cast[ptr gst.Element00](element.impl), cast[ptr gst.Context00](context.impl), tmpoutgobjectarg, tmpoutgobjectarg))
+  var displayPtr: ptr GLDisplay00
+  result = toBool(gst_gl_handle_set_context(cast[ptr gst.Element00](element.impl), cast[ptr gst.Context00](context.impl), displayPtr, tmpoutgobjectarg))
 #  dothemagic(otherContext
   let argqdata = g_object_get_qdata(tmpoutgobjectarg, Quark)
   if argqdata != nil:

@@ -6570,7 +6570,7 @@ proc parseCapsResult*(self: Query; caps: var Caps) =
   if caps != nil and caps.impl == nil:
     caps.ignoreFinalizer = true
     caps = nil
-
+#[
 proc parseCapsResult*(self: Query): Caps =
   fnew(result, gBoxedFreeGstCaps)
   gst_query_parse_caps_result(cast[ptr Query00](self.impl), cast[var ptr Caps00](addr result.impl))
@@ -6581,7 +6581,7 @@ proc parseCapsResult*(self: Query): Caps =
   if result != nil and result.impl == nil:
     result.ignoreFinalizer = true
     result = nil
-
+]#
 proc gst_query_parse_context_type(self: ptr Query00; contextType: var cstring): gboolean {.
     importc, libprag.}
 
@@ -7277,10 +7277,11 @@ proc gst_buffer_pool_acquire_buffer(self: ptr BufferPool00; buffer: var ptr Buff
 proc acquireBuffer*(self: BufferPool; buffer: var Buffer;
     params: BufferPoolAcquireParams = nil): FlowReturn =
   fnew(buffer, gBoxedFreeGstBuffer)
-  gst_buffer_pool_acquire_buffer(cast[ptr BufferPool00](self.impl), cast[var ptr Buffer00](addr buffer.impl), if params.isNil: nil else: cast[ptr BufferPoolAcquireParams00](params.impl))
+  #gst_buffer_pool_acquire_buffer(cast[ptr BufferPool00](self.impl), cast[var ptr Buffer00](addr buffer.impl), if params.isNil: nil else: cast[ptr BufferPoolAcquireParams00](params.impl))
   if buffer != nil and buffer.impl == nil:
     buffer.ignoreFinalizer = true
     buffer = nil
+  gst_buffer_pool_acquire_buffer(cast[ptr BufferPool00](self.impl), cast[var ptr Buffer00](addr buffer.impl), if params.isNil: nil else: cast[ptr BufferPoolAcquireParams00](params.impl))
 
 type
   SchedulingFlag* {.size: sizeof(cint), pure.} = enum
@@ -10123,7 +10124,7 @@ proc parseContext*(self: Query; context: var Context) =
   if context != nil and context.impl == nil:
     context.ignoreFinalizer = true
     context = nil
-
+#[
 proc parseContext*(self: Query): Context =
   fnew(result, gBoxedFreeGstContext)
   gst_query_parse_context(cast[ptr Query00](self.impl), cast[var ptr Context00](addr result.impl))
@@ -10134,7 +10135,7 @@ proc parseContext*(self: Query): Context =
   if result != nil and result.impl == nil:
     result.ignoreFinalizer = true
     result = nil
-
+]#
 proc gst_query_set_context(self: ptr Query00; context: ptr Context00) {.
     importc, libprag.}
 
@@ -13942,7 +13943,7 @@ proc parseErrorDetails*(self: Message; structure: var Structure = cast[var Struc
   if structure != nil and structure.impl == nil:
     structure.ignoreFinalizer = true
     structure = nil
-
+#[
 proc parseErrorDetails*(self: Message): Structure  =
   if addr(result) != nil:
     fnew(result, gBoxedFreeGstStructure)
@@ -13954,7 +13955,7 @@ proc parseErrorDetails*(self: Message): Structure  =
   if result != nil and result.impl == nil:
     result.ignoreFinalizer = true
     result = nil
-
+]#
 proc gst_message_parse_group_id(self: ptr Message00; groupId: var uint32): gboolean {.
     importc, libprag.}
 
@@ -13999,7 +14000,7 @@ proc parseInfoDetails*(self: Message; structure: var Structure = cast[var Struct
   if structure != nil and structure.impl == nil:
     structure.ignoreFinalizer = true
     structure = nil
-
+#[
 proc parseInfoDetails*(self: Message): Structure  =
   if addr(result) != nil:
     fnew(result, gBoxedFreeGstStructure)
@@ -14011,7 +14012,7 @@ proc parseInfoDetails*(self: Message): Structure  =
   if result != nil and result.impl == nil:
     result.ignoreFinalizer = true
     result = nil
-
+]#
 proc gst_message_parse_instant_rate_request(self: ptr Message00; rateMultiplier: var cdouble) {.
     importc, libprag.}
 
@@ -14077,7 +14078,9 @@ proc gst_message_parse_property_notify(self: ptr Message00; obj: var ptr Object0
     importc, libprag.}
 
 proc parsePropertyNotify*(self: Message; obj: var Object = cast[var Object](nil);
-    propertyName: var string = cast[var string](nil); propertyValue: var gobject.Value = cast[var gobject.Value](nil) = cast[var gobject.Value = cast[var gobject.Value](nil)](nil)) =
+    propertyName: var string = cast[var string](nil);
+    propertyValue: var gobject.Value = cast[var gobject.Value](nil)) =
+    #propertyValue: var gobject.Value = cast[var gobject.Value](nil) = cast[var gobject.Value = cast[var gobject.Value](nil)](nil)) =
   var tmpoutgobjectarg: ptr Object00
   var propertyName_00: cstring
   gst_message_parse_property_notify(cast[ptr Message00](self.impl), cast[var ptr Object00](if addr(obj) == nil: nil else: addr tmpoutgobjectarg), propertyName_00, propertyValue)
@@ -14386,7 +14389,7 @@ proc parseWarningDetails*(self: Message; structure: var Structure = cast[var Str
   if structure != nil and structure.impl == nil:
     structure.ignoreFinalizer = true
     structure = nil
-
+#[
 proc parseWarningDetails*(self: Message): Structure  =
   if addr(result) != nil:
     fnew(result, gBoxedFreeGstStructure)
@@ -14398,7 +14401,7 @@ proc parseWarningDetails*(self: Message): Structure  =
   if result != nil and result.impl == nil:
     result.ignoreFinalizer = true
     result = nil
-
+]#
 proc gst_message_set_buffering_stats(self: ptr Message00; mode: BufferingMode;
     avgIn: int32; avgOut: int32; bufferingLeft: int64) {.
     importc, libprag.}
