@@ -3415,3 +3415,37 @@ proc g_boxed_get_type*(): GType = g_type_from_name("GBoxed")
 proc g_param_get_type*(): GType = g_type_from_name("GParam")
 
 proc g_variant_get_type*(): GType = g_type_from_name("GVariant")
+
+# convenience functions
+
+proc newValue*(s: string): Value =
+  let gtype = g_type_from_name("gchararray")
+  discard init(result, gtype)
+  setString(result, s)
+
+proc newValue*(c: char): Value =
+  let gtype = g_type_from_name("gchar")
+  let cInt = int8(c)
+  discard init(result, gtype)
+  setSchar(result, cInt)
+
+proc newValue*(b: bool): Value =
+  let gtype = g_type_from_name("gboolean")
+  discard init(result, gtype)
+  setBoolean(result, b)
+
+proc newValue*(i: int): Value =
+  let gtype = g_type_from_name("gint")
+  discard init(result, gtype)
+  setInt(result, i)
+
+proc newValue*(u: uint32): Value =
+  let gtype = typeFromName("guint")
+  discard init(result, gtype)
+  g_value_set_uint(result, u)
+
+proc newValue*(f: float): Value =
+  let gtype = typeFromName("gfloat")
+  let cF = cfloat(f)
+  discard init(result, gtype)
+  setFloat(result, cF)
