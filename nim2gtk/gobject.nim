@@ -3449,3 +3449,9 @@ proc newValue*(f: float): Value =
   let cF = cfloat(f)
   discard init(result, gtype)
   setFloat(result, cF)
+
+proc newValue*(o: Object): Value =
+  let gtype = g_object_get_type()
+  discard init(result, gtype)
+  setObject(result, o)
+
