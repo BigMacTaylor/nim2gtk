@@ -1,5 +1,5 @@
 # https://gstreamer.freedesktop.org/documentation/tutorials/basic/hello-world.html?gi-language=c
-# nim c gstBasicTutorial1.nim
+# nim c gstExample_01.nim
 import nim2gtk/gst
 
 proc main =
