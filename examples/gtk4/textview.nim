@@ -1,7 +1,7 @@
 # nim c textview.nim
 # ./textview textview.nim
 # minimal GtkApplication example
-import nim2gtk/[gtk4, gobject, glib, gio] # , gtksource] # gtksource is not yet available for GTK4
+import nim2gtk/[gtk4, gobject, glib, gio] # , gtksource5] # for source view
 
 from OS import paramCount, paramStr
 
@@ -59,7 +59,7 @@ proc activate(app: Application) =
   window.title = "Empty Text View"
   window.defaultSize = (800, 600)
   let scrolledWindow = newScrolledWindow()
-  let view = newTextView() # gtksource.newView()
+  let view = newTextView() # newView() # for source view
   window.setChild(scrolledWindow) # add() for GTK3
   scrolledWindow.setChild(view)
   show(window) # showAll() for GTK3
