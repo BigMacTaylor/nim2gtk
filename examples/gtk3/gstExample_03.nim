@@ -1,4 +1,4 @@
-# https://gstreamer.freedesktop.org/documentation/tutorials/basic/hello-world.html?gi-language=c
+# https://gstreamer.freedesktop.org/documentation/tutorials/basic/toolkit-integration.html?gi-language=c
 # nim c gstExample_03.nim
 
 import nim2gtk/[gtk, gst, glib]
@@ -6,78 +6,50 @@ import nim2gtk/[gdk, gobject, gio]
 
 # Structure to contain all our information,
 # so we can pass it around.
-type CustomData = object
+type CustomData = ref object
   playbin: Element
   slider: Scale
   sinkWidgetVal: Value
   sliderSigID: culong
   state: State
-  duration: uint64
+  duration: int64
 
-proc onMessage(bus: Bus, msg: Message, data: CustomData) =
-  # Callback function to handle messages from the GStreamer bus.
-  let typ = msg.getType()
-
-  if typ == {gst.MessageFlag.error}:
-    var err: ptr glib.Error
-    var debug_info: string
-    msg.parseError(err, debug_info)
-    echo "Error received from element " & $msg.getType() & ": " & $err.message & "\n"
-    stderr.write("Debugging information: " & debug_info & "\n")
-    discard gst.setState(data.playbin, gst.State.ready)
-  if typ == {gst.MessageFlag.eos}:
-    stdout.write("End-Of-Stream reached.\n")
-    discard gst.setState(data.playbin, gst.State.ready)
-  else:
-    discard
-
+# This function is called when the PLAY button is clicked
 proc onPlay(btn: Button, data: CustomData) =
   discard gst.setState(data.playbin, gst.State.playing)
 
+# This function is called when the PAUSE button is clicked
 proc onPause(btn: Button, data: CustomData) =
   discard gst.setState(data.playbin, gst.State.paused)
 
+# This function is called when the STOP button is clicked
 proc onStop(btn: Button, data: CustomData) =
   discard gst.setState(data.playbin, gst.State.ready)
 
-proc refreshUI(data: CustomData): gboolean {.cdecl.} =
-  # TODO Fixme
-  let current: int64 = -1
+# This function is called when the main window is closed
+proc closeEvent(window: ApplicationWindow, event: gdk.Event, data: CustomData): bool =
+  discard gst.setState(data.playbin, gst.State.ready)
+  close(window)
 
-  echo data.duration
-  var timeDur: int64 = 0
-  echo timeDur
-  #if queryDuration(data.playbin, Format.time, timeDur):
-  # echo "true"
-  echo timeDur
-
-  # We don't want to update anything unless we are PAUSED or PLAYING
-  if data.state.ord < gst.State.paused.ord:
-    return gboolean(1)
-  #[
-  # If we didn't know it yet, query the stream duration
-  if queryDuration(data.playbin, Format.time, cast[var int64](data.duration)):
-    # Set the range of the slider to the clip duration, in SECONDS */
-    setRange(cast [Range](data.slider), cdouble(0), cdouble(cast[var int64](data.duration) div SECOND));
-  else:
-    echo "Could not query current duration.\n"
-]#
-  return gboolean(1)
-
-proc closeEvent(window: ApplicationWindow, event: gdk.Event, app: Application): bool =
-  quit(app)
-
+# This function is called when the slider changes its position.
+# We perform a seek to the new position here.
 proc onSlider(slider: Scale, data: CustomData) =
   let value: cdouble = getValue(cast[Range](data.slider))
-  let seekPos: int64 = int64(value) * SECOND div 2
-  let flags = SeekFlags.flush.ord or SeekFlags.keyUnit.ord
-  discard seekSimple(data.playbin, Format.time, cast[SeekFlags](flags), seekPos)
+  let seekPos: int64 = int64(value) * SECOND
+  let flags = cast[SeekFlags](SeekFlags.flush.ord or SeekFlags.keyUnit.ord)
+  discard seekSimple(data.playbin, Format.time, flags, seekPos)
 
-proc createUI(app: Application, data: var CustomData) =
+# This function creates all the GTK widgets that compose our application,
+# and registers the callbacks
+proc createUI(app: Application, data: CustomData) =
+  # The uppermost window can only hold one child widget directly
   let window = newApplicationWindow(app)
-  window.title = "nimplayer"
+  window.title = "Gst Example"
   window.defaultSize = (640, 480)
-  window.connect("delete-event", closeEvent, app)
+  window.connect("delete-event", closeEvent, data)
+
+  # Main windows child, a VBox to hold all other widgets
+  let mainBox = newBox(Orientation.vertical)
 
   let playButton =
     gtk.newButtonFromIconName("media-playback-start", IconSize.smallToolbar.ord)
@@ -93,30 +65,93 @@ proc createUI(app: Application, data: var CustomData) =
   setDrawValue(data.slider, false)
   data.sliderSigID = data.slider.connect("value-changed", onSlider, data)
 
+  # HBox to hold the buttons and the slider
   let controlBox = newBox(Orientation.horizontal)
-  controlBox.packStart(playButton, false, false, 2)
+  controlBox.packStart(playButton,  false, false, 2)
   controlBox.packStart(pauseButton, false, false, 2)
-  controlBox.packStart(stopButton, false, false, 2)
-  controlBox.packStart(data.slider, true, true, 2)
+  controlBox.packStart(stopButton,  false, false, 2)
+  controlBox.packStart(data.slider, true,  true,  2)
 
+  # Get the sink widget from value
   let widgetObj = getObject(data.sinkWidgetVal)
   let sinkWidget: Widget = cast[Widget](widgetObj)
 
+  # HBox to hold the video sink widget
   let videoBox = newBox(Orientation.horizontal)
   videoBox.packStart(sinkWidget, true, true, 0)
 
-  let mainBox = newBox(Orientation.vertical)
-  mainBox.packStart(videoBox, true, true, 0)
-  mainBox.packStart(controlBox, false, false, 0)
+  # Pack mainBox,   (Widget;   expand; fill; padding)
+  mainBox.packStart(videoBox,   true,  true,    0)
+  mainBox.packStart(controlBox, false, false,   0)
 
   window.add(mainBox)
   window.showAll()
+
+# This function is called periodically to refresh the GUI
+proc refreshUI(data: CustomData): gboolean {.cdecl.} =
+  # We don't want to update anything unless we are PAUSED or PLAYING
+  if data.state.ord < gst.State.paused.ord:
+    return gboolean(1)
+
+  assert not data.playbin.isNil, "Error, no playback element"
+
+  var pos: int64 = -1
+  var adj = getAdjustment(data.slider)
+
+  # If we didn't know it yet, query the stream duration
+  if data.duration == -1:
+    if queryDuration(data.playbin, Format.time, data.duration):
+      # Set the range of the slider to the clip duration, in SECONDS
+      adj.setUpper(cdouble(data.duration div SECOND))
+      #setRange(cast [Range](data.slider), cdouble(0), cdouble(cast[var int64](data.duration) div SECOND));
+    else:
+      echo "Could not query current duration.\n"
+
+  if queryPosition(data.playbin, Format.time, pos):
+    # Block the "value-changed" signal, so the onSlider function is not called
+    # (which would trigger a seek the user has not requested)
+    signalHandlerBlock(data.slider, data.sliderSigID)
+
+    # Set the position of the slider to the current pipeline position, in SECONDS
+    adj.setValue(cdouble(pos div SECOND))
+
+    # Re-enable the signal
+    signalHandlerUnblock(data.slider, data.sliderSigID)
+
+  return gboolean(1)
+
+# Callback function to handle messages from the GStreamer bus.
+proc onMessage(bus: Bus, msg: Message, data: CustomData) =
+  let typ = msg.getType()
+
+  # Print error details on the screen
+  if typ == {gst.MessageFlag.error}:
+    var err: ptr glib.Error
+    var debug_info: string
+    msg.parseError(err, debug_info)
+    echo "Error received from element " & $msg.getType() & ": " & $err.message & "\n"
+    stderr.write("Debugging information: " & debug_info & "\n")
+
+    # Set the pipeline to READY (which stops playback)
+    discard gst.setState(data.playbin, gst.State.ready)
+
+  # This function is called when an End-Of-Stream message is posted on the bus.
+  if typ == {gst.MessageFlag.eos}:
+    stdout.write("End-Of-Stream reached.\n")
+    discard gst.setState(data.playbin, gst.State.ready)
+
+  # This function is called when the pipeline changes state. We use it to
+  # keep track of the current state.
+  if typ == {gst.MessageFlag.stateChanged}:
+    var old, new, pending: State
+    msg.parseStateChanged(old, new, pending)
+    data.state = new
 
 proc destroyNotify(data: pointer) {.cdecl.} =
   echo "destroyNotify"
 
 proc appActivate(app: Application) =
-  var data: CustomData
+  var data = new(CustomData)
   var ret: StateChangeReturn
   var bus: Bus
   var gtkglsink, videosink: Element
@@ -125,8 +160,7 @@ proc appActivate(app: Application) =
   gst.init()
 
   # Initialize data
-  #data.duration = CLOCK_TIME_NONE;
-  data.duration = 0
+  data.duration = -1
 
   # Create the elements
   data.playbin = make("playbin", "playbin")
@@ -139,6 +173,7 @@ proc appActivate(app: Application) =
   if not videosink.isNil and not gtkglsink.isNil:
     echo "Successfully created GTK GL Sink"
     videosink.setProperty("sink", newValue(gtkglsink))
+
     # The gtkglsink creates the gtk widget for us. This is accessible through
     # a property. So we get it and use it later in our gui.
     gtkglsink.getProperty("widget", data.sinkWidgetVal)
@@ -174,7 +209,9 @@ proc appActivate(app: Application) =
     return
 
   # Register a function that GLib will call every second
-  discard timeoutAddSeconds(0, 1, cast[SourceFunc](refreshUI), data.addr, destroyNotify)
+  discard timeoutAddSeconds(
+    0, 1, cast[SourceFunc](refreshUI), cast[pointer](data), destroyNotify
+  )
 
 proc main() =
   let app = newApplication("org.gtk.example")
