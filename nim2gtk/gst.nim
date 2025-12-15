@@ -158,8 +158,22 @@ proc getName*(self: Object): string =
   result = $resul0
   cogfree(resul0)
 
+proc getName*(self: ptr Object00): string =
+  let resul0 = gst_object_get_name(self)
+  if resul0.isNil:
+    return
+  result = $resul0
+  cogfree(resul0)
+
 proc name*(self: Object): string =
   let resul0 = gst_object_get_name(cast[ptr Object00](self.impl))
+  if resul0.isNil:
+    return
+  result = $resul0
+  cogfree(resul0)
+
+proc name*(self: ptr Object00): string =
+  let resul0 = gst_object_get_name(self)
   if resul0.isNil:
     return
   result = $resul0
