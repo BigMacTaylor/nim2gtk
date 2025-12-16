@@ -30,7 +30,7 @@ proc toBoolVal(b: bool): Value =
   setBoolean(result, b)
 
 # we need the following two procs for now -- later we will not use that ugly cast...
-proc typeTest(o: gobject.Object; s: string): bool =
+proc typeTest(o: gobject.Object, s: string): bool =
   let gt = g_type_from_name(s)
   return g_type_check_instance_is_a(cast[ptr TypeInstance00](o.impl), gt).toBool
 
@@ -38,12 +38,14 @@ proc listStore(o: gobject.Object): gtk.ListStore =
   assert(typeTest(o, "GtkListStore"))
   cast[gtk.ListStore](o)
 
-proc updateRow(renderer: CellRendererText; path: string; newText: string; tree: TreeView) =
+proc updateRow(
+    renderer: CellRendererText, path: string, newText: string, tree: TreeView
+) =
   var iter: TreeIter
   var value: Value
   let gtype = typeFromName("gchararray")
   discard init(value, gtype)
-  let store = listStore(tree.getModel())   
+  let store = listStore(tree.getModel())
   value.setString(newText)
   let treePath = newTreePathFromString(path)
   discard store.getIter(iter, treePath)
@@ -59,17 +61,25 @@ proc main() =
   window.borderWidth = 20
   connect(window, "destroy", bye)
   var iter: TreeIter
-  var h = [typeFromName("guint"), typeFromName("gchararray"), typeFromName("gchararray"),
-    typeFromName("gchararray")]
-  var store = newListStore(Columns,  cast[ptr GType]( unsafeaddr h)) # cast is ugly, we should fix it in bindings.
+  var h = [
+    typeFromName("guint"),
+    typeFromName("gchararray"),
+    typeFromName("gchararray"),
+    typeFromName("gchararray"),
+  ]
+  var store = newListStore(Columns, cast[ptr GType](unsafeaddr h))
+    # cast is ugly, we should fix it in bindings.
   let progNames = ["Gedit", "Gimp", "Inkscape", "Firefox", "Calculator", "Devhelp"]
   for i, n in progNames:
-    store.append(iter) # currently we have to use setValue() as there is no varargs proc as in C original
+    store.append(iter)
+      # currently we have to use setValue() as there is no varargs proc as in C original
     store.setValue(iter, Id, toUIntVal(i))
     store.setValue(iter, Program, toStringVal(n))
-    store.setValue(iter, Color1, toStringVal(if (i and 1) != 0: "LightSlateGray" else: "DarkCyan"))
+    store.setValue(
+      iter, Color1, toStringVal(if (i and 1) != 0: "LightSlateGray" else: "DarkCyan")
+    )
     store.setValue(iter, Color2, toStringVal("cyan"))
-  var tree  = newTreeViewWithModel(store)
+  var tree = newTreeViewWithModel(store)
   tree.setHexpand
   tree.setVexpand
   setProperty(tree, "activate-on-single-click", toBoolVal(true))
@@ -87,21 +97,24 @@ proc main() =
   column1.addAttribute(renderer1, "text", Id)
   column1.addAttribute(renderer1, "cell-background", Color1)
   discard tree.appendColumn(column1)
-  var column2  = newTreeViewColumn()
+  var column2 = newTreeViewColumn()
   column1.setTitle("Program")
   column1.packStart(renderer2, true)
   column1.addAttribute(renderer2, "text", Program)
   column1.addAttribute(renderer2, "cell-background", Color2)
   discard tree.appendColumn(column2)
-  var grid = newGrid() # only one occupied cell makes no sense -- but so we can add more widgets later
+  var grid = newGrid()
+    # only one occupied cell makes no sense -- but so we can add more widgets later
   grid.attach(tree, 0, 0, 1, 1)
   window.add(grid)
   const cssString = # note: big font selected intentionally
     """treeview{background-color: rgba(0,255,255,1.0); font-size:30pt} treeview:selected{background-color:
     rgba(255,255,0,1.0); color: rgba(0,0,255,1.0);}"""
-  var provider  = newCssProvider()
+  var provider = newCssProvider()
   discard provider.loadFromData(cssString)
-  addProviderForScreen(getDefaultScreen(), provider, STYLE_PROVIDER_PRIORITY_APPLICATION)
+  addProviderForScreen(
+    getDefaultScreen(), provider, STYLE_PROVIDER_PRIORITY_APPLICATION
+  )
   window.showAll
   gtk.main()
 

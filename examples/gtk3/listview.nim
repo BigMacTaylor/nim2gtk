@@ -4,14 +4,14 @@
 import nim2gtk/[glib, gobject, gtk]
 import nim2gtk/gio except ListStore
 
-const    
+const
   LIST_ITEM = 0
   N_COLUMNS = 1
 
 var list: TreeView
 
 # we need the following two procs for now -- later we will not use that ugly cast...
-proc typeTest(o: gobject.Object; s: string): bool =
+proc typeTest(o: gobject.Object, s: string): bool =
   let gt = g_type_from_name(s)
   return g_type_check_instance_is_a(cast[ptr TypeInstance00](o.impl), gt).toBool
 
@@ -19,7 +19,7 @@ proc listStore(o: gobject.Object): gtk.ListStore =
   assert(typeTest(o, "GtkListStore"))
   cast[gtk.ListStore](o)
 
-proc appendItem(widget: Button; entry: Entry) =
+proc appendItem(widget: Button, entry: Entry) =
   var
     val: Value
     iter: TreeIter
@@ -31,19 +31,18 @@ proc appendItem(widget: Button; entry: Entry) =
   store.setValue(iter, LIST_ITEM, val)
   entry.text = ""
 
-proc removeItem(widget: Button; selection: TreeSelection) =
-  var    
+proc removeItem(widget: Button, selection: TreeSelection) =
+  var
     ls: ListStore
     iter: TreeIter
-  let store = list.getModel.listStore#getListStore(list)
+  let store = list.getModel.listStore #getListStore(list)
   if not store.getIterFirst(iter):
-      return
+    return
   if getSelected(selection, ls, iter):
     discard store.remove(iter)
 
-proc onRemoveAll(widget: Button; selection: TreeSelection) =
-  var
-    iter: TreeIter
+proc onRemoveAll(widget: Button, selection: TreeSelection) =
+  var iter: TreeIter
   #let store = getListStore(list)
   let store = list.getModel.listStore
   if not store.getIterFirst(iter):
@@ -58,7 +57,8 @@ proc initList(list: TreeView) =
   column.addAttribute(renderer, "text", LIST_ITEM)
   discard list.appendColumn(column)
   let gtype = gStringGetType() # typeFromName("gchararray")
-  let store = newListStore(N_COLUMNS, cast[ptr GType]( unsafeaddr gtype)) # cast due to bug in gtk.nim
+  let store = newListStore(N_COLUMNS, cast[ptr GType](unsafeaddr gtype))
+  # cast due to bug in gtk.nim
   list.setModel(store)
 
 proc appActivate(app: Application) =
@@ -71,11 +71,11 @@ proc appActivate(app: Application) =
     remove = newButton("Remove")
     removeAll = newButton("Remove All")
     entry = newEntry()
-  window. title = "List view"
+  window.title = "List view"
   window.position = WindowPosition.center
   window.borderWidth = 10
   window.setSizeRequest(370, 270)
-  list = newTreeView()  
+  list = newTreeView()
   sw.add(list)
   sw.setPolicy(PolicyType.automatic, PolicyType.automatic)
   sw.setShadowType(ShadowType.etchedIn)
@@ -95,7 +95,7 @@ proc appActivate(app: Application) =
   connect(removeAll, "clicked", onRemoveAll, selection)
   showAll(window)
 
-proc main =
+proc main() =
   let app = newApplication("org.gtk.example")
   connect(app, "activate", appActivate)
   discard run(app)

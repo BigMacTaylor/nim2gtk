@@ -23,7 +23,7 @@ proc createButtons(mainBox: Box) =
     btnAsyncPing = newButton("Async Ping")
     btnIsRunning = newButton("Click to test")
     testBox = newBox(Orientation.horizontal, 3)
-  
+
   btnPing.connect("clicked", onClickPing)
   btnAsyncPing.connect("clicked", onClickAsync)
   btnIsRunning.connect("clicked", onClickRun)
@@ -43,7 +43,7 @@ proc main() =
   let
     window = newWindow()
     mainBox = newBox(Orientation.vertical, 3)
-  
+
   mainBox.createButtons()
 
   window.title = "Async Ping Test"

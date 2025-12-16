@@ -15,7 +15,7 @@ proc draw(cr: cairo.Context) =
   cr.arc(70, 60, 20, 0, math.PI)
   cr.stroke # finally do it
 
-proc main =
+proc main() =
   var data: PDA_Data
   data.draw = draw
   data.extents = extents

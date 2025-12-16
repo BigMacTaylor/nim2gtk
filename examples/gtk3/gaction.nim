@@ -2,7 +2,7 @@
 # nim c gaction.nim
 import nim2gtk/[gtk, glib, gobject, gio]
 
-proc saveCb(action: SimpleAction; v: Variant) =
+proc saveCb(action: SimpleAction, v: Variant) =
   echo "saveCb"
 
 proc appActivate(app: Application) =
@@ -17,10 +17,9 @@ proc appActivate(app: Application) =
   setAccelsForAction(app, "win.save", "<Control><Shift>S")
   showAll(window)
 
-proc main =
+proc main() =
   let app = newApplication("org.gtk.example")
   connect(app, "activate", appActivate)
   discard run(app)
 
 main()
-

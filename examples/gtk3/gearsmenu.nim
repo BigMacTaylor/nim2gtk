@@ -8,7 +8,7 @@ import nim2gtk/[gtk, glib, gobject, gio]
 import strformat
 
 # https://github.com/GNOME/glib/blob/master/gio/tests/gapplication-example-actions.c
-proc activateToggleAction(action: SimpleAction; parameter: Variant; app: Application) =
+proc activateToggleAction(action: SimpleAction, parameter: Variant, app: Application) =
   app.hold # hold/release taken over from C example, there may be reasons...
   block:
     echo fmt"action {action.name} activated"
@@ -18,7 +18,9 @@ proc activateToggleAction(action: SimpleAction; parameter: Variant; app: Applica
     echo fmt"state change {b} -> {not b}"
   app.release
 
-proc activateStatefulAction(action: SimpleAction; parameter: Variant; app: Application) =
+proc activateStatefulAction(
+    action: SimpleAction, parameter: Variant, app: Application
+) =
   app.hold
   block:
     echo fmt"action {action.name} activated"
@@ -30,7 +32,7 @@ proc activateStatefulAction(action: SimpleAction; parameter: Variant; app: Appli
     echo fmt"state change {oldState} -> {newState}"
   app.release
 
-proc quitProgram(action: SimpleAction; parameter: Variant; app: Application) =
+proc quitProgram(action: SimpleAction, parameter: Variant, app: Application) =
   quit(app)
 
 proc appStartup(app: Application) =
@@ -82,7 +84,7 @@ proc appActivate(app: Application) =
   let menubar = newMenuButton()
   # menubar.setDirection(ArrowType.none) # show the gears Icon
   # let image = newImageFromIconName("open-menu-symbolic", IconSize.menu.ord)
-  let image = newImageFromIconName("document-save", IconSize.dialog.ord) # dialog is really big!
+  let image = newImageFromIconName("document-save", IconSize.dialog.ord)
   menubar.setImage(image) # this is only an example for a custom image
   # menubar.setIconName("open-menu-symbolic") # only gtk4
   headerBar.packEnd(menubar)
@@ -107,7 +109,7 @@ proc appActivate(app: Application) =
   window.add(button)
   showAll(window)
 
-proc main =
+proc main() =
   let app = newApplication("app.example")
   connect(app, "startup", appStartup)
   connect(app, "activate", appActivate)

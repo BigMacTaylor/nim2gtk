@@ -33,13 +33,13 @@ proc toBoolVal(b: bool): Value =
   discard init(result, gtype)
   setBoolean(result, b)
 
-proc selectCell(treeView: TreeView; path: TreePath; column: TreeViewColumn) =
+proc selectCell(treeView: TreeView, path: TreePath, column: TreeViewColumn) =
   let str = toString(path)
   echo fmt"{str} {getTitle(column)}"
   rowG = parseInt(str)
   queueDraw(treeView)
 
-proc drawRectangle(overlay: Overlay; cr: cairo.Context; treeView: TreeView): bool =
+proc drawRectangle(overlay: Overlay, cr: cairo.Context, treeView: TreeView): bool =
   echo fmt"Draw Rectangle {rowG} {columnG}"
   let path = newTreePathFromIndices(@[rowG.int32])
   echo path.toString
@@ -52,12 +52,14 @@ proc drawRectangle(overlay: Overlay; cr: cairo.Context; treeView: TreeView): boo
   cr.setLineWidth(2)
   cr.setSource(0, 0, 0, 1)
   treeView.getCellArea(path, column, rect)
-  cr.rectangle(rect.x.float + 1, rect.y.float + 1, rect.width.float - 1, rect.height.float - 1)
+  cr.rectangle(
+    rect.x.float + 1, rect.y.float + 1, rect.width.float - 1, rect.height.float - 1
+  )
   cr.stroke
   cr.restore
   return EVENT_PROPAGATE # false
 
-proc main =
+proc main() =
   gtk.init()
   let window = newWindow()
   window.setTitle("Overlay Tree")
@@ -66,12 +68,18 @@ proc main =
   window.setBorderWidth(20)
   window.connect("destroy", bye)
   var iter: TreeIter
-  let h = [typeFromName("guint"), typeFromName("gchararray"), typeFromName("gchararray"),
-    typeFromName("gchararray")]
-  let store = newListStore(Columns, cast[ptr GType](unsafeaddr h)) # cast is ugly, we should fix it in bindings.
+  let h = [
+    typeFromName("guint"),
+    typeFromName("gchararray"),
+    typeFromName("gchararray"),
+    typeFromName("gchararray"),
+  ]
+  let store = newListStore(Columns, cast[ptr GType](unsafeaddr h))
+    # cast is ugly, we should fix it in bindings.
   let progNames = ["Gedit", "Gimp", "Inkscape", "Firefox", "Calculator", "Devhelp"]
   for i, n in progNames:
-    store.append(iter) # currently we have to use setValue() as there is no varargs proc as in C original
+    store.append(iter)
+      # currently we have to use setValue() as there is no varargs proc as in C original
     store.setValue(iter, Id, toUIntVal(i))
     store.setValue(iter, Program, toStringVal(n))
     store.setValue(iter, Color, toStringVal("SpringGreen"))

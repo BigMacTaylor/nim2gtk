@@ -3,10 +3,10 @@
 # nim c builder.nim
 import nim2gtk/[gtk, gobject, gio]
 
-proc hello(b: Button; msg: string) =
+proc hello(b: Button, msg: string) =
   echo "Hello", msg
 
-proc quitApp(b: Button; app: Application) =
+proc quitApp(b: Button, app: Application) =
   echo "Bye"
   quit(app)
 
@@ -23,7 +23,7 @@ proc appActivate(app: Application) =
   button.connect("clicked", quitApp, app)
   #showAll(window)
 
-proc main =
+proc main() =
   let app = newApplication("org.gtk.example")
   connect(app, "activate", appActivate)
   discard run(app)

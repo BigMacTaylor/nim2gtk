@@ -14,7 +14,7 @@ proc appActivate(app: Application) =
   window.add(label)
   showAll(window)
 
-proc main =
+proc main() =
   let app = newApplication("org.gtk.example")
   connect(app, "activate", appActivate)
   discard run(app)

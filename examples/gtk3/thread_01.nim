@@ -2,12 +2,12 @@
 # nim c --threads:on --gc:arc -r thread1.nim
 
 import nim2gtk/[gtk, glib, gobject, gio]
-from  os import sleep
+from os import sleep
 
 var channel: Channel[int]
 var workThread: system.Thread[void]
 
-proc workProc =
+proc workProc() =
   var countdown {.global.} = 25
   while countdown > 0:
     sleep(1000)
@@ -24,22 +24,22 @@ proc updateGUI(b: Button): bool =
       return SOURCE_REMOVE
   return SOURCE_CONTINUE
 
-proc buttonClicked (b: Button) =
+proc buttonClicked(b: Button) =
   b.label = utf8Strreverse(b.label, -1)
 
-proc activate (app: Application) =
+proc activate(app: Application) =
   let window = newApplicationWindow(app)
   window.title = "Countdown"
   window.defaultSize = (250, 50)
   let button = newButton("Click Me")
   window.add(button)
-  button.connect("clicked",  buttonClicked)
+  button.connect("clicked", buttonClicked)
   window.showAll
   channel.open
   createThread(workThread, workProc)
   discard timeoutAdd(1000 div 60, updateGUI, button)
 
-proc main =
+proc main() =
   let app = newApplication("org.gtk.example")
   connect(app, "activate", activate)
   discard app.run

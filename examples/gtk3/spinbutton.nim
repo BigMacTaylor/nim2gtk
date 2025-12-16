@@ -1,11 +1,11 @@
-##  https://github.com/GNOME/gtk/blob/gtk-3-24/tests/testspinbutton.c
-##  gcc `pkg-config gtk+-3.0 --cflags` spinbutton.c -o spinbutton `pkg-config --libs gtk+-3.0`
+#  https://github.com/GNOME/gtk/blob/gtk-3-24/tests/testspinbutton.c
+#  gcc `pkg-config gtk+-3.0 --cflags` spinbutton.c -o spinbutton `pkg-config --libs gtk+-3.0`
 
 import nim2gtk/[gtk, gdk, glib, gobject]
 
 var numWindows: int
 
-proc onDeleteEvent(w: gtk.Window; event: gdk.Event): bool =
+proc onDeleteEvent(w: gtk.Window, event: gdk.Event): bool =
   dec(numWindows)
   if numWindows == 0:
     gtk.mainQuit()
@@ -14,7 +14,13 @@ proc onDeleteEvent(w: gtk.Window; event: gdk.Event): bool =
 proc prepareWindowForOrientation(orientation: gtk.Orientation) =
   let window = newWindow()
   discard connect(window, "delete_event", onDeleteEvent)
-  let mainbox = gtk.newBox(if orientation == gtk.Orientation.horizontal: Orientation.vertical else: Orientation.horizontal, 2)
+  let mainbox = gtk.newBox(
+    if orientation == gtk.Orientation.horizontal:
+      Orientation.vertical
+    else:
+      Orientation.horizontal,
+    2,
+  )
   window.add(mainbox)
   let wrapButton = newToggleButton("Wrap")
   mainbox.add(wrapButton)
@@ -32,11 +38,10 @@ proc prepareWindowForOrientation(orientation: gtk.Orientation) =
   window.showAll()
   inc(numWindows)
 
-proc main =
+proc main() =
   gtk.init()
   prepareWindowForOrientation(gtk.Orientation.horizontal)
   prepareWindowForOrientation(gtk.Orientation.vertical)
   gtk.main()
 
 main()
-

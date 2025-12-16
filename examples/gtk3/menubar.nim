@@ -7,7 +7,7 @@ import nim2gtk/[gtk, glib, gobject, gio]
 from strutils import `%`, format
 
 # https://github.com/GNOME/glib/blob/master/gio/tests/gapplication-example-actions.c
-proc activateToggleAction(action: SimpleAction; parameter: Variant; app: Application) =
+proc activateToggleAction(action: SimpleAction, parameter: Variant, app: Application) =
   app.hold # hold/release taken over from C example, there may be reasons...
   block:
     echo format("action $1 activated", action.name)
@@ -17,7 +17,9 @@ proc activateToggleAction(action: SimpleAction; parameter: Variant; app: Applica
     echo format("state change $1 -> $2", b, not b)
   app.release
 
-proc activateStatefulAction(action: SimpleAction; parameter: Variant; app: Application) =
+proc activateStatefulAction(
+    action: SimpleAction, parameter: Variant, app: Application
+) =
   app.hold
   block:
     echo format("action $1 activated", action.name)
@@ -29,7 +31,7 @@ proc activateStatefulAction(action: SimpleAction; parameter: Variant; app: Appli
     echo format("state change $1 -> $2", oldState, newState)
   app.release
 
-proc quitProgram(action: SimpleAction; parameter: Variant; app: Application) =
+proc quitProgram(action: SimpleAction, parameter: Variant, app: Application) =
   quit(app)
 
 proc appStartup(app: Application) =
@@ -64,7 +66,7 @@ proc appStartup(app: Application) =
     let section = gio.newMenu()
     submenu.appendSection(nil, section)
     section.append("Check", "win.toggleSpellCheck")
-  # finally add the menubar
+    # finally add the menubar
     setMenuBar(app, menu)
 
 proc appActivate(app: Application) =
@@ -94,11 +96,12 @@ proc appActivate(app: Application) =
   window.add(button)
   showAll(window)
 
-proc main =
+proc main() =
   let app = newApplication("app.example")
   connect(app, "startup", appStartup)
   connect(app, "activate", appActivate)
-  echo "GTK Version $1.$2.$3" % [$getMajorVersion(), $getMinorVersion(), $getMicroVersion()]
+  echo "GTK Version $1.$2.$3" %
+    [$getMajorVersion(), $getMinorVersion(), $getMicroVersion()]
   let status = run(app)
   quit(status)
 

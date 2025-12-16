@@ -3,7 +3,8 @@
 # gcc -Wall gaction.c -o gaction `pkg-config --cflags --libs gtk4`
 import nim2gtk/[gtk, glib, gobject, gio]
 
-const menuData = """
+const menuData =
+  """
 <interface>
   <menu id="menuModel">
     <section>
@@ -44,19 +45,19 @@ const menuData = """
 </interface>
 """
 
-proc changeLabelButton(action: SimpleAction; v: Variant; label: Label) =
+proc changeLabelButton(action: SimpleAction, v: Variant, label: Label) =
   label.setLabel("Text set from button")
 
-proc normalMenuItem(action: SimpleAction; v: Variant; label: Label) =
+proc normalMenuItem(action: SimpleAction, v: Variant, label: Label) =
   label.setLabel("Text set from normal menu item")
 
-proc toggleMenuItem(action: SimpleAction; v: Variant; label: Label) =
+proc toggleMenuItem(action: SimpleAction, v: Variant, label: Label) =
   label.setLabel("Text set from toggle menu item")
 
-proc submenuItem(action: SimpleAction; v: Variant; label: Label) =
+proc submenuItem(action: SimpleAction, v: Variant, label: Label) =
   label.setLabel("Text set from submenu item")
 
-proc radio(action: SimpleAction; parameter: Variant; label: Label) =
+proc radio(action: SimpleAction, parameter: Variant, label: Label) =
   var l: uint64
   let newState: Variant = newVariantString(getString(parameter, l))
   let str: string = "From Radio menu item " & getString(newState, l)
@@ -66,7 +67,7 @@ proc radio(action: SimpleAction; parameter: Variant; label: Label) =
 #  mainQuit()
 #  echo "Bye..."
 
-proc main =
+proc main() =
   gtk.init()
   let
     window = newWindow()

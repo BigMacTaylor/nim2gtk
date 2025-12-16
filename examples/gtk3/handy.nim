@@ -2,7 +2,7 @@
 # nim c --gc:arc handy.nim
 import nim2gtk/[gtk, gobject, handy]
 
-proc main =
+proc main() =
   gtk.init()
   handy.init()
   let window = gtk.newWindow()
@@ -26,6 +26,5 @@ proc main =
   window.add(vbox)
   window.showAll()
   gtk.main()
-  
-main()
 
+main()

@@ -17,19 +17,19 @@ var
   ## Store data from file.
   bigSurfaceData*: ptr cuchar = nil
 
-proc translateXSpinChanged(spinButton: SpinButton; data: DrawingArea) =
+proc translateXSpinChanged(spinButton: SpinButton, data: DrawingArea) =
   translateX = spinButton.value
   data.queueDraw
 
-proc translateYSpinChanged(spinButton: SpinButton; data: DrawingArea) =
+proc translateYSpinChanged(spinButton: SpinButton, data: DrawingArea) =
   translateY = spinButton.getValue
   data.queueDraw
 
-proc scaleSpinChanged(spinButton: SpinButton; data: DrawingArea) =
+proc scaleSpinChanged(spinButton: SpinButton, data: DrawingArea) =
   scale = spinButton.value
   data.queueDraw
 
-proc saveBigSurface =
+proc saveBigSurface() =
   ## Use gdk_cairo_surface_create_from_pixbuf() to read in a pixbuf. Try a test surface here.
   let bigSurface = imageSurfaceCreate(CFormat, Width, Height)
   let cr = newContext(bigSurface)
@@ -84,14 +84,17 @@ proc getBigSurface(): Surface =
   var len = readBuffer(f, bigSurfaceData, stride * Height)
   echo("read $1" % $len)
   close(f)
-  let bigSurface: Surface = new Surface # this is a temporary fix, we will support this later in cairo modul
-  bigSurface.impl = cairo_image_surface_create_for_data(bigSurfaceData, CFormat, Width, Height, stride)
-  discard setUserData(bigSurface, addr(Key), bigSurfaceData, myDealloc) # automatic deallocation
+  let bigSurface: Surface =
+    new Surface # this is a temporary fix, we will support this later in cairo modul
+  bigSurface.impl =
+    cairo_image_surface_create_for_data(bigSurfaceData, CFormat, Width, Height, stride)
+  discard setUserData(bigSurface, addr(Key), bigSurfaceData, myDealloc)
+    # automatic deallocation
   # flush(bigSurface)
   echo("open $1" % bigSurface.status.statusToString)
   return bigSurface
 
-proc daDrawing*(da: DrawingArea; cr: Context; bigSurface: Surface): bool =
+proc daDrawing*(da: DrawingArea, cr: Context, bigSurface: Surface): bool =
   var
     width = da.getAllocatedWidth.float
     height = da.getAllocatedHeight.float
@@ -105,8 +108,9 @@ proc daDrawing*(da: DrawingArea; cr: Context; bigSurface: Surface): bool =
   cr.setSource(0, 0, 0)
   cr.paint
   ## Partition the big surface.
-  var littleSurface: Surface = cairo.surfaceCreateForRectangle(bigSurface,
-      originX, originY, width / scale, height / scale)
+  var littleSurface: Surface = cairo.surfaceCreateForRectangle(
+    bigSurface, originX, originY, width / scale, height / scale
+  )
   cr.scale(scale, scale)
   cr.setSourceSurface(littleSurface, 0, 0)
   setFilter(getSource(cr), cairo.Filter.bilinear)
@@ -117,7 +121,7 @@ proc bye(w: Window) =
   mainQuit()
   echo "Bye..."
 
-proc main =
+proc main() =
   gtk.init()
   let window = newWindow()
   window.setTitle("Big Surface2")
@@ -136,7 +140,7 @@ proc main =
     translateYAdj = newAdjustment(0, 0, 5000, 20, 0, 0)
     scaleAdj = newAdjustment(1, 1, 5, 0.1, 0, 0)
     translateXLabel = newLabel("translate x")
-    translateXSpin= newSpinButton(translateXAdj, 50, 1)
+    translateXSpin = newSpinButton(translateXAdj, 50, 1)
   connect(translateXSpin, "value-changed", translateXSpinChanged, da)
   let translateYLabel = newLabel("translate y")
   let translateYSpin = newSpinButton(translateYAdj, 50, 1)
@@ -157,4 +161,3 @@ proc main =
   gtk.main()
 
 main()
-

@@ -9,7 +9,7 @@ proc openDialog(button: Button, window: ApplicationWindow) =
   let dialog = newDialog()
   dialog.title = "New Dialog Window"
   dialog.setModal(true)
-  setTransientFor(dialog, window)
+  dialog.setTransientFor(window)
 
   # Get the content area and add a label
   let contentArea = getContentArea(dialog)
@@ -44,7 +44,7 @@ proc appActivate(app: Application) =
 
 proc main() =
   let app = newApplication("org.gtk.msgBox")
-  connect(app, "activate", appActivate)
+  app.connect("activate", appActivate)
   discard app.run()
 
 main()

@@ -22,13 +22,18 @@ proc toBoolVal(b: bool): Value =
   setBoolean(result, b)
 
 # our Nim function
-proc cellDataFuncN(column: TreeViewColumn; renderer: CellRenderer;
-                  model: TreeModel; iter: TreeIter, data: TreeViewColumn) =
+proc cellDataFuncN(
+    column: TreeViewColumn,
+    renderer: CellRenderer,
+    model: TreeModel,
+    iter: TreeIter,
+    data: TreeViewColumn,
+) =
   ##  Get the color string stored by the column and make it the foreground color.
   # for testing that optional args work, we pass a TreeViewColumn and echo its title
   echo data.title
   var val: Value
-  model.getValue(iter, Color, val) 
+  model.getValue(iter, Color, val)
   let text = val.getString
   val.unset # is this necessary?
   setProperty(renderer, "foreground", toStringVal("#FFFFFF"))
@@ -53,7 +58,7 @@ proc setupTreeView(treeview: TreeView) =
   column.unsetCellDataFunc(renderer)
   column.setCellDataFunc(renderer, cellDataFuncN, column)
 
-proc main =
+proc main() =
   var iter: TreeIter
   gtk.init()
   let window = newWindow()
@@ -80,4 +85,4 @@ proc main =
   window.showAll
   gtk.main()
 
-main() 
+main()

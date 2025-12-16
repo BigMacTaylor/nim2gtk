@@ -1,10 +1,10 @@
 # nim c --gc:arc glisttest.nim
 import nim2gtk/[gtk, glib, gobject, gio]
 
-proc buttonClicked (button: Button) =
+proc buttonClicked(button: Button) =
   button.label = utf8Strreverse(button.label, -1)
 
-proc appActivate (app: Application) =
+proc appActivate(app: Application) =
   let window = newApplicationWindow(app)
   window.title = "GNOME Button"
   window.defaultSize = (250, 50)
@@ -18,14 +18,13 @@ proc appActivate (app: Application) =
   echo cast[int](button.impl)
   echo ch[0] is Button
   echo ch[0] of Button
-  Button(ch[0]).connect("clicked",  buttonClicked)
+  Button(ch[0]).connect("clicked", buttonClicked)
   #button.connect("clicked",  buttonClicked)
   window.showAll
 
-proc main =
+proc main() =
   let app = newApplication("org.gtk.example")
   connect(app, "activate", appActivate)
   discard app.run
 
 main()
-

@@ -1,20 +1,19 @@
 # nim c connect_args.nim
 import nim2gtk/[gtk, gobject, gio]
 
-type
-  O = object
-    i, j: int
+type O = object
+  i, j: int
 
-proc b1Callback(button: Button; str: string) =
+proc b1Callback(button: Button, str: string) =
   echo str
 
-proc b2Callback(button: Button; o: O) =
+proc b2Callback(button: Button, o: O) =
   echo "Value of field i in object o = ", o.i
 
-proc b3Callback(button: Button; r: ref O) =
+proc b3Callback(button: Button, r: ref O) =
   echo "Value of field i in ref to object o = ", r.i
 
-proc b4Callback(button: Button; w: ApplicationWindow) =
+proc b4Callback(button: Button, w: ApplicationWindow) =
   if w.title == "Nim with GTK3":
     w.title = "GTK3 with Nim"
   else:
@@ -40,10 +39,9 @@ proc appActivate(app: Application) =
   window.add(box)
   window.showAll
 
-proc main =
+proc main() =
   let app = newApplication("org.gtk.example")
   connect(app, "activate", appActivate)
   discard app.run
 
 main()
-

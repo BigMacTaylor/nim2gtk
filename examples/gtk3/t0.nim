@@ -5,7 +5,7 @@ proc bye(w: Window) =
   mainQuit()
   echo "Bye..."
 
-proc main =
+proc main() =
   gtk.init()
   let window = newWindow()
   window.title = "First Test"

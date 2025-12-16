@@ -16,7 +16,8 @@ const
   ZoomNearMousepointer = true # mouse wheel zooming -- to mouse-pointer or center
   SelectRectCol = [0.0, 0, 1, 0.5] # blue with transparency
 
-discard """
+discard
+  """
 Zooming, scrolling, panning...
 
 |-------------------------|
@@ -48,56 +49,59 @@ Panning: Moving mouse while middle mouse button pressed
 
 # drawing area and scroll bars in 2x2 grid (PDA == Plain Drawing Area)
 
-type
-  PosAdj = ref object of Adjustment
-    handlerID: uint64
+type PosAdj = ref object of Adjustment
+  handlerID: uint64
 
-proc newPosAdj: PosAdj =
+proc newPosAdj(): PosAdj =
   newAdjustment(PosAdj, 0, 0, 1, 1, 10, 1)
 
-type
-  PDA_Data* = object
-    draw*: proc (cr: Context)
-    extents*: proc (): tuple[x, y, w, h: float]
-    windowSize*: tuple[w, h: int]
+type PDA_Data* = object
+  draw*: proc(cr: Context)
+  extents*: proc(): tuple[x, y, w, h: float]
+  windowSize*: tuple[w, h: int]
 
-type
-  PDA = ref object of Grid
-    zoomNearMousepointer: bool
-    selecting: bool
-    userZoom: float
-    darea: DrawingArea
-    hadjustment: PosAdj
-    vadjustment: PosAdj
-    hscrollbar: Scrollbar
-    vscrollbar: Scrollbar
-    fullScale: float
-    dataX: float
-    dataY: float
-    dataWidth: float
-    dataHeight: float
-    lastButtonDownPosX: float
-    lastButtonDownPosY: float
-    lastMousePosX: float
-    lastMousePosY: float
-    zoomRectX1: float
-    zoomRectY1: float
-    oldSizeX: int
-    oldSizeY: int
-    drawWorld: proc (cr: Context)
-    extents: proc (): tuple[x, y, w, h: float]
+type PDA = ref object of Grid
+  zoomNearMousepointer: bool
+  selecting: bool
+  userZoom: float
+  darea: DrawingArea
+  hadjustment: PosAdj
+  vadjustment: PosAdj
+  hscrollbar: Scrollbar
+  vscrollbar: Scrollbar
+  fullScale: float
+  dataX: float
+  dataY: float
+  dataWidth: float
+  dataHeight: float
+  lastButtonDownPosX: float
+  lastButtonDownPosY: float
+  lastMousePosX: float
+  lastMousePosY: float
+  zoomRectX1: float
+  zoomRectY1: float
+  oldSizeX: int
+  oldSizeY: int
+  drawWorld: proc(cr: Context)
+  extents: proc(): tuple[x, y, w, h: float]
 
-proc drawingAreaDrawCb(darea: DrawingArea; cr: Context; this: PDA): bool =
+proc drawingAreaDrawCb(darea: DrawingArea, cr: Context, this: PDA): bool =
   cr.save
-  cr.translate(this.hadjustment.upper * 0.5 - this.hadjustment.value, # our origin is the center
-    this.vadjustment.upper * 0.5 - this.vadjustment.value)
+  cr.translate(
+    this.hadjustment.upper * 0.5 - this.hadjustment.value, # our origin is the center
+    this.vadjustment.upper * 0.5 - this.vadjustment.value,
+  )
   cr.scale(this.fullScale * this.userZoom, this.fullScale * this.userZoom)
   cr.translate(-this.dataX - this.dataWidth * 0.5, -this.dataY - this.dataHeight * 0.5)
   this.drawWorld(cr) # call the user provided drawing function
   cr.restore
   if this.selecting:
-    cr.rectangle(this.lastButtonDownPosX, this.lastButtonDownPosY,
-      this.zoomRectX1 - this.lastButtonDownPosX, this.zoomRectY1 - this.lastButtonDownPosY)
+    cr.rectangle(
+      this.lastButtonDownPosX,
+      this.lastButtonDownPosY,
+      this.zoomRectX1 - this.lastButtonDownPosX,
+      this.zoomRectY1 - this.lastButtonDownPosY,
+    )
     cr.setSource(SelectRectCol) # SELECT_RECT_COL) # 0, 0, 1, 0.5
     cr.fillPreserve
     cr.setSource(0, 0, 0)
@@ -107,12 +111,12 @@ proc drawingAreaDrawCb(darea: DrawingArea; cr: Context; this: PDA): bool =
   #return true # TRUE to stop other handlers from being invoked for the event. FALSE to propagate the event further.
 
 # clamp to correct values, 0 <= value <= (adj.upper - adj.pageSize), block calling onAdjustmentEvent()
-proc updateVal(adj: PosAdj; d: float) =
+proc updateVal(adj: PosAdj, d: float) =
   adj.signalHandlerBlock(adj.handlerID)
   adj.setValue(max(0.0, min(adj.value + d, adj.upper - adj.pageSize)))
   adj.signalHandlerUnblock(adj.handlerID)
 
-proc updateAdjustments(this: PDA; dx, dy: float) =
+proc updateAdjustments(this: PDA, dx, dy: float) =
   this.hadjustment.setUpper(this.darea.allocatedWidth.float * this.userZoom)
   this.vadjustment.setUpper(this.darea.allocatedHeight.float * this.userZoom)
   this.hadjustment.setPageSize(this.darea.allocatedWidth.float)
@@ -120,46 +124,54 @@ proc updateAdjustments(this: PDA; dx, dy: float) =
   updateVal(this.hadjustment, dx)
   updateVal(this.vadjustment, dy)
 
-proc dareaConfigureCallback(darea: DrawingArea; event: EventConfigure; this: PDA): bool =
-  (this.dataX, this.dataY, this.dataWidth,
-    this.dataHeight) = this.extents() # query user defined size
-  this.fullScale = min(this.darea.allocatedWidth.float / this.dataWidth,
-      this.darea.allocatedHeight.float / this.dataHeight)
+proc dareaConfigureCallback(
+    darea: DrawingArea, event: EventConfigure, this: PDA
+): bool =
+  (this.dataX, this.dataY, this.dataWidth, this.dataHeight) = this.extents()
+    # query user defined size
+  this.fullScale = min(
+    this.darea.allocatedWidth.float / this.dataWidth,
+    this.darea.allocatedHeight.float / this.dataHeight,
+  )
   return gdk.EVENT_STOP
 
-proc hscrollbarSizeAllocateCallback(s: Scrollbar; r: gdk.Rectangle; pda: PDA) =
+proc hscrollbarSizeAllocateCallback(s: Scrollbar, r: gdk.Rectangle, pda: PDA) =
   pda.hadjustment.setUpper(r.width.float * pda.userZoom)
   pda.hadjustment.setPageSize(r.width.float)
   if pda.oldSizeX != 0: # this fix is not exact, as fullScale can ...
     updateVal(pda.hadjustment, (r.width - pda.oldSizeX).float * 0.5)
   pda.oldSizeX = r.width
 
-proc vscrollbarSizeAllocateCallback(s: Scrollbar; r: gdk.Rectangle; pda: PDA) =
+proc vscrollbarSizeAllocateCallback(s: Scrollbar, r: gdk.Rectangle, pda: PDA) =
   pda.vadjustment.setUpper(r.height.float * pda.userZoom)
   pda.vadjustment.setPageSize(r.height.float)
   if pda.oldSizeY != 0: # ... change when window is rezized. But it's good enough!
     updateVal(pda.vadjustment, (r.height - pda.oldSizeY).float * 0.5)
   pda.oldSizeY = r.height
 
-proc updateAdjustmentsAndPaint(this: PDA; dx, dy: float) =
+proc updateAdjustmentsAndPaint(this: PDA, dx, dy: float) =
   this.updateAdjustments(dx, dy)
   this.darea.queueDrawArea(0, 0, this.darea.allocatedWidth, this.darea.allocatedHeight)
 
 # event coordinates to user space
-proc getUserCoordinates(this: PDA; eventX, eventY: float): (float, float) =
-  ((eventX - this.hadjustment.upper * 0.5 + this.hadjustment.value) / (
-      this.fullScale * this.userZoom) + this.dataX + this.dataWidth * 0.5,
-   (eventY - this.vadjustment.upper * 0.5 + this.vadjustment.value) / (
-       this.fullScale * this.userZoom) + this.dataY + this.dataHeight * 0.5)
+proc getUserCoordinates(this: PDA, eventX, eventY: float): (float, float) =
+  (
+    (eventX - this.hadjustment.upper * 0.5 + this.hadjustment.value) /
+      (this.fullScale * this.userZoom) + this.dataX + this.dataWidth * 0.5,
+    (eventY - this.vadjustment.upper * 0.5 + this.vadjustment.value) /
+      (this.fullScale * this.userZoom) + this.dataY + this.dataHeight * 0.5,
+  )
 
-proc onMotion(darea: DrawingArea; event: EventMotion; this: PDA): bool =
+proc onMotion(darea: DrawingArea, event: EventMotion, this: PDA): bool =
   let state = getState(event)
   let (x, y) = event.getCoords
   if state.contains(button1): # selecting
     this.selecting = true
     this.zoomRectX1 = x
     this.zoomRectY1 = y
-    this.darea.queueDrawArea(0, 0, this.darea.allocatedWidth, this.darea.allocatedHeight)
+    this.darea.queueDrawArea(
+      0, 0, this.darea.allocatedWidth, this.darea.allocatedHeight
+    )
   elif button2 in state: # panning
     this.updateAdjustmentsAndPaint(this.lastMousePosX - x, this.lastMousePosY - y)
   else:
@@ -174,7 +186,7 @@ proc onMotion(darea: DrawingArea; event: EventMotion; this: PDA): bool =
 # is the relative movement caused by zooming
 # In other words, this is the delta-move d of a point at position P from zooming:
 # d = newPos - P = P * scale - P = P * (z/z0) - P = P * (z/z0 - 1). We have to compensate for this d.
-proc scrollEvent(darea: DrawingArea; event: EventScroll; this: PDA): bool =
+proc scrollEvent(darea: DrawingArea, event: EventScroll, this: PDA): bool =
   let z0 = this.userZoom
   case getScrollDirection(event)
   of ScrollDirection.up:
@@ -187,15 +199,20 @@ proc scrollEvent(darea: DrawingArea; event: EventScroll; this: PDA): bool =
     return gdk.EVENT_PROPAGATE
   if this.zoomNearMousepointer:
     let (x, y) = event.getCoords
-    this.updateAdjustmentsAndPaint((this.hadjustment.value + x) * (this.userZoom / z0 - 1),
-      (this.vadjustment.value + y) * (this.userZoom / z0 - 1))
+    this.updateAdjustmentsAndPaint(
+      (this.hadjustment.value + x) * (this.userZoom / z0 - 1),
+      (this.vadjustment.value + y) * (this.userZoom / z0 - 1),
+    )
   else: # zoom to center
-    this.updateAdjustmentsAndPaint((this.hadjustment.value +
-        this.darea.allocatedWidth.float * 0.5) * (this.userZoom / z0 - 1),
-        (this.vadjustment.value + this.darea.allocatedHeight.float * 0.5) * (this.userZoom / z0 - 1))
+    this.updateAdjustmentsAndPaint(
+      (this.hadjustment.value + this.darea.allocatedWidth.float * 0.5) *
+        (this.userZoom / z0 - 1),
+      (this.vadjustment.value + this.darea.allocatedHeight.float * 0.5) *
+        (this.userZoom / z0 - 1),
+    )
   return gdk.EVENT_STOP
 
-proc buttonPressEvent(darea: DrawingArea; event: EventButton; this: PDA): bool =
+proc buttonPressEvent(darea: DrawingArea, event: EventButton, this: PDA): bool =
   var (x, y) = event.getCoords
   this.lastMousePosX = x
   this.lastMousePosY = y
@@ -208,25 +225,31 @@ proc buttonPressEvent(darea: DrawingArea; event: EventButton; this: PDA): bool =
 
 # zoom into selected rectangle and center it
 # math: we first center the selection rectangle, and then compensate for translation due to scale
-proc buttonReleaseEvent(darea: DrawingArea; event: EventButton; this: PDA): bool =
+proc buttonReleaseEvent(darea: DrawingArea, event: EventButton, this: PDA): bool =
   let (x, y) = event.getCoords
   let b = getButton(event)
   if b == 1:
     this.selecting = false
-    let z1 = min(this.darea.allocatedWidth.float / (this.lastButtonDownPosX - x).abs,
-      this.darea.allocatedHeight.float / (this.lastButtonDownPosY - y).abs)
-    if z1 < ZoomFactorSelectMax: # else selection rectangle will persist, we may output a message...
+    let z1 = min(
+      this.darea.allocatedWidth.float / (this.lastButtonDownPosX - x).abs,
+      this.darea.allocatedHeight.float / (this.lastButtonDownPosY - y).abs,
+    )
+    if z1 < ZoomFactorSelectMax:
+      # else selection rectangle will persist, we may output a message...
       this.userZoom *= z1
       this.updateAdjustmentsAndPaint(
-        ((x + this.lastButtonDownPosX) * z1 - this.darea.allocatedWidth.float) * 0.5 + this.hadjustment.value * (z1 - 1),
-        ((y + this.lastButtonDownPosY) * z1 - this.darea.allocatedHeight.float) * 0.5 + this.vadjustment.value * (z1 - 1))
+        ((x + this.lastButtonDownPosX) * z1 - this.darea.allocatedWidth.float) * 0.5 +
+          this.hadjustment.value * (z1 - 1),
+        ((y + this.lastButtonDownPosY) * z1 - this.darea.allocatedHeight.float) * 0.5 +
+          this.vadjustment.value * (z1 - 1),
+      )
     return gdk.EVENT_STOP
   return gdk.EVENT_PROPAGATE
- 
-proc onAdjustmentEvent(this: PosAdj; pda: PDA) =
+
+proc onAdjustmentEvent(this: PosAdj, pda: PDA) =
   pda.darea.queueDrawArea(0, 0, pda.darea.allocatedWidth, pda.darea.allocatedHeight)
 
-proc newPDA: PDA =
+proc newPDA(): PDA =
   result = newGrid(PDA)
   let da = newDrawingArea()
   result.darea = da
@@ -234,8 +257,12 @@ proc newPDA: PDA =
   da.setVExpand
   da.connect("draw", drawingAreaDrawCb, result)
   da.connect("configure-event", dareaConfigureCallback, result)
-  da.addEvents({EventFlag.buttonPress, EventFlag.buttonRelease,
-      EventFlag.scroll, button1Motion, button2Motion, pointerMotionHint})
+  da.addEvents(
+    {
+      EventFlag.buttonPress, EventFlag.buttonRelease, EventFlag.scroll, button1Motion,
+      button2Motion, pointerMotionHint,
+    }
+  )
   da.connect("motion-notify-event", onMotion, result)
   da.connect("scroll_event", scrollEvent, result)
   da.connect("button_press_event", buttonPressEvent, result)
@@ -243,9 +270,11 @@ proc newPDA: PDA =
   result.zoomNearMousepointer = ZoomNearMousepointer # mouse wheel zooming
   result.userZoom = 1.0
   result.hadjustment = newPosAdj()
-  result.hadjustment.handlerID = result.hadjustment.connect("value-changed", onAdjustmentEvent, result)
+  result.hadjustment.handlerID =
+    result.hadjustment.connect("value-changed", onAdjustmentEvent, result)
   result.vadjustment = newPosAdj()
-  result.vadjustment.handlerID = result.vadjustment.connect("value-changed", onAdjustmentEvent, result)
+  result.vadjustment.handlerID =
+    result.vadjustment.connect("value-changed", onAdjustmentEvent, result)
   result.hscrollbar = newScrollbar(Orientation.horizontal, result.hadjustment)
   result.vscrollbar = newScrollbar(Orientation.vertical, result.vadjustment)
   result.hscrollbar.setHExpand
@@ -259,7 +288,7 @@ proc newPDA: PDA =
 proc appStartup(app: Application) =
   echo "appStartup"
 
-proc appActivate(app: Application; initData: PDA_Data) =
+proc appActivate(app: Application, initData: PDA_Data) =
   let window = newApplicationWindow(app)
   window.title = "Drawing example"
   # window.defaultSize = initData.windowSize
@@ -277,7 +306,6 @@ proc newDisplay*(initData: PDA_Data) =
   discard run(app)
 
 when isMainModule:
-
   const # arbitrary locations for our data
     DataX = 150.0
     DataY = 250.0
@@ -303,7 +331,7 @@ when isMainModule:
       i += 10
     cr.stroke
 
-  proc test =
+  proc test() =
     let data = PDA_Data(draw: drawWorld, extents: worldExtents, windowSize: (800, 600))
     newDisplay(data)
 

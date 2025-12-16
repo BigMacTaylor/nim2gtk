@@ -1,7 +1,7 @@
 # nim c --threads:on --gc:arc -r thread2.nim
 
 import nim2gtk/[gtk, glib, gobject, gio]
-from  os import sleep
+from os import sleep
 
 var workThread: system.Thread[void]
 var button: Button
@@ -10,7 +10,7 @@ proc idleFunc(i: int): bool =
   button.label = $i
   return SOURCE_REMOVE
 
-proc workProc =
+proc workProc() =
   var countdown {.global.} = 25
   while countdown > 0:
     sleep(1000)
@@ -26,11 +26,11 @@ proc activate(app: Application) =
   window.defaultSize = (250, 50)
   button = newButton("Click Me")
   window.add(button)
-  button.connect("clicked",  buttonClicked)
+  button.connect("clicked", buttonClicked)
   window.showAll
   createThread(workThread, workProc)
 
-proc main =
+proc main() =
   let app = newApplication("org.gtk.example")
   connect(app, "activate", activate)
   discard app.run

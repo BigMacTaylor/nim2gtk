@@ -21,17 +21,15 @@ proc toUIntVal(i: int): Value =
   setUint(result, i)
 
 ##  these are the caps we are going to pass through the appsink and appsrc
-const
-  audioCaps = "audio/x-raw,format=S16LE,channels=1,rate=8000, layout=interleaved"
+const audioCaps = "audio/x-raw,format=S16LE,channels=1,rate=8000, layout=interleaved"
 
-type
-  ProgramData = ref object
-    loop: MainLoop
-    source: gst.Element
-    sink: gst.Element
+type ProgramData = ref object
+  loop: MainLoop
+  source: gst.Element
+  sink: gst.Element
 
 ##  called when the appsink notifies us that there is a new buffer ready for processing
-proc onNewSampleFromSink(elt: AppSink; data: ProgramData): gst.FlowReturn =
+proc onNewSampleFromSink(elt: AppSink, data: ProgramData): gst.FlowReturn =
   var
     sample: gst.Sample
     appBuffer: gst.Buffer
@@ -51,7 +49,7 @@ proc onNewSampleFromSink(elt: AppSink; data: ProgramData): gst.FlowReturn =
 
 ##  called when we get a GstMessage from the source pipeline when we get EOS, we notify the appsrc of it.
 #BusFunc* = proc (bus: ptr Bus00; message: ptr Message00; userData: pointer): gboolean {.cdecl.}
-proc onSourceMessage(bus: gst.Bus; message: gst.Message; data: ProgramData): bool =
+proc onSourceMessage(bus: gst.Bus, message: gst.Message, data: ProgramData): bool =
   var source: gst.Element
   var h = message.impl.type
   if h == {MessageFlag.eos}:
@@ -68,7 +66,7 @@ proc onSourceMessage(bus: gst.Bus; message: gst.Message; data: ProgramData): boo
 
 ##  called when we get a GstMessage from the sink pipeline when we get EOS, we
 ##  exit the mainloop and this testapp.
-proc onSinkMessage(bus: gst.Bus; message: gst.Message; data: ProgramData): bool =
+proc onSinkMessage(bus: gst.Bus, message: gst.Message, data: ProgramData): bool =
   var h = message.impl.type
   if h == {MessageFlag.eos}:
     echo("Finished playback")
@@ -80,7 +78,7 @@ proc onSinkMessage(bus: gst.Bus; message: gst.Message; data: ProgramData): bool 
     discard
   return true
 
-proc main =
+proc main() =
   ##  Parse arguments
   let argc = paramCount() + 1
   var argv = newSeq[string](argc)
@@ -107,7 +105,9 @@ proc main =
   data = new ProgramData #g_new0(ProgramData, 1)
   data.loop = glib.newMainLoop(nil, false)
   ##  setting up source pipeline, we read from a file and convert to our desired caps.
-  str = "filesrc location=\"$1\" ! wavparse ! audioconvert ! audioresample ! appsink caps=\"$2\" name=testsink" % [filename, audioCaps]
+  str =
+    "filesrc location=\"$1\" ! wavparse ! audioconvert ! audioresample ! appsink caps=\"$2\" name=testsink" %
+    [filename, audioCaps]
   #g_free(filename)
   data.source = gst.parseLaunch(str) #, nil)
   #g_free(string)
@@ -143,7 +143,8 @@ proc main =
     quit(QuitFailure)
   testsource = gst.getByName(cast[gst.Bin](data.sink), "testsource")
   ##  configure for time-based format
-  setProperty(testsource, "format", toUIntVal(Format.time.ord)) # caution, is the enum signed or unsigned?
+  setProperty(testsource, "format", toUIntVal(Format.time.ord))
+    # caution, is the enum signed or unsigned?
   #g_object_set(testsource, "format", GST_FORMAT_TIME, nil)
   ##  uncomment the next line to block when appsrc has buffered enough
   ##  g_object_set (testsource, "block", TRUE, NULL);
@@ -168,4 +169,3 @@ proc main =
   quit(QuitSuccess)
 
 main()
-
