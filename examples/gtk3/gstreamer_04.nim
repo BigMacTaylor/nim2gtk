@@ -1,6 +1,6 @@
 # https://gstreamer.freedesktop.org/documentation/tutorials/basic/toolkit-integration.html?gi-language=c
 # GUI toolkit integration example
-# nim c gstExample_04.nim
+# nim c gstreamer_04.nim
 
 import nim2gtk/[gtk, gst, glib]
 import nim2gtk/[gdk, gobject, gio]

@@ -1,5 +1,5 @@
 # https://gstreamer.freedesktop.org/documentation/tutorials/basic/hello-world.html?gi-language=c
-# nim c gstExample_02.nim
+# nim c gstreamer_02.nim
 
 import nim2gtk/[glib, gst, gobject]
 

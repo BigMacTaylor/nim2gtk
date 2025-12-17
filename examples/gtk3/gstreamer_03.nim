@@ -1,6 +1,6 @@
 # https://gitlab.freedesktop.org/gstreamer/gst-docs/blob/d2469972f06bc2ef2936fd8ab4b708a862f3d220/examples/tutorials/basic-tutorial-3.c
 # Working with dynamic pipelines example
-# nim c gstExample_03.nim
+# nim c gstreamer_03.nim
 
 import nim2gtk/[gtk, gst, gobject, glib]
 from strutils import startsWith, `%`

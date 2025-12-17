@@ -17,6 +17,9 @@ proc appActivate(app: Application) =
   button2.connect("clicked", onClick)
 
   let headerBar = newHeaderBar()
+  headerBar.setTitle("Title")
+  headerBar.setSubtitle("Subtitle")
+  headerBar.setShowCloseButton(true)
   headerBar.packStart(button1)
   headerBar.packEnd(button2)
 
