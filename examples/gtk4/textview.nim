@@ -1,6 +1,6 @@
+# minimal textview example
 # nim c textview.nim
 # ./textview textview.nim
-# minimal GtkApplication example
 import nim2gtk/[gtk4, gobject, glib, gio] # , gtksource5] # for source view
 
 from OS import paramCount, paramStr
@@ -11,13 +11,13 @@ proc shutdown(app: Application) =
 proc startup(app: Application) =
   echo "startup"
 
-proc handleLocalOptions(app: Application; vd: VariantDict): int =
+proc handleLocalOptions(app: Application, vd: VariantDict): int =
   echo "handle-local-options"
 
 proc nameLost(app: Application): bool =
   echo "name-lost"
 
-proc open(app: Application; files: seq[GFile]; hint: string) =
+proc open(app: Application, files: seq[GFile], hint: string) =
   var
     contents: string
     etagOut: string
@@ -50,7 +50,7 @@ proc open(app: Application; files: seq[GFile]; hint: string) =
 
   show(window) # showAll() for GTK3
 
-proc commandLine(app: Application; cl: ApplicationCommandLine): int =
+proc commandLine(app: Application, cl: ApplicationCommandLine): int =
   echo "command-line"
 
 proc activate(app: Application) =
@@ -64,8 +64,9 @@ proc activate(app: Application) =
   scrolledWindow.setChild(view)
   show(window) # showAll() for GTK3
 
-proc main =
-  let app = newApplication("org.gtk.example", {ApplicationFlag.handlesOpen})#, handlesCommandLine})
+proc main() =
+  let app = newApplication("org.gtk.example", {ApplicationFlag.handlesOpen})
+  #, handlesCommandLine})
   app.connect("startup", startup)
   app.connect("activate", activate)
   app.connect("command-line", commandLine)
@@ -77,6 +78,7 @@ proc main =
   var argStr = newSeq[string](argLen)
   for i in 0 ..< argLen:
     argStr[i] = paramStr(i)
-  discard run(app, argLen, argStr) # we have to pass an argString to support open signal handling files
+  discard run(app, argLen, argStr)
+  # we have to pass an argString to support open signal handling files
 
 main()

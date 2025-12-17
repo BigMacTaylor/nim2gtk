@@ -2,7 +2,7 @@
 # nim c --gc:arc webkitgtk.nim
 import nim2gtk/[gtk4, glib, gobject, gio, webkit6]
 
-proc appActivate (app: Application) =
+proc appActivate(app: Application) =
   let window = newApplicationWindow(app)
   window.title = "WebKitGtk"
   window.defaultSize = (800, 600)
@@ -11,10 +11,9 @@ proc appActivate (app: Application) =
   window.setChild(view)
   window.show
 
-proc main =
+proc main() =
   let app = newApplication("org.gtk.example")
   connect(app, "activate", appActivate)
   discard app.run
 
 main()
-

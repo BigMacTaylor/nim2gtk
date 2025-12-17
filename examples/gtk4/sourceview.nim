@@ -3,7 +3,7 @@
 # ./sourceview sourceview.nim
 import nim2gtk/[gtk4, gobject, gio, gtksource5]
 
-proc appActivate (app: Application) =
+proc appActivate(app: Application) =
   let window = newApplicationWindow(app)
   window.title = "GTKSourceView"
   window.defaultSize = (800, 600)
@@ -17,9 +17,9 @@ proc appActivate (app: Application) =
   window.setChild(scrollBox)
   window.show()
 
-proc main =
+proc main() =
   let app = newApplication("org.gtk.example")
-  connect(app, "activate", appActivate)
-  discard app.run
+  app.connect("activate", appActivate)
+  discard run(app)
 
 main()

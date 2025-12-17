@@ -9,11 +9,13 @@ proc appActivate(app: Application) =
   let environ = getEnviron()
   let command = environ.environGetenv("SHELL")
   var pid = 0
-  echo terminal.spawnSync({}, nil, [command], [], {SpawnFlag.leaveDescriptorsOpen}, nil, nil, pid, nil)
+  echo terminal.spawnSync(
+    {}, nil, [command], [], {SpawnFlag.leaveDescriptorsOpen}, nil, nil, pid, nil
+  )
   window.setChild(terminal) # add() for GTK3
   show(window) # showAll() for GTK3
 
-proc main =
+proc main() =
   let app = newApplication("org.gtk.example")
   connect(app, "activate", appActivate)
   discard run(app)
