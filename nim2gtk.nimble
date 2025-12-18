@@ -1,6 +1,6 @@
 # Package
 
-version       = "0.1.3"
+version       = "0.1.4"
 author        = "Mac Taylor"
 description   = "GTK bindings for Nim 2.0"
 license       = "MIT"
