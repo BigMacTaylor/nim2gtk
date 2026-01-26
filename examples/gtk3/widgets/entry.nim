@@ -42,7 +42,7 @@ proc appActivate(app: Application) =
   window.showAll()
 
 proc main() =
-  let app = newApplication("org.nim.example.entry")
+  let app = newApplication("org.gtk.example.entry")
   app.connect("activate", appActivate)
   discard run(app)
 
