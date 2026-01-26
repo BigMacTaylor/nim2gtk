@@ -7,7 +7,7 @@ proc onClick(button: Button) =
 
 proc appActivate(app: Application) =
   let window = newApplicationWindow(app)
-  window.title = "GNOME Button"
+  window.title = "Button Example"
   window.defaultSize = (250, 50)
 
   let button = newButton("Click Me")

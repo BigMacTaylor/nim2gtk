@@ -31,14 +31,17 @@ proc activateStatefulAction(
     echo format("state change $1 -> $2", oldState, newState)
   app.release
 
-proc quitProgram(action: SimpleAction, parameter: Variant, app: Application) =
+proc onQuit(action: SimpleAction, parameter: Variant, app: Application) =
   quit(app)
 
 proc appStartup(app: Application) =
   echo "appStartup"
-  let quit = newSimpleAction("quit") # here we create the actions for whole app
-  connect(quit, "activate", quitProgram, app)
+
+  # Create the actions for whole app
+  let quit = newSimpleAction("quit")
+  connect(quit, "activate", onQuit, app)
   app.addAction(quit)
+  app.setAccelsForAction("app.quit", "<Control>Q")
 
   let menu = gio.newMenu() # root of all menus
   block: # plain stateless menu
