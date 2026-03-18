@@ -11,7 +11,7 @@ proc appActivate(app: gtk.Application) =
   let window = newApplicationWindow(app)
 
   # Before the window is first realized, set it up to be a layer surface.
-  initForWindow(window)
+  initLayerShell(window)
 
   # Order below normal windows (e.g. for a wallpaper or a dock that goes below)
   setLayer(window, Layer.top)
@@ -20,7 +20,7 @@ proc appActivate(app: gtk.Application) =
   autoExclusiveZoneEnable(window)
 
   # Margins (gaps around the window's edges)
-  setMargin(window, Edge.top, 5) # 0 is default
+  setLayerShellMargin(window, Edge.bottom, 5) # 0 is default
 
   # Anchors: pin the window to specific edges of the output
   # Example: top, left, and right (like a top bar)
@@ -43,9 +43,9 @@ proc appActivate(app: gtk.Application) =
 
   # Add more icons (Clock, Volume, etc.)
 
-  let label = newLabel("GTK Layer Shell example in Nim!")
+  let label = newLabel("GTK4 Layer Shell example in Nim!")
   label.setMarkup("<span font_desc=\"20.0\">GTK Layer Shell example in Nim!</span>")
-  label.halign = Align.center
+  label.halign = Align.right
 
   # Pack main box (Widget; expand; fill; padding)
   mainBox.packStart(appBtn, false, false, 0)

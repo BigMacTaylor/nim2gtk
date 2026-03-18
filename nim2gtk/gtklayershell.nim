@@ -75,6 +75,7 @@ proc getExclusiveZone*(window: gtk.Window): int =
 proc exclusiveZone*(window: gtk.Window): int =
   int(gtk_layer_get_exclusive_zone(cast[ptr gtk.Window00](window.impl)))
 
+# gtk_layer_get_keyboard_interactivity has been deprecated since version 0.6.
 proc gtk_layer_get_keyboard_interactivity(window: ptr gtk.Window00): gboolean {.
     importc, libprag.}
 
@@ -105,25 +106,25 @@ proc layer*(window: gtk.Window): Layer =
 proc gtk_layer_get_major_version(): uint32 {.
     importc, libprag.}
 
-proc getMajorVersion*(): int =
+proc MajorVersion*(): int =
   int(gtk_layer_get_major_version())
 
 proc gtk_layer_get_margin(window: ptr gtk.Window00; edge: Edge): int32 {.
     importc, libprag.}
 
-proc getMargin*(window: gtk.Window; edge: Edge): int =
+proc getLayerShellMargin*(window: gtk.Window; edge: Edge): int =
   int(gtk_layer_get_margin(cast[ptr gtk.Window00](window.impl), edge))
 
 proc gtk_layer_get_micro_version(): uint32 {.
     importc, libprag.}
 
-proc getMicroVersion*(): int =
+proc MicroVersion*(): int =
   int(gtk_layer_get_micro_version())
 
 proc gtk_layer_get_minor_version(): uint32 {.
     importc, libprag.}
 
-proc getMinorVersion*(): int =
+proc MinorVersion*(): int =
   int(gtk_layer_get_minor_version())
 
 proc gtk_layer_get_monitor(window: ptr gtk.Window00): ptr gdk.Monitor00 {.
@@ -173,7 +174,7 @@ proc namespace*(window: gtk.Window): string =
 proc gtk_layer_get_protocol_version(): uint32 {.
     importc, libprag.}
 
-proc getProtocolVersion*(): int =
+proc ProtocolVersion*(): int =
   int(gtk_layer_get_protocol_version())
 
 proc gtk_layer_get_zwlr_layer_surface_v1(window: ptr gtk.Window00): pointer {.
@@ -185,7 +186,7 @@ proc getZwlrLayerSurfaceV1*(window: gtk.Window): pointer =
 proc gtk_layer_init_for_window(window: ptr gtk.Window00) {.
     importc, libprag.}
 
-proc initForWindow*(window: gtk.Window) =
+proc initLayerShell*(window: gtk.Window) =
   gtk_layer_init_for_window(cast[ptr gtk.Window00](window.impl))
 
 proc gtk_layer_is_layer_window(window: ptr gtk.Window00): gboolean {.
@@ -215,6 +216,7 @@ proc setExclusiveZone*(window: gtk.Window; exclusiveZone: int) =
 proc `exclusiveZone=`*(window: gtk.Window; exclusiveZone: int) =
   gtk_layer_set_exclusive_zone(cast[ptr gtk.Window00](window.impl), int32(exclusiveZone))
 
+# gtk_layer_get_keyboard_interactivity has been deprecated since version 0.6.
 proc gtk_layer_set_keyboard_interactivity(window: ptr gtk.Window00; interactivity: gboolean) {.
     importc, libprag.}
 
@@ -223,6 +225,7 @@ proc setKeyboardInteractivity*(window: gtk.Window; interactivity: bool) =
 
 proc `keyboardInteractivity=`*(window: gtk.Window; interactivity: bool) =
   gtk_layer_set_keyboard_interactivity(cast[ptr gtk.Window00](window.impl), gboolean(interactivity))
+
 
 proc gtk_layer_set_keyboard_mode(window: ptr gtk.Window00; mode: KeyboardMode) {.
     importc, libprag.}
@@ -245,7 +248,7 @@ proc `layer=`*(window: gtk.Window; layer: Layer) =
 proc gtk_layer_set_margin(window: ptr gtk.Window00; edge: Edge; marginSize: int32) {.
     importc, libprag.}
 
-proc setMargin*(window: gtk.Window; edge: Edge; marginSize: int) =
+proc setLayerShellMargin*(window: gtk.Window; edge: Edge; marginSize: int) =
   gtk_layer_set_margin(cast[ptr gtk.Window00](window.impl), edge, int32(marginSize))
 
 proc gtk_layer_set_monitor(window: ptr gtk.Window00; monitor: ptr gdk.Monitor00) {.
@@ -265,4 +268,11 @@ proc setNamespace*(window: gtk.Window; nameSpace: cstring) =
 
 proc `namespace=`*(window: gtk.Window; nameSpace: cstring) =
   gtk_layer_set_namespace(cast[ptr gtk.Window00](window.impl), nameSpace)
+
+proc gtk_layer_try_force_commit(window: ptr gtk.Window00) {.
+    importc, libprag.}
+
+proc tryForceCommit*(window: gtk.Window) =
+  gtk_layer_try_force_commit(cast[ptr gtk.Window00](window.impl))
+
 # === remaining symbols:
