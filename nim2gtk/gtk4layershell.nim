@@ -16,6 +16,7 @@
 # Gtk-4.0
 # libraries:
 # libgtk4-layer-shell.so.0
+# libwayland-client.so.0
 {.warning[UnusedImport]: off.}
 import pangocairo, freetype2, glib, gdkpixbuf, harfbuzz, gmodule, gtk4, cairo, graphene, gsk, gobject, gdk4, gio, pango
 const Lib = "libgtk4-layer-shell.so.0"
