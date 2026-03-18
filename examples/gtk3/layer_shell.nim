@@ -45,7 +45,7 @@ proc appActivate(app: gtk.Application) =
 
   let label = newLabel("GTK4 Layer Shell example in Nim!")
   label.setMarkup("<span font_desc=\"20.0\">GTK Layer Shell example in Nim!</span>")
-  label.halign = Align.right
+  label.halign = Align.center
 
   # Pack main box (Widget; expand; fill; padding)
   mainBox.packStart(appBtn, false, false, 0)
