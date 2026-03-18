@@ -16,10 +16,13 @@
 # Gtk-3.0
 # libraries:
 # libgtk-layer-shell.so.0
+# libwayland-client.so.0
 {.warning[UnusedImport]: off.}
 import xlib, freetype2, glib, gdk, harfbuzz, gmodule, gtk, cairo, gobject, pango, gio, atk, gdkpixbuf
 const Lib = "libgtk-layer-shell.so.0"
 {.pragma: libprag, cdecl, dynlib: Lib.}
+{.passL: "-lgtk-layer-shell".}
+{.passL: "-lwayland-client".}
 
 proc finalizeGObject*[T](o: ref T) =
   if not o.ignoreFinalizer:
