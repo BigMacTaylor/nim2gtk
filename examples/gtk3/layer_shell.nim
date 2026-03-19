@@ -11,7 +11,7 @@ proc appActivate(app: gtk.Application) =
   let window = newApplicationWindow(app)
 
   # Before the window is first realized, set it up to be a layer surface.
-  initForWindow(window)
+  initLayerShell(window)
 
   # Order below normal windows (e.g. for a wallpaper or a dock that goes below)
   setLayer(window, Layer.top)
@@ -20,7 +20,7 @@ proc appActivate(app: gtk.Application) =
   autoExclusiveZoneEnable(window)
 
   # Margins (gaps around the window's edges)
-  setMargin(window, Edge.top, 5) # 0 is default
+  setLayerShellMargin(window, Edge.bottom, 5) # 0 is default
 
   # Anchors: pin the window to specific edges of the output
   # Example: top, left, and right (like a top bar)

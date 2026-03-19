@@ -78,6 +78,7 @@ proc getExclusiveZone*(window: gtk.Window): int =
 proc exclusiveZone*(window: gtk.Window): int =
   int(gtk_layer_get_exclusive_zone(cast[ptr gtk.Window00](window.impl)))
 
+# gtk_layer_get_keyboard_interactivity has been deprecated since version 0.6.
 proc gtk_layer_get_keyboard_interactivity(window: ptr gtk.Window00): gboolean {.
     importc, libprag.}
 
@@ -191,6 +192,9 @@ proc gtk_layer_init_for_window(window: ptr gtk.Window00) {.
 proc initForWindow*(window: gtk.Window) =
   gtk_layer_init_for_window(cast[ptr gtk.Window00](window.impl))
 
+proc initLayerShell*(window: gtk.Window) =
+  gtk_layer_init_for_window(cast[ptr gtk.Window00](window.impl))
+
 proc gtk_layer_is_layer_window(window: ptr gtk.Window00): gboolean {.
     importc, libprag.}
 
@@ -218,6 +222,7 @@ proc setExclusiveZone*(window: gtk.Window; exclusiveZone: int) =
 proc `exclusiveZone=`*(window: gtk.Window; exclusiveZone: int) =
   gtk_layer_set_exclusive_zone(cast[ptr gtk.Window00](window.impl), int32(exclusiveZone))
 
+# gtk_layer_set_keyboard_interactivity has been deprecated since version 0.6.
 proc gtk_layer_set_keyboard_interactivity(window: ptr gtk.Window00; interactivity: gboolean) {.
     importc, libprag.}
 
@@ -251,6 +256,9 @@ proc gtk_layer_set_margin(window: ptr gtk.Window00; edge: Edge; marginSize: int3
 proc setMargin*(window: gtk.Window; edge: Edge; marginSize: int) =
   gtk_layer_set_margin(cast[ptr gtk.Window00](window.impl), edge, int32(marginSize))
 
+proc setLayerShellMargin*(window: gtk.Window; edge: Edge; marginSize: int) =
+  gtk_layer_set_margin(cast[ptr gtk.Window00](window.impl), edge, int32(marginSize))
+
 proc gtk_layer_set_monitor(window: ptr gtk.Window00; monitor: ptr gdk.Monitor00) {.
     importc, libprag.}
 
@@ -268,4 +276,11 @@ proc setNamespace*(window: gtk.Window; nameSpace: cstring) =
 
 proc `namespace=`*(window: gtk.Window; nameSpace: cstring) =
   gtk_layer_set_namespace(cast[ptr gtk.Window00](window.impl), nameSpace)
+
+proc gtk_layer_try_force_commit(window: ptr gtk.Window00) {.
+    importc, libprag.}
+
+proc tryForceCommit*(window: gtk.Window) =
+  gtk_layer_try_force_commit(cast[ptr gtk.Window00](window.impl))
+
 # === remaining symbols:
