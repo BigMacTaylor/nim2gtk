@@ -1,5 +1,10 @@
 # Simple gtk-layer-shell example
-# nim c layer_shell.nim
+#
+# Important!
+# gtk4-layer-shell needs to be linked before libwayland.
+# compile with:
+# nim c --dynlibOverride:gtk4-layer-shell layer_shell.nim
+
 import nim2gtk/[gtk4layershell, gtk4, gobject, gio]
 
 # Called function has the sender of the signal as the first argument

@@ -118,6 +118,9 @@ proc gtk_layer_get_margin(window: ptr gtk.Window00; edge: Edge): int32 {.
 proc getMargin*(window: gtk.Window; edge: Edge): int =
   int(gtk_layer_get_margin(cast[ptr gtk.Window00](window.impl), edge))
 
+proc getLayerShellMargin*(window: gtk.Window; edge: Edge): int =
+  int(gtk_layer_get_margin(cast[ptr gtk.Window00](window.impl), edge))
+
 proc gtk_layer_get_micro_version(): uint32 {.
     importc, libprag.}
 

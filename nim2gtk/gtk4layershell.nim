@@ -99,11 +99,14 @@ proc layer*(window: gtk4.Window): Layer =
 proc gtk_layer_get_major_version(): uint32 {.
     importc, libprag.}
 
-proc MajorVersion*(): int =
+proc getMajorVersion*(): int =
   int(gtk_layer_get_major_version())
 
 proc gtk_layer_get_margin(window: ptr gtk4.Window00; edge: Edge): int32 {.
     importc, libprag.}
+
+proc getMargin*(window: gtk4.Window; edge: Edge): int =
+  int(gtk_layer_get_margin(cast[ptr gtk4.Window00](window.impl), edge))
 
 proc getLayerShellMargin*(window: gtk4.Window; edge: Edge): int =
   int(gtk_layer_get_margin(cast[ptr gtk4.Window00](window.impl), edge))
@@ -111,13 +114,13 @@ proc getLayerShellMargin*(window: gtk4.Window; edge: Edge): int =
 proc gtk_layer_get_micro_version(): uint32 {.
     importc, libprag.}
 
-proc MicroVersion*(): int =
+proc getMicroVersion*(): int =
   int(gtk_layer_get_micro_version())
 
 proc gtk_layer_get_minor_version(): uint32 {.
     importc, libprag.}
 
-proc MinorVersion*(): int =
+proc getMinorVersion*(): int =
   int(gtk_layer_get_minor_version())
 
 proc gtk_layer_get_monitor(window: ptr gtk4.Window00): ptr gdk4.Monitor00 {.
@@ -167,7 +170,7 @@ proc namespace*(window: gtk4.Window): string =
 proc gtk_layer_get_protocol_version(): uint32 {.
     importc, libprag.}
 
-proc ProtocolVersion*(): int =
+proc getProtocolVersion*(): int =
   int(gtk_layer_get_protocol_version())
 
 proc gtk_layer_get_zwlr_layer_surface_v1(window: ptr gtk4.Window00): pointer {.
@@ -178,6 +181,9 @@ proc getZwlrLayerSurfaceV1*(window: gtk4.Window): pointer =
 
 proc gtk_layer_init_for_window(window: ptr gtk4.Window00) {.
     importc, libprag.}
+
+proc initForWindow*(window: gtk4.Window) =
+  gtk_layer_init_for_window(cast[ptr gtk4.Window00](window.impl))
 
 proc initLayerShell*(window: gtk4.Window) =
   gtk_layer_init_for_window(cast[ptr gtk4.Window00](window.impl))
@@ -229,6 +235,9 @@ proc `layer=`*(window: gtk4.Window; layer: Layer) =
 
 proc gtk_layer_set_margin(window: ptr gtk4.Window00; edge: Edge; marginSize: int32) {.
     importc, libprag.}
+
+proc setMargin*(window: gtk4.Window; edge: Edge; marginSize: int) =
+  gtk_layer_set_margin(cast[ptr gtk4.Window00](window.impl), edge, int32(marginSize))
 
 proc setLayerShellMargin*(window: gtk4.Window; edge: Edge; marginSize: int) =
   gtk_layer_set_margin(cast[ptr gtk4.Window00](window.impl), edge, int32(marginSize))
