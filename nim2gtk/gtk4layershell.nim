@@ -18,6 +18,12 @@
 # libgtk4-layer-shell.so.0
 # libwayland-client.so.0
 {.warning[UnusedImport]: off.}
+# Check if gtk4-layer-shell exists at compile time cause
+# gtk4-layer-shell needs to be linked before libwayland
+const hasLib = staticExec("pkg-config --exists gtk4-layer-shell || pkg-config --exists gtk4-layer-shell-0 && echo 'true' || echo 'false'")
+when hasLib == "false":
+  {.error: "gtk4-layer-shell not found. Are development files installed?" .}
+
 import pangocairo, freetype2, glib, gdkpixbuf, harfbuzz, gmodule, gtk4, cairo, graphene, gsk, gobject, gdk4, gio, pango
 const Lib = "libgtk4-layer-shell.so.0"
 {.pragma: libprag, cdecl, dynlib: Lib.}
